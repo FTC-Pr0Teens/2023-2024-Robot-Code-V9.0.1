@@ -20,7 +20,7 @@ public class MagneticSwitchTest extends LinearOpMode {
         while (opModeIsActive()) {
             double tickNum = multiMotorSubsystem.getPosition();
             if (magnet.isPressed() && gamepad1.left_stick_y <0) {
-                multiMotorSubsystem.moveLift(tickNum);
+                multiMotorSubsystem.moveLift(-(-0.498 + 0.22 * Math.log(tickNum)));
             }
             else {
                 multiMotorSubsystem.moveLift(gamepad1.left_stick_y);
