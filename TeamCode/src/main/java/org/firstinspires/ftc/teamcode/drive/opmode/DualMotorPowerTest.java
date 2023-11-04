@@ -24,9 +24,11 @@ public class DualMotorPowerTest extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+            double targetPosition = 0;
 
             if(gamepad1.a){
                 multiMotorSubsystem.LiftCascadeProcess(4100);
+                targetPosition = 4100;
             }
             else {
                 multiMotorSubsystem.moveLift(gamepad1.left_stick_y);
@@ -42,6 +44,8 @@ public class DualMotorPowerTest extends LinearOpMode {
             packet.put("controlleroutput", multiMotorSubsystem.getCascadeOutput());
             packet.put("outputPositionalValue", multiMotorSubsystem.getCascadePositional());
             packet.put("outputVelocityValue", multiMotorSubsystem.getCascadeVelocity());
+            packet.put("Target Position", targetPosition);
+            telemetry.addData("Target Position", targetPosition);
             telemetry.addData("position", multiMotorSubsystem.getPosition());
             telemetry.addData("power", multiMotorSubsystem.getMainPower());
             telemetry.addData("auxpower", multiMotorSubsystem.getAux1Power());
