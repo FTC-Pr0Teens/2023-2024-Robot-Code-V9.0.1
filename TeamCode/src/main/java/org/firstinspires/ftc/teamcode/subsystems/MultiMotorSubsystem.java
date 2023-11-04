@@ -62,7 +62,7 @@ public class MultiMotorSubsystem extends Specifications {
     private double cascadeKp = (double) 1/2700;
     private double cascadeKi = 0;
     private double cascadeKd = 0.0;
-    private double cascadeKpVel = (double) 1/1500;
+    private double cascadeKpVel = (double) 1/2000;
     private double cascadeKiVel = 0;
     private double cascadeKdVel = 0;
     private PIDCore testLiftPID = new PIDCore(1, 1, 1);
