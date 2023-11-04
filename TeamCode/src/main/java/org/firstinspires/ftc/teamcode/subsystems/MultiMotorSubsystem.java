@@ -350,7 +350,7 @@ public class MultiMotorSubsystem extends Specifications {
         Interval interval2 = new Interval(3400, 3700, -2000);
         Interval interval3 = new Interval(3700, 4000, -1000);
         Interval interval4 = new Interval(4000, 4500, 0);
-        IntervalControl velocityInterval = new IntervalControl(interval);
+        IntervalControl velocityInterval = new IntervalControl(interval1, interval2, interval3, interval4);
 //        angularVelocity = -main.getVelocity(AngleUnit.RADIANS);
 
         if(runToPosition){
