@@ -62,7 +62,7 @@ public class MultiMotorSubsystem extends Specifications {
     private double cascadeKp = (double) 1/2700;
     private double cascadeKi = 0;
     private double cascadeKd = 0.0;
-    private double cascadeKpVel = (double) 1/1500;
+    private double cascadeKpVel = (double) 1/2000;
     private double cascadeKiVel = 0;
     private double cascadeKdVel = 0;
     private PIDCore testLiftPID = new PIDCore(1, 1, 1);
@@ -346,10 +346,10 @@ public class MultiMotorSubsystem extends Specifications {
     public void LiftCascadeProcess(double targetPos, Interval... interval){
         runToPosition = true;
         //position, end position, angular velocity within that interval
-//        Interval interval1 = new Interval(0, 3700, -2500);
-//        Interval interval2 = new Interval(3400, 3700, -2000);
-//        Interval interval3 = new Interval(3700, 4000, -1000);
-//        Interval interval4 = new Interval(4000, 4500, 0);
+        Interval interval1 = new Interval(0, 3700, -2500);
+        Interval interval2 = new Interval(3400, 3700, -2000);
+        Interval interval3 = new Interval(3700, 4000, -1000);
+        Interval interval4 = new Interval(4000, 4500, 0);
         IntervalControl velocityInterval = new IntervalControl(interval);
 //        angularVelocity = -main.getVelocity(AngleUnit.RADIANS);
 
