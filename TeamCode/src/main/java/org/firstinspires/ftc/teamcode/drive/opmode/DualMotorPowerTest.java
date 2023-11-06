@@ -18,13 +18,14 @@ public class DualMotorPowerTest extends LinearOpMode {
         FtcDashboard dash = FtcDashboard.getInstance();
         TelemetryPacket packet = new TelemetryPacket();
         ElapsedTime timer = new ElapsedTime();
+        double targetPosition = 0;
 
         MultiMotorSubsystem multiMotorSubsystem = new MultiMotorSubsystem(hardwareMap, true, MultiMotorSubsystem.MultiMotorType.dualMotor);
 
         waitForStart();
 
         while (opModeIsActive()) {
-            double targetPosition = 0;
+
 
             if(gamepad1.a){
                 multiMotorSubsystem.LiftCascadeProcess(4100);
