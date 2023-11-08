@@ -26,11 +26,11 @@ public class DualMotorPowerTest extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-
             if(gamepad1.a){
-                multiMotorSubsystem.LiftCascadeProcess(4100);
-                targetPosition = 4100;
+                multiMotorSubsystem.LiftCascadeProcess(3100);
+                targetPosition = 3100;
             }
+
             else {
                 multiMotorSubsystem.moveLift(gamepad1.left_stick_y);
             }
