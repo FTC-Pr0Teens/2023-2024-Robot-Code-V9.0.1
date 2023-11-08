@@ -5,27 +5,26 @@ import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 public class IntakeCommand {
     private IntakeSubsystem intakeSubsystem;
 
-    public IntakeCommand(IntakeSubsystem intakeSubsystem) {
+    public IntakeCommand(IntakeSubsystem intakeSubsystem){
         this.intakeSubsystem = intakeSubsystem;
     }
 
-    public void raiseIntake() {
+    public void raiseIntake(){
         intakeSubsystem.setIntakePosition(0.5);
     }
 
-    public void lowerIntake() {
+    public void lowerIntake(){
         intakeSubsystem.setIntakePosition(0);
     }
 
-    public void intakeIn() {
+    public void intakeIn(){
         intakeSubsystem.setIntakePower(1);
     }
-
-    public void intakeOut() {
+    public void intakeOut(){
         intakeSubsystem.setIntakePower(-1);
     }
 
-    public void stopIntake() {
+    public void stopIntake(){
         intakeSubsystem.setIntakePower(0);
     }
 }
