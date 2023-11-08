@@ -13,8 +13,8 @@ public class MagneticSwitchTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        bottomMagnet = hardwareMap.get(TouchSensor.class, "magnet");
-        topMagnet = hardwareMap.get(TouchSensor.class, "magnet");
+        bottomMagnet = hardwareMap.get(TouchSensor.class, "bottomMagnet");
+        topMagnet = hardwareMap.get(TouchSensor.class, "topMagnet");
         MultiMotorSubsystem multiMotorSubsystem = new MultiMotorSubsystem(hardwareMap, true, MultiMotorSubsystem.MultiMotorType.dualMotor);
 
         waitForStart();
@@ -24,8 +24,8 @@ public class MagneticSwitchTest extends LinearOpMode {
             if (bottomMagnet.isPressed() && gamepad1.left_stick_y <0) {
                 multiMotorSubsystem.moveLift(-(-0.498 + 0.22 * Math.log(tickNum)));
             }
-            if (topMagnet.isPressed() && gamepad1.left_stick_y >0) {
-                multiMotorSubsystem.moveLift(-0.001*tickNum+4);
+            if (topMagnet.isPressed() == false && gamepad1.left_stick_y >0) {
+                multiMotorSubsystem.moveLift(-0.001 * tickNum+4);
             }
             else {
                 multiMotorSubsystem.moveLift(gamepad1.left_stick_y);
