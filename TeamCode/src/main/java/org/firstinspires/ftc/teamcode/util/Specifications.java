@@ -49,9 +49,6 @@ public class Specifications {
      */
 
     //DS: distance sensor
-
-    public static final String INTAKE_MOTOR = "intakeMotor";
-    public static final String INTAKE_SERVO = "intakeServo";
     public static final String EXTENSION_MOTOR_MAIN = "extension1";
     public static final String EXTENSION_MOTOR_AUX1 = "extension2";
     public static final String EXTENSION_MOTOR_AUX2 = "extension3";

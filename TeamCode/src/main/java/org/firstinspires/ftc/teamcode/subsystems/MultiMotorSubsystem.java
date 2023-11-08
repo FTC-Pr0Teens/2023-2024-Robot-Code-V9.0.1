@@ -201,7 +201,7 @@ public class MultiMotorSubsystem extends Specifications {
     public void moveLift(double power){
         main.setPower(power);
         aux1.setPower(getMainPower());
-        testLiftPID.outputPositional(3900, getPosition());
+//        testLiftPID.outputPositional(3900, getPosition());
     }
 
     public void externalEncoderProcessTwoMotor(){
@@ -361,6 +361,9 @@ public class MultiMotorSubsystem extends Specifications {
         }
 
     }
+
+
+
 
     public void motorTurn(boolean run, int position){
         if (run){

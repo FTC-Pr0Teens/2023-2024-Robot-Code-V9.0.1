@@ -8,25 +8,28 @@ import org.firstinspires.ftc.teamcode.subsystems.MultiMotorSubsystem;
 
 @TeleOp
 public class MagneticSwitchTest extends LinearOpMode {
-    TouchSensor magnet;
+    TouchSensor bottomMagnet;
+    TouchSensor topMagnet;
 
     @Override
     public void runOpMode() {
-        magnet = hardwareMap.get(TouchSensor.class, "magnet");
+        bottomMagnet = hardwareMap.get(TouchSensor.class, "bottomMagnet");
+        topMagnet = hardwareMap.get(TouchSensor.class, "topMagnet");
         MultiMotorSubsystem multiMotorSubsystem = new MultiMotorSubsystem(hardwareMap, true, MultiMotorSubsystem.MultiMotorType.dualMotor);
 
         waitForStart();
 
         while (opModeIsActive()) {
             double tickNum = multiMotorSubsystem.getPosition();
-            if (magnet.isPressed() && gamepad1.left_stick_y <0) {
+            if (bottomMagnet.isPressed() && gamepad1.left_stick_y <0) {
                 multiMotorSubsystem.moveLift(-(-0.498 + 0.22 * Math.log(tickNum)));
+            }
+            if (topMagnet.isPressed() == false && gamepad1.left_stick_y >0) {
+                multiMotorSubsystem.moveLift(-0.001 * tickNum+4);
             }
             else {
                 multiMotorSubsystem.moveLift(gamepad1.left_stick_y);
             }
-
-            telemetry.update();
         }
     }
 }
