@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.command.MultiMotorCommand;
 import org.firstinspires.ftc.teamcode.subsystems.MultiMotorSubsystem;
 
 @Config
@@ -21,16 +22,32 @@ public class DualMotorPowerTest extends LinearOpMode {
         double targetPosition = 0;
 
         MultiMotorSubsystem multiMotorSubsystem = new MultiMotorSubsystem(hardwareMap, true, MultiMotorSubsystem.MultiMotorType.dualMotor);
+        MultiMotorCommand multiMotorCommand = new MultiMotorCommand(multiMotorSubsystem);
 
         waitForStart();
 
         while (opModeIsActive()) {
 
             if(gamepad1.a){
-                multiMotorSubsystem.LiftCascadeProcess(3100);
+                multiMotorCommand.LiftUp(true, 4);
                 targetPosition = 3100;
             }
-
+            else if(gamepad1.b){
+                multiMotorCommand.LiftUp(true, 3);
+                targetPosition = 0;
+            }
+            else if(gamepad1.y){
+                multiMotorCommand.LiftUp(true, 2);
+                targetPosition = 3100;
+            }
+            else if(gamepad1.x){
+                multiMotorCommand.LiftUp(true, 1);
+                targetPosition = 1300;
+            }
+            else if(gamepad1.dpad_down){
+                multiMotorCommand.LiftUp(true, 0);
+                targetPosition = 0;
+            }
             else {
                 multiMotorSubsystem.moveLift(gamepad1.left_stick_y);
             }
