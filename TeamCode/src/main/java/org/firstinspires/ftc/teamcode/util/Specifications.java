@@ -62,13 +62,6 @@ public class Specifications {
     public static final String BK_ENCODER = "extension3"; //port 2
     public static final String LF_ENCODER = "extension2"; //port 1
     public static final String RT_ENCODER = "rt_encoder"; //port 3
-    public static final String ROTATION = "rotation";
-    public static final String CLAW = "claw";
-    public static final String TILT = "tilt";
-    public static final String LINKAGE = "linkage";
-    public static final String LINKAGE_POTENTIOMETER = "potentiometer";
-    public static final String INTAKE_LEFT = "intakeLeft";
-    public static final String INTAKE_RIGHT = "intakeRight";
     public static final String IMU = "imu";
     public static final String DS_FT_LF = "distance_sensor_frontLeft";
     public static final String DS_FT_RT = "distance_sensor_frontRight";

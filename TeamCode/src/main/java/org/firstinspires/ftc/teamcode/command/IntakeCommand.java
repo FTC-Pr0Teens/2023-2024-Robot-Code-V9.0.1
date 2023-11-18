@@ -1,31 +1,37 @@
 package org.firstinspires.ftc.teamcode.command;
 
-import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.teamcode.subsystems.SingleMotorSubsystem;
+import org.firstinspires.ftc.teamcode.util.Specifications;
 
 public class IntakeCommand {
-    private IntakeSubsystem intakeSubsystem;
+    private SingleMotorSubsystem intake;
+    private Servo intakeServo;
 
-    public IntakeCommand(IntakeSubsystem intakeSubsystem) {
-        this.intakeSubsystem = intakeSubsystem;
+    public IntakeCommand(HardwareMap hardwareMap) {
+        intake = new SingleMotorSubsystem(hardwareMap, Specifications.INTAKE_MOTOR);
+        intakeServo = hardwareMap.get(Servo.class, Specifications.INTAKE_SERVO);
     }
 
     public void raiseIntake() {
-        intakeSubsystem.setIntakePosition(0.5);
+        intakeServo.setPosition(1);
     }
 
     public void lowerIntake() {
-        intakeSubsystem.setIntakePosition(0);
+        intakeServo.setPosition(0);
     }
 
     public void intakeIn() {
-        intakeSubsystem.setIntakePower(1);
+        intake.motorTurnPower(true, 1);
     }
 
     public void intakeOut() {
-        intakeSubsystem.setIntakePower(-1);
+        intake.motorTurnPower(true, -1);
     }
 
     public void stopIntake() {
-        intakeSubsystem.setIntakePower(0);
+        intake.motorTurnPower(true, 0);
     }
 }

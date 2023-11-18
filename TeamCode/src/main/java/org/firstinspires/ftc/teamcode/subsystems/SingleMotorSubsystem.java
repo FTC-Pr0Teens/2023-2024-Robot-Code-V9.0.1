@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.threadopmode.subsystems;
+package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -13,10 +13,8 @@ public class SingleMotorSubsystem extends Specifications {
     private DcMotorEx motor;
     private PIDCore pidCore;
 
-    public SingleMotorSubsystem(HardwareMap hardwareMap) {
-        this.motor = hardwareMap.get(DcMotorEx.class, ROTATION);
-        this.motor.setDirection(DcMotorSimple.Direction.FORWARD);
-        this.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    public SingleMotorSubsystem(HardwareMap hardwareMap, String motorName){
+        this.motor = hardwareMap.get(DcMotorEx.class, motorName);
         pidCore = new PIDCore(0.1, 0.0001, 0);
     }
 

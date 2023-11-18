@@ -5,8 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.MecanumCommand;
 import org.firstinspires.ftc.teamcode.command.MultiMotorCommand;
-import org.firstinspires.ftc.teamcode.command.OutputCommand;
-import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MultiMotorSubsystem;
 import org.firstinspires.ftc.teamcode.threadopmode.subsystems.OdometrySubsystem;
@@ -22,7 +20,6 @@ public class MainTeleOp extends LinearOpMode{
     private MecanumSubsystem mecanumSubsystem;
     private MecanumCommand mecanumCommand;
 //    private OutputCommand outputCommand;
-    private IntakeSubsystem intakeSubsystem;
     private IntakeCommand intakeCommand;
     private IMUSubsystem imuSubsystem;
     private GyroOdometry gyroOdometry;
@@ -43,9 +40,7 @@ public class MainTeleOp extends LinearOpMode{
         mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem, null, null, null, null, gyroOdometry, this, null);
 
 //        outputCommand = new OutputCommand(hardwareMap);
-
-        intakeSubsystem = new IntakeSubsystem(hardwareMap);
-        intakeCommand = new IntakeCommand(intakeSubsystem);
+        intakeCommand = new IntakeCommand(hardwareMap);
 
         gridAutoCentering = new GridAutoCentering(mecanumSubsystem, gyroOdometry);
 
