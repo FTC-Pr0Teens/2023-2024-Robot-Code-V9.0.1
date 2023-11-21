@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.command;
 import android.util.Log;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.threadopmode.subsystems.DistanceSensorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
@@ -20,7 +20,7 @@ public class MecanumCommand {
     private GyroOdometry gyroOdometry;
     private DistanceSensorSubsystem distance_sensor_backLeft, distance_sensor_backRight, distance_sensor_right, distance_sensor_left;
     private boolean run;
-    private LinearOpMode opMode;
+    private OpMode opMode;
     private ElapsedTime elapsedTime;
     private PIDCore globalPositionController;
     public PIDCore globalXController;
@@ -86,7 +86,7 @@ public class MecanumCommand {
         globalThetaController.setConstant(kptheta, kdtheta, kitheta);
     }
 
-    public MecanumCommand(MecanumSubsystem mecanumSubsystem, OdometrySubsystem odometrySubsystem, DistanceSensorSubsystem distance_sensor_backLeft, DistanceSensorSubsystem distance_sensor_backRight, DistanceSensorSubsystem distance_sensor_right, DistanceSensorSubsystem distance_sensor_left, GyroOdometry gyroOdometry, LinearOpMode opMode, PurePursuit purePursuit) {
+    public MecanumCommand(MecanumSubsystem mecanumSubsystem, OdometrySubsystem odometrySubsystem, DistanceSensorSubsystem distance_sensor_backLeft, DistanceSensorSubsystem distance_sensor_backRight, DistanceSensorSubsystem distance_sensor_right, DistanceSensorSubsystem distance_sensor_left, GyroOdometry gyroOdometry, OpMode opMode, PurePursuit purePursuit) {
         this.mecanumSubsystem = mecanumSubsystem;
         this.odometrySubsystem = odometrySubsystem;
         this.distance_sensor_backLeft = distance_sensor_backLeft;

@@ -23,11 +23,11 @@ import org.firstinspires.ftc.teamcode.util.VectorCartesian;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import java.util.Timer;
-
+@TeleOp(name = "nov 21 in history class")
 public class LeoTeleOp extends ThreadOpMode{
 
     private MultiMotorSubsystem multiMotorSubsystem;
@@ -48,7 +48,7 @@ public class LeoTeleOp extends ThreadOpMode{
     //Robot state variables
     private double autoCenterAngle = 0;
     private boolean doCentering = false;
-    private boolean right_stick_pressed = false;
+    private boolean rightStickPressed = false;
 
     private VectorCartesian controllerVector;
     private double velocityMultiplier;
@@ -88,15 +88,35 @@ public class LeoTeleOp extends ThreadOpMode{
         registerThread(new TaskThread(new TaskThread.Actions() { //process mecanum movement and rotation
             @Override
             public void loop() {
-                thread_baseControls();
+                mecanumSubsystem.motorProcessTeleOp();
+            }
+        }));
+
+        registerThread(new TaskThread(new TaskThread.Actions() { //process mecanum movement and rotation
+            @Override
+            public void loop() {
+                //movement controls
+                runMovement();
+            }
+        }));
+        registerThread(new TaskThread(new TaskThread.Actions(){
+            @Override
+            public void loop(){
+                //autocenter
+                gridAutoCentering.process(doCentering);
+            }
+        }));
+
+        registerThread(new TaskThread(new TaskThread.Actions(){
+            @Override
+            public void loop(){
+                //IMU Processing
+                imuSubsystem.gyroProcess();
+                gyroOdometry.angleProcess();
             }
         }));
     }
 
-    public void thread_baseControls() {
-        runMovement();
-        gridAutoCentering.process(doCentering);
-    }
 
     public void mainLoop(){
 
@@ -153,26 +173,28 @@ public class LeoTeleOp extends ThreadOpMode{
 
     }
     public void runMovement(){
-        velocityMultiplier = 0.7 + gamepad1.right_trigger * 0.4;
+        velocityMultiplier = 0.7 + (gamepad1.b ? 0.3 : 0);
 
         //change the rotational joystick control scheme if pressed down (does autocentering presets instead)
         if (!gamepad1.right_stick_button) {
-            if (right_stick_pressed) //don't enable turning unless stick is reset back to default after pressing stick
-                if (gamepad1.right_stick_x == 0) {
-                    right_stick_pressed = false;
-                }
-            if (Math.abs(gamepad1.right_stick_x) > 0.5) {
-                doCentering = false;
-            }
+            //if rightstick not pressed, do literally nothing
+            // UNLESS: 1. rightStick mode is on
+            if (rightStickPressed) //don't enable turning unless stick is reset back to default after pressing stick
+                if (gamepad1.right_stick_x == 0) rightStickPressed = false;
+            // 2. disable autoCentering if joystick moved
+            if (doCentering && Math.abs(gamepad1.right_stick_x) > 0.2) doCentering = false; //if stick position is off center disable autoCenter
 
-        } else {
-            right_stick_pressed = true;
-            doCentering = true;
+        } else { //ELSE if stick is pressed
+
+            rightStickPressed = true; //stick is pressed
+            doCentering = true;       //enable autocenter mode
 
             if (Math.abs(gamepad1.right_stick_x) < 0.5 && Math.abs(gamepad1.right_stick_y) < 0.5) {
                 //set centering angle offset to current angle
-                gridAutoCentering.offsetTargetAngle(gyroOdometry.theta);
-            } else {
+                gridAutoCentering.offsetTargetAngle(gyroOdometry.theta); //autoCenter to current angle
+                //CHANGE TO 90 degrees facing the board
+
+            } else { //this needs fixing
                 switch (controllerVector.returnStickPosition(gamepad1.right_stick_x, -gamepad1.right_stick_y)) {
                     case 1: //straight
                         autoCenterAngle = 0;
@@ -195,11 +217,13 @@ public class LeoTeleOp extends ThreadOpMode{
             }
         }
         
-        if (gamepad1.left_bumper) { //toggle grid
+        if (gamepad1.dpad_left) { //reset grid
             imuSubsystem.resetAngle(); //for gyro odometry
-            imuSubsystem.resetAngleXY(); //for antitip
             gridAutoCentering.reset(); //reset grid heading
         }
+
+        //move robot
+        mecanumCommand.moveGlobalPartial(true, -gamepad1.left_stick_y * velocityMultiplier, gamepad1.left_stick_x * velocityMultiplier, gamepad1.right_stick_y * 0.5);
 
     }
 }
