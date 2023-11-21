@@ -2,7 +2,8 @@ package org.firstinspires.ftc.teamcode.util.Pipelines;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.threadopmode.subsystems.WebcamSubsystem;
+
+import org.firstinspires.ftc.teamcode.subsystems.WebcamSubsystem;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -27,6 +28,9 @@ AVERAGE PROCESSING TIMES BASED ON IMAGE RESOLUTION:
 This pipeline is designed to filter out the yellow poles and detect their edges.
 Additionally, the pipeline also finds the areas and their center of masses of the detected
 yellow shapes.
+
+//TODO: make it for not yellow
+
 Once this information is found, the pipeline regularly updates which contour it thinks is the largest,
 in other words, which pole is deemed as the "closest"
  */
@@ -44,7 +48,7 @@ public class ContourPipeline extends OpenCvPipeline {
     private final Scalar CONTOUR_COLOR = new Scalar(255, 255, 255);
     private final Scalar CONTOUR_CENTER_COLOUR = new Scalar(255,0,255);
     private final Scalar UPPER_HSV = new Scalar(30, 255, 255);
-    private final Scalar LOWER_HSV = new Scalar(10, 130, 130);
+    private final Scalar LOWER_HSV = new Scalar(12, 130, 130);
 
     // final output image
     Mat output = new Mat();
@@ -153,7 +157,7 @@ public class ContourPipeline extends OpenCvPipeline {
         return largestContourCenter;
     }
 
-    public boolean poleDetected() {
+    public boolean objectDetected() {
         return !contourAreas.isEmpty();
     }
 }
