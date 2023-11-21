@@ -46,56 +46,56 @@ public class MainTeleOp extends LinearOpMode{
 
         waitForStart();
 
-        if(gamepad1.a){
-            multiMotorCommand.LiftUp(true, 0);
-        }
-        else if(gamepad1.b){
-            multiMotorCommand.LiftUp(true, 3);
-        }
-        else if(gamepad1.y){
-            multiMotorCommand.LiftUp(true, 1);
-        }
-        else if(gamepad1.x){
-            multiMotorCommand.LiftUp(true, 2);
-        }
-        else {
-            multiMotorSubsystem.moveLift(0);
-        }
+        while(opModeIsActive()){
+            if(gamepad1.a){
+                multiMotorCommand.LiftUp(true, 0);
+            }
+            else if(gamepad1.b){
+                multiMotorCommand.LiftUp(true, 3);
+            }
+            else if(gamepad1.y){
+                multiMotorCommand.LiftUp(true, 1);
+            }
+            else if(gamepad1.x){
+                multiMotorCommand.LiftUp(true, 2);
+            }
+            else {
+                multiMotorSubsystem.moveLift(0);
+            }
 
-        mecanumCommand.moveGlobalPartial(true, gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            mecanumCommand.moveGlobalPartial(true, gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
-        if(gamepad1.right_trigger > 0.5){
-            intakeCommand.intakeIn();
-        }
-        else if(gamepad1.left_trigger > 0.5){
-            intakeCommand.intakeOut();
-        }
-        else{
-            intakeCommand.stopIntake();
-        }
+            if(gamepad1.right_trigger > 0.5){
+                intakeCommand.intakeIn();
+            }
+            else if(gamepad1.left_trigger > 0.5){
+                intakeCommand.intakeOut();
+            }
+            else{
+                intakeCommand.stopIntake();
+            }
 
-        if(gamepad1.dpad_left){
-            gridAutoCentering.offsetTargetAngle(-Math.PI/2);
-            gridAutoCentering.process(true);
+            if(gamepad1.dpad_left){
+                gridAutoCentering.offsetTargetAngle(-Math.PI/2);
+                gridAutoCentering.process(true);
+            }
+            else if(gamepad1.dpad_right){
+                gridAutoCentering.offsetTargetAngle(Math.PI/2);
+                gridAutoCentering.process(true);
+            }
+            else if(gamepad1.dpad_up){
+                gridAutoCentering.offsetTargetAngle(0);
+                gridAutoCentering.process(true);
+            }
+            else if(gamepad1.dpad_down){
+                gridAutoCentering.offsetTargetAngle(Math.PI);
+                gridAutoCentering.process(true);
+            } else if (gamepad1.right_bumper) {
+                gridAutoCentering.reset();
+            }
+            else{
+                gridAutoCentering.process(false);
+            }
         }
-        else if(gamepad1.dpad_right){
-            gridAutoCentering.offsetTargetAngle(Math.PI/2);
-            gridAutoCentering.process(true);
-        }
-        else if(gamepad1.dpad_up){
-            gridAutoCentering.offsetTargetAngle(0);
-            gridAutoCentering.process(true);
-        }
-        else if(gamepad1.dpad_down){
-            gridAutoCentering.offsetTargetAngle(Math.PI);
-            gridAutoCentering.process(true);
-        } else if (gamepad1.right_bumper) {
-            gridAutoCentering.reset();
-        }
-        else{
-            gridAutoCentering.process(false);
-        }
-
-
     }
 }
