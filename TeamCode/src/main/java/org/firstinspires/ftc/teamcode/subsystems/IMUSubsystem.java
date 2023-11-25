@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.threadopmode.subsystems;
+package org.firstinspires.ftc.teamcode.subsystems;
 
 import androidx.annotation.NonNull;
 
@@ -42,9 +42,8 @@ public class IMUSubsystem extends Specifications {
     public double loopTime;
     private final double twoPi = Math.PI*2;
 
-    public IMUSubsystem(@NonNull HardwareMap hardwareMap, Initialize initialize) {
+    public IMUSubsystem(@NonNull HardwareMap hardwareMap) {
         timer = new ElapsedTime();
-        this.initialize = initialize;
         parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;

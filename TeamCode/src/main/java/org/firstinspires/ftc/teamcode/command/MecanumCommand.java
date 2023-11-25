@@ -166,130 +166,130 @@ public class MecanumCommand {
             mecanumSubsystem.partialMove(true, localVertical, localHorizontal, rotational);
         }
     }
-
-    public void movePartial(boolean run, double vertical, double horizontal, double rotational){
-        if (run){
-            vertical *= mecanumSubsystem.MAX_ANGULAR_VEL;
-            horizontal *= mecanumSubsystem.MAX_ANGULAR_VEL;
-            rotational *= mecanumSubsystem.MAX_ANGULAR_VEL;
-            mecanumSubsystem.partialMove(true, vertical, horizontal, rotational);
-        }
-    }
-
-    public void localToCoordMixed(boolean run, double xf, double yf, double power){
-        double xi = odometrySubsystem.rightEncoder();
-        double yi = odometrySubsystem.backEncoder();
-        double x = 0;
-        double y = 0;
-        while (run && (Math.abs(xf - x) > 0.1 || Math.abs(yf - y) > 0.1)){
-            x = (odometrySubsystem.rightEncoder() - xi) / odometrySubsystem.odometryTick * odometrySubsystem.odometryCir;
-            y = (odometrySubsystem.backEncoder() - yi) / odometrySubsystem.odometryTick * odometrySubsystem.odometryCir;
-            mecanumSubsystem.partialMove(true, Math.copySign(power, xf - x), Math.copySign(power, (yf - y)), 0);
-        }
-        mecanumSubsystem.partialMove(true, 0, 0, 0);
-    }
-
-    public void turnToAngle(double pow, double angle) {
-
-//        double xTemp = mecanumSubsystem.x;
-//        double yTemp = mecanumSubsystem.y;
-
-        if (angle < 0) {
-            angle += 360;
-        }
-
-        double angleTemp = angle - odometrySubsystem.convertBearing(odometrySubsystem.theta);
-        if (angleTemp < 0) {
-            angleTemp += 360;
-        }
-
-        if (angleTemp < 180) {
-            while (Math.abs(odometrySubsystem.convertBearing(odometrySubsystem.theta) - angle) > 3 && opMode.opModeIsActive()) {
-                mecanumSubsystem.move(true, 0 , 0, pow);
-            }
-        } else {
-            while (Math.abs(odometrySubsystem.convertBearing(odometrySubsystem.theta) - angle) > 3 && opMode.opModeIsActive()) {
-                mecanumSubsystem.move(true, 0, 0, -pow);
-            }
-        }
-//        while ( Math.abs(mecanumSubsystem.Theta - angle) > 3 ) {
-//            mecanumSubsystem.move(true, 0, 0, directionalPow);
+//
+//    public void movePartial(boolean run, double vertical, double horizontal, double rotational){
+//        if (run){
+//            vertical *= mecanumSubsystem.MAX_ANGULAR_VEL;
+//            horizontal *= mecanumSubsystem.MAX_ANGULAR_VEL;
+//            rotational *= mecanumSubsystem.MAX_ANGULAR_VEL;
+//            mecanumSubsystem.partialMove(true, vertical, horizontal, rotational);
 //        }
-        mecanumSubsystem.stop(true);
-//        mecanumSubsystem.x = xTemp;
-//        mecanumSubsystem.y = yTemp;
-
-    }
-
-    public void turnToAngleMixed(double pow, double angle) {
-
-//        double xTemp = mecanumSubsystem.x;
-//        double yTemp = mecanumSubsystem.y;
-
-        if (angle < 0) {
-            angle += 360;
-        }
-
-        double angleTemp = angle - odometrySubsystem.convertBearing(gyroOdometry.theta);
-        if (angleTemp < 0) {
-            angleTemp += 360;
-        }
-
-        if (angleTemp < 180) {
-            while (Math.abs(odometrySubsystem.convertBearing(gyroOdometry.theta) - angle) > 3 && opMode.opModeIsActive()) {
-                mecanumSubsystem.move(true, 0 , 0, pow);
-            }
-        } else {
-            while (Math.abs(odometrySubsystem.convertBearing(gyroOdometry.theta) - angle) > 3 && opMode.opModeIsActive()) {
-                mecanumSubsystem.move(true, 0, 0, -pow);
-            }
-        }
-//        while ( Math.abs(mecanumSubsystem.Theta - angle) > 3 ) {
-//            mecanumSubsystem.move(true, 0, 0, directionalPow);
+//    }
+//
+//    public void localToCoordMixed(boolean run, double xf, double yf, double power){
+//        double xi = odometrySubsystem.rightEncoder();
+//        double yi = odometrySubsystem.backEncoder();
+//        double x = 0;
+//        double y = 0;
+//        while (run && (Math.abs(xf - x) > 0.1 || Math.abs(yf - y) > 0.1)){
+//            x = (odometrySubsystem.rightEncoder() - xi) / odometrySubsystem.odometryTick * odometrySubsystem.odometryCir;
+//            y = (odometrySubsystem.backEncoder() - yi) / odometrySubsystem.odometryTick * odometrySubsystem.odometryCir;
+//            mecanumSubsystem.partialMove(true, Math.copySign(power, xf - x), Math.copySign(power, (yf - y)), 0);
 //        }
-        mecanumSubsystem.stop(true);
-//        mecanumSubsystem.x = xTemp;
-//        mecanumSubsystem.y = yTemp;
-
-    }
-    
-    public void turnToZeroMixed(double pow) {
-
-//        double xTemp = odometrySubsystem.x;
-//        double yTemp = odometrySubsystem.y;
-
-        if(odometrySubsystem.convertBearing(gyroOdometry.theta) < 0) {
-            while ((Math.abs(odometrySubsystem.convertBearing(gyroOdometry.theta)) > 5) && opMode.opModeIsActive()) {
-                mecanumSubsystem.move(true, 0, 0, -pow);
-            }
-        } else {
-            while ((Math.abs(odometrySubsystem.convertBearing(gyroOdometry.theta)) > 5) && opMode.opModeIsActive()) {
-                mecanumSubsystem.move(true, 0, 0, pow);
-            }
-        }
-        mecanumSubsystem.stop(true);
-//        mecanumSubsystem.x = xTemp;
-//        mecanumSubsystem.y = yTemp;
-    }
-
-    public void turnToZero(double pow) {
-
-//        double xTemp = mecanumSubsystem.x;
-//        double yTemp = mecanumSubsystem.y;
-
-        if(odometrySubsystem.convertBearing(odometrySubsystem.theta) < 0) {
-            while ((Math.abs(odometrySubsystem.convertBearing(odometrySubsystem.theta)) > 5) && opMode.opModeIsActive()) {
-                mecanumSubsystem.move(true, 0, 0, -pow);
-            }
-        } else {
-            while ((Math.abs(odometrySubsystem.convertBearing(odometrySubsystem.theta)) > 5) && opMode.opModeIsActive()) {
-                mecanumSubsystem.move(true, 0, 0, pow);
-            }
-        }
-        mecanumSubsystem.stop(true);
-//        mecanumSubsystem.x = xTemp;
-//        mecanumSubsystem.y = yTemp;
-    }
+//        mecanumSubsystem.partialMove(true, 0, 0, 0);
+//    }
+//
+//    public void turnToAngle(double pow, double angle) {
+//
+////        double xTemp = mecanumSubsystem.x;
+////        double yTemp = mecanumSubsystem.y;
+//
+//        if (angle < 0) {
+//            angle += 360;
+//        }
+//
+//        double angleTemp = angle - odometrySubsystem.convertBearing(odometrySubsystem.theta);
+//        if (angleTemp < 0) {
+//            angleTemp += 360;
+//        }
+//
+//        if (angleTemp < 180) {
+//            while (Math.abs(odometrySubsystem.convertBearing(odometrySubsystem.theta) - angle) > 3 && opMode.opModeIsActive()) {
+//                mecanumSubsystem.move(true, 0 , 0, pow);
+//            }
+//        } else {
+//            while (Math.abs(odometrySubsystem.convertBearing(odometrySubsystem.theta) - angle) > 3 && opMode.opModeIsActive()) {
+//                mecanumSubsystem.move(true, 0, 0, -pow);
+//            }
+//        }
+////        while ( Math.abs(mecanumSubsystem.Theta - angle) > 3 ) {
+////            mecanumSubsystem.move(true, 0, 0, directionalPow);
+////        }
+//        mecanumSubsystem.stop(true);
+////        mecanumSubsystem.x = xTemp;
+////        mecanumSubsystem.y = yTemp;
+//
+//    }
+//
+//    public void turnToAngleMixed(double pow, double angle) {
+//
+////        double xTemp = mecanumSubsystem.x;
+////        double yTemp = mecanumSubsystem.y;
+//
+//        if (angle < 0) {
+//            angle += 360;
+//        }
+//
+//        double angleTemp = angle - odometrySubsystem.convertBearing(gyroOdometry.theta);
+//        if (angleTemp < 0) {
+//            angleTemp += 360;
+//        }
+//
+//        if (angleTemp < 180) {
+//            while (Math.abs(odometrySubsystem.convertBearing(gyroOdometry.theta) - angle) > 3 && opMode.opModeIsActive()) {
+//                mecanumSubsystem.move(true, 0 , 0, pow);
+//            }
+//        } else {
+//            while (Math.abs(odometrySubsystem.convertBearing(gyroOdometry.theta) - angle) > 3 && opMode.opModeIsActive()) {
+//                mecanumSubsystem.move(true, 0, 0, -pow);
+//            }
+//        }
+////        while ( Math.abs(mecanumSubsystem.Theta - angle) > 3 ) {
+////            mecanumSubsystem.move(true, 0, 0, directionalPow);
+////        }
+//        mecanumSubsystem.stop(true);
+////        mecanumSubsystem.x = xTemp;
+////        mecanumSubsystem.y = yTemp;
+//
+//    }
+//
+//    public void turnToZeroMixed(double pow) {
+//
+////        double xTemp = odometrySubsystem.x;
+////        double yTemp = odometrySubsystem.y;
+//
+//        if(odometrySubsystem.convertBearing(gyroOdometry.theta) < 0) {
+//            while ((Math.abs(odometrySubsystem.convertBearing(gyroOdometry.theta)) > 5) && opMode.opModeIsActive()) {
+//                mecanumSubsystem.move(true, 0, 0, -pow);
+//            }
+//        } else {
+//            while ((Math.abs(odometrySubsystem.convertBearing(gyroOdometry.theta)) > 5) && opMode.opModeIsActive()) {
+//                mecanumSubsystem.move(true, 0, 0, pow);
+//            }
+//        }
+//        mecanumSubsystem.stop(true);
+////        mecanumSubsystem.x = xTemp;
+////        mecanumSubsystem.y = yTemp;
+//    }
+//
+//    public void turnToZero(double pow) {
+//
+////        double xTemp = mecanumSubsystem.x;
+////        double yTemp = mecanumSubsystem.y;
+//
+//        if(odometrySubsystem.convertBearing(odometrySubsystem.theta) < 0) {
+//            while ((Math.abs(odometrySubsystem.convertBearing(odometrySubsystem.theta)) > 5) && opMode.opModeIsActive()) {
+//                mecanumSubsystem.move(true, 0, 0, -pow);
+//            }
+//        } else {
+//            while ((Math.abs(odometrySubsystem.convertBearing(odometrySubsystem.theta)) > 5) && opMode.opModeIsActive()) {
+//                mecanumSubsystem.move(true, 0, 0, pow);
+//            }
+//        }
+//        mecanumSubsystem.stop(true);
+////        mecanumSubsystem.x = xTemp;
+////        mecanumSubsystem.y = yTemp;
+//    }
 
 //    public void HugWallRed(boolean run, double pow) {
 //
@@ -389,344 +389,344 @@ public class MecanumCommand {
 //        mecanumSubsystem.getRightForward().setVelocity();
 //    }
 
-    public void toCoordOdometry(boolean run, double pow, double xf, double yf){
-        if (run){
-            double dx = xf - odometrySubsystem.x;
-            double dy = yf - odometrySubsystem.y;
-            double theta = odometrySubsystem.theta;
-            while (theta > 2*Math.PI && opMode.opModeIsActive()){
-                theta = theta - (2*Math.PI);
-            }
-            while (theta < 0 && opMode.opModeIsActive()){
-                theta = theta + (2*Math.PI);
-            }
-            double angle = Math.atan2(dy, dx)- (2*Math.PI) + theta;
-            while (angle < 0 && opMode.opModeIsActive()){
-                angle = angle + (2*Math.PI);
-            }
-            double temp = Math.tan(angle);
-//            Log.d("tempLogs", "Current ratio: " + Double.toString(temp));
-            Log.d("Auto2Logs", "Angle from endpoint: " + angle);
-
-            if (angle < Math.PI){
-                if (angle < Math.PI/2){
-                    if (angle <= Math.PI/4){
-                        //Works
+//    public void toCoordOdometry(boolean run, double pow, double xf, double yf){
+//        if (run){
+//            double dx = xf - odometrySubsystem.x;
+//            double dy = yf - odometrySubsystem.y;
+//            double theta = odometrySubsystem.theta;
+//            while (theta > 2*Math.PI && opMode.opModeIsActive()){
+//                theta = theta - (2*Math.PI);
+//            }
+//            while (theta < 0 && opMode.opModeIsActive()){
+//                theta = theta + (2*Math.PI);
+//            }
+//            double angle = Math.atan2(dy, dx)- (2*Math.PI) + theta;
+//            while (angle < 0 && opMode.opModeIsActive()){
+//                angle = angle + (2*Math.PI);
+//            }
+//            double temp = Math.tan(angle);
+////            Log.d("tempLogs", "Current ratio: " + Double.toString(temp));
+//            Log.d("Auto2Logs", "Angle from endpoint: " + angle);
+//
+//            if (angle < Math.PI){
+//                if (angle < Math.PI/2){
+//                    if (angle <= Math.PI/4){
+//                        //Works
+////                        mecanumSubsystem.move(true, pow, pow*temp, 0);
 //                        mecanumSubsystem.move(true, pow, pow*temp, 0);
-                        mecanumSubsystem.move(true, pow, pow*temp, 0);
-                    } else {
-                        //Works
-                        temp = 1/temp;
+//                    } else {
+//                        //Works
+//                        temp = 1/temp;
+////                        mecanumSubsystem.move(true, pow*temp, pow, 0);
 //                        mecanumSubsystem.move(true, pow*temp, pow, 0);
-                        mecanumSubsystem.move(true, pow*temp, pow, 0);
-                    }
-                } else {
-
-                    if (angle <= 3*Math.PI/4){
-                        //Works
-                        temp = 1/temp;
+//                    }
+//                } else {
+//
+//                    if (angle <= 3*Math.PI/4){
+//                        //Works
+//                        temp = 1/temp;
+////                        mecanumSubsystem.move(true, pow*temp, pow, 0);
 //                        mecanumSubsystem.move(true, pow*temp, pow, 0);
-                        mecanumSubsystem.move(true, pow*temp, pow, 0);
-                    } else {
-                        //Works
+//                    } else {
+//                        //Works
+////                        mecanumSubsystem.move(true, -pow, -pow*temp, 0);
 //                        mecanumSubsystem.move(true, -pow, -pow*temp, 0);
-                        mecanumSubsystem.move(true, -pow, -pow*temp, 0);
-                    }
-                }
-            } else {
-                if (angle < 3*Math.PI/2){
-                    //Works
-                    if (angle <= 5*Math.PI/4){
+//                    }
+//                }
+//            } else {
+//                if (angle < 3*Math.PI/2){
+//                    //Works
+//                    if (angle <= 5*Math.PI/4){
+////                        mecanumSubsystem.move(true, -pow, -pow*temp, 0);
 //                        mecanumSubsystem.move(true, -pow, -pow*temp, 0);
-                        mecanumSubsystem.move(true, -pow, -pow*temp, 0);
-                    } else {
-                        temp = 1/temp;
+//                    } else {
+//                        temp = 1/temp;
+////                        mecanumSubsystem.move(true, -pow*temp, -pow, 0);
 //                        mecanumSubsystem.move(true, -pow*temp, -pow, 0);
-                        mecanumSubsystem.move(true, -pow*temp, -pow, 0);
-                    }
-                } else {
-                    if (angle <= 7*Math.PI/4){
-                        //Works
-                        temp = 1/temp;
+//                    }
+//                } else {
+//                    if (angle <= 7*Math.PI/4){
+//                        //Works
+//                        temp = 1/temp;
+////                        mecanumSubsystem.move(true, -pow*temp, -pow, 0);
 //                        mecanumSubsystem.move(true, -pow*temp, -pow, 0);
-                        mecanumSubsystem.move(true, -pow*temp, -pow, 0);
-                    } else {
+//                    } else {
+////                        mecanumSubsystem.move(true, pow, pow*temp, 0);
 //                        mecanumSubsystem.move(true, pow, pow*temp, 0);
-                        mecanumSubsystem.move(true, pow, pow*temp, 0);
-
-                    }
-                }
-            }
-        }
-    }
-
-    public void toCoordMixed(boolean run, double pow, double xf, double yf){
-        if (run){
-            double dx = xf - gyroOdometry.x;
-            double dy = yf - gyroOdometry.y;
-            double theta = gyroOdometry.theta;
-            while (theta > 2*Math.PI && opMode.opModeIsActive()){
-                theta = theta - (2*Math.PI);
-            }
-            while (theta < 0 && opMode.opModeIsActive()){
-                theta = theta + (2*Math.PI);
-            }
-            double angle = Math.atan2(dy, dx)- (2*Math.PI) + theta;
-            while (angle < 0 && opMode.opModeIsActive()){
-                angle = angle + (2*Math.PI);
-            }
-            double temp = Math.tan(angle);
-//            Log.d("tempLogs", "Current ratio: " + Double.toString(temp));
-            Log.d("Auto2Logs", "Angle from endpoint: " + angle);
-
-            if (angle < Math.PI){
-                if (angle < Math.PI/2){
-                    if (angle <= Math.PI/4){
-                        //Works
+//
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//    public void toCoordMixed(boolean run, double pow, double xf, double yf){
+//        if (run){
+//            double dx = xf - gyroOdometry.x;
+//            double dy = yf - gyroOdometry.y;
+//            double theta = gyroOdometry.theta;
+//            while (theta > 2*Math.PI && opMode.opModeIsActive()){
+//                theta = theta - (2*Math.PI);
+//            }
+//            while (theta < 0 && opMode.opModeIsActive()){
+//                theta = theta + (2*Math.PI);
+//            }
+//            double angle = Math.atan2(dy, dx)- (2*Math.PI) + theta;
+//            while (angle < 0 && opMode.opModeIsActive()){
+//                angle = angle + (2*Math.PI);
+//            }
+//            double temp = Math.tan(angle);
+////            Log.d("tempLogs", "Current ratio: " + Double.toString(temp));
+//            Log.d("Auto2Logs", "Angle from endpoint: " + angle);
+//
+//            if (angle < Math.PI){
+//                if (angle < Math.PI/2){
+//                    if (angle <= Math.PI/4){
+//                        //Works
+////                        mecanumSubsystem.move(true, pow, pow*temp, 0);
 //                        mecanumSubsystem.move(true, pow, pow*temp, 0);
-                        mecanumSubsystem.move(true, pow, pow*temp, 0);
-                    } else {
-                        //Works
-                        temp = 1/temp;
+//                    } else {
+//                        //Works
+//                        temp = 1/temp;
+////                        mecanumSubsystem.move(true, pow*temp, pow, 0);
 //                        mecanumSubsystem.move(true, pow*temp, pow, 0);
-                        mecanumSubsystem.move(true, pow*temp, pow, 0);
-                    }
-                } else {
-
-                    if (angle <= 3*Math.PI/4){
-                        //Works
-                        temp = 1/temp;
+//                    }
+//                } else {
+//
+//                    if (angle <= 3*Math.PI/4){
+//                        //Works
+//                        temp = 1/temp;
+////                        mecanumSubsystem.move(true, pow*temp, pow, 0);
 //                        mecanumSubsystem.move(true, pow*temp, pow, 0);
-                        mecanumSubsystem.move(true, pow*temp, pow, 0);
-                    } else {
-                        //Works
+//                    } else {
+//                        //Works
+////                        mecanumSubsystem.move(true, -pow, -pow*temp, 0);
 //                        mecanumSubsystem.move(true, -pow, -pow*temp, 0);
-                        mecanumSubsystem.move(true, -pow, -pow*temp, 0);
-                    }
-                }
-            } else {
-                if (angle < 3*Math.PI/2){
-                    //Works
-                    if (angle <= 5*Math.PI/4){
+//                    }
+//                }
+//            } else {
+//                if (angle < 3*Math.PI/2){
+//                    //Works
+//                    if (angle <= 5*Math.PI/4){
+////                        mecanumSubsystem.move(true, -pow, -pow*temp, 0);
 //                        mecanumSubsystem.move(true, -pow, -pow*temp, 0);
-                        mecanumSubsystem.move(true, -pow, -pow*temp, 0);
-                    } else {
-                        temp = 1/temp;
+//                    } else {
+//                        temp = 1/temp;
+////                        mecanumSubsystem.move(true, -pow*temp, -pow, 0);
 //                        mecanumSubsystem.move(true, -pow*temp, -pow, 0);
-                        mecanumSubsystem.move(true, -pow*temp, -pow, 0);
-                    }
-                } else {
-                    if (angle <= 7*Math.PI/4){
-                        //Works
-                        temp = 1/temp;
+//                    }
+//                } else {
+//                    if (angle <= 7*Math.PI/4){
+//                        //Works
+//                        temp = 1/temp;
+////                        mecanumSubsystem.move(true, -pow*temp, -pow, 0);
 //                        mecanumSubsystem.move(true, -pow*temp, -pow, 0);
-                        mecanumSubsystem.move(true, -pow*temp, -pow, 0);
-                    } else {
+//                    } else {
+////                        mecanumSubsystem.move(true, pow, pow*temp, 0);
 //                        mecanumSubsystem.move(true, pow, pow*temp, 0);
-                        mecanumSubsystem.move(true, pow, pow*temp, 0);
+//
+//                    }
+//                }
+//            }
+//        }
+//    }
 
-                    }
-                }
-            }
-        }
-    }
-
-    //important
-    public void toPosPIDGyroOdometry(double vel, double xf, double yf, double thetaf){
-        globalXController.integralReset();
-        globalYController.integralReset();
-        globalThetaController.integralReset();
-        while ((Math.abs(xf-gyroOdometry.x) > 5 || Math.abs(yf-gyroOdometry.y) > 5 || Math.abs(thetaf-gyroOdometry.theta) > 0.05)&&opMode.opModeIsActive()){
-            if (Math.abs(xf-gyroOdometry.x) > 2){
-                ex = globalXController.outputPositional(xf, gyroOdometry.x);
-            } else {
-                ex = 0;
-            }
-            if (Math.abs(yf - gyroOdometry.y) > 2){
-                ey = globalYController.outputPositional(yf, gyroOdometry.y);
-            } else {
-                ey = 0;
-            }
-            if (Math.abs(thetaf - gyroOdometry.theta) > 0.02){
-                etheta = globalThetaController.outputPositional(thetaf, gyroOdometry.theta);
-            } else {
-                etheta = 0;
-            }
-            if (Math.abs(ex) > vel || Math.abs(ey) > vel){
-                double max = Math.max(Math.abs(ex), Math.abs(ey));
-                ex = ex / max * vel;
-                ey = ey / max * vel;
-                etheta = etheta / max * vel;
-            }
-            moveGlobalPartial(true, ex, ey, etheta);
-        }
-        moveGlobalPartial(true, 0, 0, 0);
-    }
-
-    public void toPosVelPIDGyroOdometry(double vel, double xf, double yf, double thetaf){
-        globalXController.integralReset();
-        globalYController.integralReset();
-        globalThetaController.integralReset();
-        while ((Math.abs(xf-gyroOdometry.x) > 5 || Math.abs(yf-gyroOdometry.y) > 5 || Math.abs(thetaf-gyroOdometry.theta) > 0.05)&&opMode.opModeIsActive()){
-            if (Math.abs(xf-gyroOdometry.x) > 2){
-                ex = globalXController.outputPositional(xf, gyroOdometry.x);
-            } else {
-                ex = 0;
-            }
-            if (Math.abs(yf - gyroOdometry.y) > 2){
-                ey = globalYController.outputPositional(yf, gyroOdometry.y);
-            } else {
-                ey = 0;
-            }
-            if (Math.abs(thetaf - gyroOdometry.theta) > 0.02){
-                etheta = globalThetaController.outputPositional(thetaf, gyroOdometry.theta);
-            } else {
-                etheta = 0;
-            }
-            if (ex > vel || ey > vel){
-                double max = Math.max(ex, ey);
-                ex = ex / max * vel;
-                ey = ey / max * vel;
-                etheta = etheta / max * vel;
-            }
-            ex = globalVXController.outputPositional(ex, gyroOdometry.vxGlobal);
-            ey = globalVXController.outputPositional(ey, gyroOdometry.vyGlobal);
-            etheta = globalVXController.outputPositional(etheta, gyroOdometry.vTheta);
-            moveGlobalPartial(true, ex, ey, etheta);
-        }
-        moveGlobalPartial(true, 0, 0, 0);
-    }
-
-    public void toPosPIDGyroOdometryPreciseNoTheta(double vel, double xf, double yf){
-        double ex;
-        double ey;
-        double etheta;
-        globalXController.integralReset();
-        globalYController.integralReset();
-        globalThetaController.integralReset();
-        while ((Math.abs(xf-gyroOdometry.x) > 1 || Math.abs(yf-gyroOdometry.y) > 1 &&opMode.opModeIsActive())){
-            if (Math.abs(xf-gyroOdometry.x) > 1){
-                ex = globalXController.outputPositional(xf, gyroOdometry.x);
-            } else {
-                ex = 0;
-            }
-            if (Math.abs(yf - gyroOdometry.y) > 1){
-                ey = globalYController.outputPositional(yf, gyroOdometry.y);
-            } else {
-                ey = 0;
-            }
-            if (ex > vel || ey > vel){
-                double max = Math.max(ex, ey);
-                ex = ex / max * vel;
-                ey = ey / max * vel;
-            }
-            moveGlobalPartial(true, ex, ey, 0);
-        }
-        moveGlobalPartial(true, 0, 0, 0);
-    }
-
-    public void toPosPIDGyroOdometryPrecise(double error, double vel, double xf, double yf, double thetaf){
-        double ex;
-        double ey;
-        double etheta;
-        globalXController.integralReset();
-        globalYController.integralReset();
-        globalThetaController.integralReset();
-        while ((Math.abs(xf-gyroOdometry.x) > error || Math.abs(yf-gyroOdometry.y) > error || Math.abs(thetaf-gyroOdometry.theta) > 0.02)&&opMode.opModeIsActive()){
-            if (Math.abs(xf-gyroOdometry.x) > error){
-                ex = globalXController.outputPositional(xf, gyroOdometry.x);
-            } else {
-                ex = 0;
-            }
-            if (Math.abs(yf - gyroOdometry.y) > error){
-                ey = globalYController.outputPositional(yf, gyroOdometry.y);
-            } else {
-                ey = 0;
-            }
-            if (Math.abs(thetaf - gyroOdometry.theta) > 0.005){
-                etheta = globalThetaController.outputPositional(thetaf, gyroOdometry.theta);
-            } else {
-                etheta = 0;
-            }
-            if (ex > vel || ey > vel){
-                double max = Math.max(ex, ey);
-                ex = ex / max * vel;
-                ey = ey / max * vel;
-                etheta = etheta / max * vel;
-            }
-            moveGlobalPartial(true, ex, ey, etheta);
-        }
-        moveGlobalPartial(true, 0, 0, 0);
-    }
-
-    public void toPosPIDGyroOdometryPrecise(double error, double vel, double xf, double yf, double thetaf, double maxTime){
-        double ex;
-        double ey;
-        double etheta;
-        globalXController.integralReset();
-        globalYController.integralReset();
-        globalThetaController.integralReset();
-        elapsedTime.reset();
-        while ((Math.abs(xf-gyroOdometry.x) > error || Math.abs(yf-gyroOdometry.y) > error || Math.abs(thetaf-gyroOdometry.theta) > 0.02) && elapsedTime.time() < maxTime && opMode.opModeIsActive()){
-            if (Math.abs(xf-gyroOdometry.x) > error){
-                ex = globalXController.outputPositional(xf, gyroOdometry.x);
-            } else {
-                ex = 0;
-            }
-            if (Math.abs(yf - gyroOdometry.y) > error){
-                ey = globalYController.outputPositional(yf, gyroOdometry.y);
-            } else {
-                ey = 0;
-            }
-            if (Math.abs(thetaf - gyroOdometry.theta) > 0.005){
-                etheta = globalThetaController.outputPositional(thetaf, gyroOdometry.theta);
-            } else {
-                etheta = 0;
-            }
-            if (ex > vel || ey > vel){
-                double max = Math.max(ex, ey);
-                ex = ex / max * vel;
-                ey = ey / max * vel;
-                etheta = etheta / max * vel;
-            }
-            moveGlobalPartial(true, ex, ey, etheta);
-        }
-        moveGlobalPartial(true, 0, 0, 0);
-    }
-
-    public void toPosPIDGyroOdometryPreciseErrorTheta(double time, double error, double vel, double xf, double yf, double thetaf){
-        double ex;
-        double ey;
-        double etheta;
-        globalXController.integralReset();
-        globalYController.integralReset();
-        globalThetaController.integralReset();
-        while ((Math.abs(xf-gyroOdometry.x) > error || Math.abs(yf-gyroOdometry.y) > error || Math.abs(thetaf-gyroOdometry.theta) > 0.02)&&opMode.opModeIsActive() && positionTime < time){
-            if (Math.abs(xf-gyroOdometry.x) > error){
-                ex = globalXController.outputPositional(xf, gyroOdometry.x);
-            } else {
-                ex = 0;
-            }
-            if (Math.abs(yf - gyroOdometry.y) > error){
-                ey = globalYController.outputPositional(yf, gyroOdometry.y);
-            } else {
-                ey = 0;
-            }
-            if (Math.abs(thetaf - gyroOdometry.theta) > 0.02){
-                etheta = globalThetaController.outputPositional(thetaf, gyroOdometry.theta);
-            } else {
-                etheta = 0;
-            }
-            if (ex > vel || ey > vel){
-                double max = Math.max(ex, ey);
-                ex = ex / max * vel;
-                ey = ey / max * vel;
-                etheta = etheta / max * vel;
-            }
-            moveGlobalPartial(true, ex, ey, etheta);
-        }
-        moveGlobalPartial(true, 0, 0, 0);
-    }
+//    //important
+//    public void toPosPIDGyroOdometry(double vel, double xf, double yf, double thetaf){
+//        globalXController.integralReset();
+//        globalYController.integralReset();
+//        globalThetaController.integralReset();
+//        while ((Math.abs(xf-gyroOdometry.x) > 5 || Math.abs(yf-gyroOdometry.y) > 5 || Math.abs(thetaf-gyroOdometry.theta) > 0.05)&&opMode.opModeIsActive()){
+//            if (Math.abs(xf-gyroOdometry.x) > 2){
+//                ex = globalXController.outputPositional(xf, gyroOdometry.x);
+//            } else {
+//                ex = 0;
+//            }
+//            if (Math.abs(yf - gyroOdometry.y) > 2){
+//                ey = globalYController.outputPositional(yf, gyroOdometry.y);
+//            } else {
+//                ey = 0;
+//            }
+//            if (Math.abs(thetaf - gyroOdometry.theta) > 0.02){
+//                etheta = globalThetaController.outputPositional(thetaf, gyroOdometry.theta);
+//            } else {
+//                etheta = 0;
+//            }
+//            if (Math.abs(ex) > vel || Math.abs(ey) > vel){
+//                double max = Math.max(Math.abs(ex), Math.abs(ey));
+//                ex = ex / max * vel;
+//                ey = ey / max * vel;
+//                etheta = etheta / max * vel;
+//            }
+//            moveGlobalPartial(true, ex, ey, etheta);
+//        }
+//        moveGlobalPartial(true, 0, 0, 0);
+//    }
+//
+//    public void toPosVelPIDGyroOdometry(double vel, double xf, double yf, double thetaf){
+//        globalXController.integralReset();
+//        globalYController.integralReset();
+//        globalThetaController.integralReset();
+//        while ((Math.abs(xf-gyroOdometry.x) > 5 || Math.abs(yf-gyroOdometry.y) > 5 || Math.abs(thetaf-gyroOdometry.theta) > 0.05)&&opMode.opModeIsActive()){
+//            if (Math.abs(xf-gyroOdometry.x) > 2){
+//                ex = globalXController.outputPositional(xf, gyroOdometry.x);
+//            } else {
+//                ex = 0;
+//            }
+//            if (Math.abs(yf - gyroOdometry.y) > 2){
+//                ey = globalYController.outputPositional(yf, gyroOdometry.y);
+//            } else {
+//                ey = 0;
+//            }
+//            if (Math.abs(thetaf - gyroOdometry.theta) > 0.02){
+//                etheta = globalThetaController.outputPositional(thetaf, gyroOdometry.theta);
+//            } else {
+//                etheta = 0;
+//            }
+//            if (ex > vel || ey > vel){
+//                double max = Math.max(ex, ey);
+//                ex = ex / max * vel;
+//                ey = ey / max * vel;
+//                etheta = etheta / max * vel;
+//            }
+//            ex = globalVXController.outputPositional(ex, gyroOdometry.vxGlobal);
+//            ey = globalVXController.outputPositional(ey, gyroOdometry.vyGlobal);
+//            etheta = globalVXController.outputPositional(etheta, gyroOdometry.vTheta);
+//            moveGlobalPartial(true, ex, ey, etheta);
+//        }
+//        moveGlobalPartial(true, 0, 0, 0);
+//    }
+//
+//    public void toPosPIDGyroOdometryPreciseNoTheta(double vel, double xf, double yf){
+//        double ex;
+//        double ey;
+//        double etheta;
+//        globalXController.integralReset();
+//        globalYController.integralReset();
+//        globalThetaController.integralReset();
+//        while ((Math.abs(xf-gyroOdometry.x) > 1 || Math.abs(yf-gyroOdometry.y) > 1 &&opMode.opModeIsActive())){
+//            if (Math.abs(xf-gyroOdometry.x) > 1){
+//                ex = globalXController.outputPositional(xf, gyroOdometry.x);
+//            } else {
+//                ex = 0;
+//            }
+//            if (Math.abs(yf - gyroOdometry.y) > 1){
+//                ey = globalYController.outputPositional(yf, gyroOdometry.y);
+//            } else {
+//                ey = 0;
+//            }
+//            if (ex > vel || ey > vel){
+//                double max = Math.max(ex, ey);
+//                ex = ex / max * vel;
+//                ey = ey / max * vel;
+//            }
+//            moveGlobalPartial(true, ex, ey, 0);
+//        }
+//        moveGlobalPartial(true, 0, 0, 0);
+//    }
+//
+//    public void toPosPIDGyroOdometryPrecise(double error, double vel, double xf, double yf, double thetaf){
+//        double ex;
+//        double ey;
+//        double etheta;
+//        globalXController.integralReset();
+//        globalYController.integralReset();
+//        globalThetaController.integralReset();
+//        while ((Math.abs(xf-gyroOdometry.x) > error || Math.abs(yf-gyroOdometry.y) > error || Math.abs(thetaf-gyroOdometry.theta) > 0.02)&&opMode.opModeIsActive()){
+//            if (Math.abs(xf-gyroOdometry.x) > error){
+//                ex = globalXController.outputPositional(xf, gyroOdometry.x);
+//            } else {
+//                ex = 0;
+//            }
+//            if (Math.abs(yf - gyroOdometry.y) > error){
+//                ey = globalYController.outputPositional(yf, gyroOdometry.y);
+//            } else {
+//                ey = 0;
+//            }
+//            if (Math.abs(thetaf - gyroOdometry.theta) > 0.005){
+//                etheta = globalThetaController.outputPositional(thetaf, gyroOdometry.theta);
+//            } else {
+//                etheta = 0;
+//            }
+//            if (ex > vel || ey > vel){
+//                double max = Math.max(ex, ey);
+//                ex = ex / max * vel;
+//                ey = ey / max * vel;
+//                etheta = etheta / max * vel;
+//            }
+//            moveGlobalPartial(true, ex, ey, etheta);
+//        }
+//        moveGlobalPartial(true, 0, 0, 0);
+//    }
+//
+//    public void toPosPIDGyroOdometryPrecise(double error, double vel, double xf, double yf, double thetaf, double maxTime){
+//        double ex;
+//        double ey;
+//        double etheta;
+//        globalXController.integralReset();
+//        globalYController.integralReset();
+//        globalThetaController.integralReset();
+//        elapsedTime.reset();
+//        while ((Math.abs(xf-gyroOdometry.x) > error || Math.abs(yf-gyroOdometry.y) > error || Math.abs(thetaf-gyroOdometry.theta) > 0.02) && elapsedTime.time() < maxTime && opMode.opModeIsActive()){
+//            if (Math.abs(xf-gyroOdometry.x) > error){
+//                ex = globalXController.outputPositional(xf, gyroOdometry.x);
+//            } else {
+//                ex = 0;
+//            }
+//            if (Math.abs(yf - gyroOdometry.y) > error){
+//                ey = globalYController.outputPositional(yf, gyroOdometry.y);
+//            } else {
+//                ey = 0;
+//            }
+//            if (Math.abs(thetaf - gyroOdometry.theta) > 0.005){
+//                etheta = globalThetaController.outputPositional(thetaf, gyroOdometry.theta);
+//            } else {
+//                etheta = 0;
+//            }
+//            if (ex > vel || ey > vel){
+//                double max = Math.max(ex, ey);
+//                ex = ex / max * vel;
+//                ey = ey / max * vel;
+//                etheta = etheta / max * vel;
+//            }
+//            moveGlobalPartial(true, ex, ey, etheta);
+//        }
+//        moveGlobalPartial(true, 0, 0, 0);
+//    }
+//
+//    public void toPosPIDGyroOdometryPreciseErrorTheta(double time, double error, double vel, double xf, double yf, double thetaf){
+//        double ex;
+//        double ey;
+//        double etheta;
+//        globalXController.integralReset();
+//        globalYController.integralReset();
+//        globalThetaController.integralReset();
+//        while ((Math.abs(xf-gyroOdometry.x) > error || Math.abs(yf-gyroOdometry.y) > error || Math.abs(thetaf-gyroOdometry.theta) > 0.02)&&opMode.opModeIsActive() && positionTime < time){
+//            if (Math.abs(xf-gyroOdometry.x) > error){
+//                ex = globalXController.outputPositional(xf, gyroOdometry.x);
+//            } else {
+//                ex = 0;
+//            }
+//            if (Math.abs(yf - gyroOdometry.y) > error){
+//                ey = globalYController.outputPositional(yf, gyroOdometry.y);
+//            } else {
+//                ey = 0;
+//            }
+//            if (Math.abs(thetaf - gyroOdometry.theta) > 0.02){
+//                etheta = globalThetaController.outputPositional(thetaf, gyroOdometry.theta);
+//            } else {
+//                etheta = 0;
+//            }
+//            if (ex > vel || ey > vel){
+//                double max = Math.max(ex, ey);
+//                ex = ex / max * vel;
+//                ey = ey / max * vel;
+//                etheta = etheta / max * vel;
+//            }
+//            moveGlobalPartial(true, ex, ey, etheta);
+//        }
+//        moveGlobalPartial(true, 0, 0, 0);
+//    }
 
     public void purePursuit(){
         if (runPurePursuit){

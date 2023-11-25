@@ -54,29 +54,15 @@ public class Specifications {
     public static final String INTAKE_SERVO = "intakeServo";
     public static final String EXTENSION_MOTOR_MAIN = "extension1";
     public static final String EXTENSION_MOTOR_AUX1 = "extension2";
-    public static final String EXTENSION_MOTOR_AUX2 = "extension3";
     public static final String FTLF_MOTOR = "leftForward";
     public static final String FTRT_MOTOR = "rightForward";
     public static final String BKLF_MOTOR = "leftBack";
     public static final String BKRT_MOTOR = "rightBack";
-    public static final String BK_ENCODER = "extension3"; //port 2
-    public static final String LF_ENCODER = "extension2"; //port 1
-    public static final String RT_ENCODER = "rt_encoder"; //port 3
+    public static final String BK_ENCODER = "rightForward"; //port 2
+    public static final String LF_ENCODER = "rightBack"; //port 1
+    public static final String RT_ENCODER = "leftBack"; //port 3
     public static final String IMU = "imu";
-    public static final String DS_FT_LF = "distance_sensor_frontLeft";
-    public static final String DS_FT_RT = "distance_sensor_frontRight";
-    public static final String DS_BK_LF = "distance_sensor_backLeft";
-    public static final String DS_BK_RT = "distance_sensor_backRight";
-    public static final String DS_LF_FT = "distance_sensor_leftFront";
-    public static final String DS_LF_BK = "distance_sensor_leftBack";
-    public static final String DS_RT_FT = "distance_sensor_rightFront";
-    public static final String DS_RT_BK = "distance_sensor_rightBack";
-    public static final String DS_LF = "distance_sensor_left";
-    public static final String DS_RT = "distance_sensor_right";
-    public static final String DS_OUTPUT = "distance_sensor_output";
-    public static final String DS_INTAKE = "distance_sensor_intake";
     public static final String INITIAL_CAM = "Webcam";
-    public static final String AIMING_CAM = "Webcam 2";
 
     public enum NavSystem{
         IMU,

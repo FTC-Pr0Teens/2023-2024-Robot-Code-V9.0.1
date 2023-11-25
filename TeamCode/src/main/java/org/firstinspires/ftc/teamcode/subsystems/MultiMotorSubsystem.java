@@ -114,7 +114,7 @@ public class MultiMotorSubsystem extends Specifications {
         if(type == MultiMotorType.threeMotor) {
             main = hardwareMap.get(DcMotorEx.class, EXTENSION_MOTOR_MAIN);
             aux1 = hardwareMap.get(DcMotor.class, EXTENSION_MOTOR_AUX1);
-            aux2 = hardwareMap.get(DcMotor.class, EXTENSION_MOTOR_AUX2);
+            aux2 = hardwareMap.get(DcMotor.class, "");
             main.setDirection(DcMotorSimple.Direction.REVERSE);
             aux1.setDirection(DcMotorSimple.Direction.FORWARD);
             aux2.setDirection(DcMotorSimple.Direction.FORWARD);
