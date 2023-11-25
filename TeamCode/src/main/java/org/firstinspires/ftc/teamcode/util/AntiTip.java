@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.util;
 
+import org.firstinspires.ftc.teamcode.subsystems.IMUSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
-import org.firstinspires.ftc.teamcode.threadopmode.subsystems.IMUSubsystem;
 
 public class AntiTip {
     private MecanumSubsystem mecanumSubsystem;

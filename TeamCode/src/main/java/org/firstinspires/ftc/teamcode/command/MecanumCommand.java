@@ -1,11 +1,9 @@
 package org.firstinspires.ftc.teamcode.command;
 
-import android.util.Log;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.teamcode.threadopmode.subsystems.DistanceSensorSubsystem;
+
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 import org.firstinspires.ftc.teamcode.threadopmode.subsystems.OdometrySubsystem;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
@@ -18,7 +16,6 @@ public class MecanumCommand {
     private MecanumSubsystem mecanumSubsystem;
     private OdometrySubsystem odometrySubsystem;
     private GyroOdometry gyroOdometry;
-    private DistanceSensorSubsystem distance_sensor_backLeft, distance_sensor_backRight, distance_sensor_right, distance_sensor_left;
     private boolean run;
     private OpMode opMode;
     private ElapsedTime elapsedTime;
@@ -86,15 +83,10 @@ public class MecanumCommand {
         globalThetaController.setConstant(kptheta, kdtheta, kitheta);
     }
 
-    public MecanumCommand(MecanumSubsystem mecanumSubsystem, OdometrySubsystem odometrySubsystem, DistanceSensorSubsystem distance_sensor_backLeft, DistanceSensorSubsystem distance_sensor_backRight, DistanceSensorSubsystem distance_sensor_right, DistanceSensorSubsystem distance_sensor_left, GyroOdometry gyroOdometry, OpMode opMode, PurePursuit purePursuit) {
+    public MecanumCommand(MecanumSubsystem mecanumSubsystem, OdometrySubsystem odometrySubsystem, GyroOdometry gyroOdometry) {
         this.mecanumSubsystem = mecanumSubsystem;
-        this.odometrySubsystem = odometrySubsystem;
-        this.distance_sensor_backLeft = distance_sensor_backLeft;
-        this.distance_sensor_backRight = distance_sensor_backRight;
-        this.distance_sensor_right = distance_sensor_right;
-        this.distance_sensor_left = distance_sensor_left;
+        this.odometrySubsystem = odometrySubsystem;;
         this.gyroOdometry = gyroOdometry;
-        this.opMode = opMode;
         globalPositionController = new PIDCore(kp, kd, ki);
         globalXController = new PIDCore(kpx, kdx, kix);
         globalYController = new PIDCore(kpy, kdy, kiy);
@@ -103,7 +95,6 @@ public class MecanumCommand {
         globalVYController = new PIDCore(kpvy, kdvy, kivy);
         globalVThetaController = new PIDCore(kpvtheta, kdvtheta, kivtheta);
         elapsedTime = new ElapsedTime();
-        this.purePursuit = purePursuit;
         xFinal = gyroOdometry.x;
         yFinal = gyroOdometry.y;
         thetaFinal = gyroOdometry.theta;
@@ -123,20 +114,20 @@ public class MecanumCommand {
         moveGlobalPartial(true, ex, ey, etheta);
     }
 
-    public void pidProcessPurePursuit(){
-        e = globalPositionController.outputPositional(Math.sqrt(Math.pow((purePursuit.getPoints().get(purePursuit.getCurrentTargetPoint()).getX() - gyroOdometry.x), 2) + Math.pow((purePursuit.getPoints().get(purePursuit.getCurrentTargetPoint()).getY() - gyroOdometry.y), 2)));
-        heading = Math.atan2(xFinal - gyroOdometry.x, yFinal - gyroOdometry.y);
-        ex = e * Math.sin(heading);
-        ey = e * Math.cos(heading);
-        etheta = globalThetaController.outputPositional(thetaFinal, gyroOdometry.theta);
-        if (Math.abs(ex) > velocity || Math.abs(ey) > velocity){
-            double max = Math.max(Math.abs(ex), Math.abs(ey));
-            ex = ex / max * velocity;
-            ey = ey / max * velocity;
-            etheta = etheta / max * velocity;
-        }
-        moveGlobalPartial(true, ex, ey, etheta);
-    }
+//    public void pidProcessPurePursuit(){
+//        e = globalPositionController.outputPositional(Math.sqrt(Math.pow((purePursuit.getPoints().get(purePursuit.getCurrentTargetPoint()).getX() - gyroOdometry.x), 2) + Math.pow((purePursuit.getPoints().get(purePursuit.getCurrentTargetPoint()).getY() - gyroOdometry.y), 2)));
+//        heading = Math.atan2(xFinal - gyroOdometry.x, yFinal - gyroOdometry.y);
+//        ex = e * Math.sin(heading);
+//        ey = e * Math.cos(heading);
+//        etheta = globalThetaController.outputPositional(thetaFinal, gyroOdometry.theta);
+//        if (Math.abs(ex) > velocity || Math.abs(ey) > velocity){
+//            double max = Math.max(Math.abs(ex), Math.abs(ey));
+//            ex = ex / max * velocity;
+//            ey = ey / max * velocity;
+//            etheta = etheta / max * velocity;
+//        }
+//        moveGlobalPartial(true, ex, ey, etheta);
+//    }
 
     public void move(boolean run, double lv, double lh, double rv, double rh) {
         mecanumSubsystem.move(run, lv, lh, rv, rh);

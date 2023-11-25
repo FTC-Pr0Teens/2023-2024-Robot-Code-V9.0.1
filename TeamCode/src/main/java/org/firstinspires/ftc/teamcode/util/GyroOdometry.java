@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.util;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.threadopmode.subsystems.IMUSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.IMUSubsystem;
 import org.firstinspires.ftc.teamcode.threadopmode.subsystems.OdometrySubsystem;
 
 import java.util.concurrent.TimeUnit;
@@ -47,10 +47,9 @@ public class GyroOdometry extends Specifications{
     public double testy2/* = dx*Math.sin(theta)*/;
 //    public double positionTime;
 
-    public GyroOdometry(OdometrySubsystem odometrySubsystem, IMUSubsystem imuSubsystem, Initialize initialize) {
+    public GyroOdometry(OdometrySubsystem odometrySubsystem, IMUSubsystem imuSubsystem) {
         this.odometrySubsystem = odometrySubsystem;
         this.imuSubsystem = imuSubsystem;
-        this.initialize = initialize;
         time = new ElapsedTime();
     }
 

@@ -11,7 +11,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.util.Initialize;
 import org.firstinspires.ftc.teamcode.util.Specifications;
 
 //IMU: Inertial Measuring Unit
@@ -37,7 +36,6 @@ public class IMUSubsystem extends Specifications {
     public double cTheta = 0;
     public double cx = 0;
     public double cy = 0;
-    public Initialize initialize;
     public ElapsedTime timer;
     public double loopTime;
     private final double twoPi = Math.PI*2;
@@ -52,16 +50,6 @@ public class IMUSubsystem extends Specifications {
         orientation = imu.getAngularOrientation(AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS);
         orientationDegree = imu.getAngularOrientation(AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
         acceleration = imu.getLinearAcceleration();
-    }
-
-    //initialize starting position
-    public void initialize(){
-        if (initialize != null){
-            x = initialize.x;
-            y = initialize.y;
-            Theta = initialize.theta;
-            cTheta = orientation.thirdAngle - Theta;
-        }
     }
 
     public void resetAngle(){

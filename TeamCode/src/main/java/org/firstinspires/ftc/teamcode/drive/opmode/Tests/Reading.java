@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import org.firstinspires.ftc.teamcode.threadopmode.subsystems.OdometrySubsystem;
 
 @TeleOp(name="Reading")
 public class Reading extends LinearOpMode {
@@ -27,11 +28,12 @@ public class Reading extends LinearOpMode {
     private IMUSubsystem imu;
     private FtcDashboard dash;
     private TelemetryPacket packet;
+    private OdometrySubsystem odometrySubsystem;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        odo = new GyroOdometry(hardwareMap);
         imu = new IMUSubsystem(hardwareMap);
+        odo = new GyroOdometry(odometrySubsystem, imu);
 
         frontLeft = hardwareMap.get(DcMotor.class, "leftForward");
         frontRight = hardwareMap.get(DcMotor.class, "rightForward");
@@ -55,12 +57,12 @@ public class Reading extends LinearOpMode {
         FtcDashboard dashboard = FtcDashboard.getInstance();
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry()); // allows telemetry to output to phone and dashboard
 
-        odo.reset();
+        odometrySubsystem.reset();
+
         waitForStart();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Executor executor = Executors.newFixedThreadPool(4);
-            CompletableFuture.runAsync(this::updateOdometry, executor);
-        }
+
+        Executor executor = Executors.newFixedThreadPool(4);
+        CompletableFuture.runAsync(this::updateOdometry, executor);
 
         while (opModeIsActive()) {
             if(gamepad1.a){
@@ -93,33 +95,11 @@ public class Reading extends LinearOpMode {
                 backLeft.setPower(0);
                 backRight.setPower(0);
             }
-            // reporting turret data
-            telemetry.addLine();
-            telemetry.addData("x", odo.getXPos());
-            telemetry.addData("y", odo.getYPos());
-//            telemetry.addData("heading", imu.getHeadingRAD());
-            telemetry.addData("odoHeading", odo.getHeading());
-            telemetry.addData("leftEncoder", odo.getLeftTicks());
-            telemetry.addData("rightEncoder", odo.getRightTicks());
-            telemetry.addData("auxEncoder", odo.getAuxTicks());
-            packet.put("leftEncoder", odo.getLeftTicks());
-            packet.put("rightEncoder", odo.getRightTicks());
-            packet.put("auxEncoder", odo.getAuxTicks());
-            packet.put("frontLeft", frontLeft.getCurrentPosition());
-            packet.put("frontRight", frontRight.getCurrentPosition());
-            packet.put("backLeft", backLeft.getCurrentPosition());
-            packet.put("backRight", backRight.getCurrentPosition());
-            packet.put("x", odo.getXPos());
-            packet.put("y", odo.getYPos());
-            packet.put("heading", imu.getTheta());
-            telemetry.addData("odoHeading", odo.getHeading());
-            dash.sendTelemetryPacket(packet);
-            telemetry.update();
         }
     }
     public void updateOdometry() {
         while (opModeIsActive()) {
-            odo.updatePosition();
+            odo.odometryProcess();
         }
     }
 }
