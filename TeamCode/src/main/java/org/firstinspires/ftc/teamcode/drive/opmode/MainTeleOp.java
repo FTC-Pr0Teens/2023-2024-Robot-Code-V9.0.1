@@ -37,7 +37,7 @@ public class MainTeleOp extends LinearOpMode{
         odometrySubsystem = new OdometrySubsystem(hardwareMap);
 
         mecanumSubsystem = new MecanumSubsystem(hardwareMap);
-        mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem, null, null, null, null, gyroOdometry, this, null);
+        mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem,  gyroOdometry, this);
 
 //        outputCommand = new OutputCommand(hardwareMap);
         intakeCommand = new IntakeCommand(hardwareMap);

@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 public class GyroOdometry extends Specifications{
     private OdometrySubsystem odometrySubsystem;
     private IMUSubsystem imuSubsystem;
-    private Initialize initialize;
     public double totalsEncoder = 0;
     public double totalfEncoder = 0;
     public double tempXIntegrate = 0;
@@ -51,12 +50,6 @@ public class GyroOdometry extends Specifications{
         this.odometrySubsystem = odometrySubsystem;
         this.imuSubsystem = imuSubsystem;
         time = new ElapsedTime();
-    }
-
-    public void initialize(){
-        x = initialize.x;
-        y = initialize.y;
-        theta = initialize.theta;
     }
 
     public void process(){

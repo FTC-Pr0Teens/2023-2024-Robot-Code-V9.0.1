@@ -83,10 +83,11 @@ public class MecanumCommand {
         globalThetaController.setConstant(kptheta, kdtheta, kitheta);
     }
 
-    public MecanumCommand(MecanumSubsystem mecanumSubsystem, OdometrySubsystem odometrySubsystem, GyroOdometry gyroOdometry) {
+    public MecanumCommand(MecanumSubsystem mecanumSubsystem, OdometrySubsystem odometrySubsystem, GyroOdometry gyroOdometry, OpMode opmode) {
         this.mecanumSubsystem = mecanumSubsystem;
         this.odometrySubsystem = odometrySubsystem;;
         this.gyroOdometry = gyroOdometry;
+        this.opMode = opmode;
         globalPositionController = new PIDCore(kp, kd, ki);
         globalXController = new PIDCore(kpx, kdx, kix);
         globalYController = new PIDCore(kpy, kdy, kiy);
