@@ -115,6 +115,12 @@ public class MecanumSubsystem extends Specifications{
         rightBack.setPower(0);
         rightForward.setPower(0);
     }
+    public void turnOffInternalPID() {
+        rightForward.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftForward.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
 
     public void move(boolean run, double vertical, double horizontal, double rotational){
         if (run){

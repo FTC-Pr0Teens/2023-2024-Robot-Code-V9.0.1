@@ -101,6 +101,9 @@ public class MecanumCommand {
         thetaFinal = gyroOdometry.theta;
         velocity = 0;
     }
+    public void turnOffInternalPID(){
+        mecanumSubsystem.turnOffInternalPID();
+    }
 
     public void pidProcess(){
         ex = globalXController.outputPositional(xFinal, gyroOdometry.x);
@@ -719,6 +722,20 @@ public class MecanumCommand {
 //        }
 //        moveGlobalPartial(true, 0, 0, 0);
 //    }
+
+    public void moveToGlobalPosition(double targetX, double targetY, double targetTheta) {
+        // stop moving if within 5 ticks or 0.2 radians from the position
+        while (Math.abs(targetX - odometrySubsystem.x) > 2
+                || Math.abs(targetY - odometrySubsystem.y) > 2
+                || Math.abs(targetTheta - odometrySubsystem.theta) > 0.1) {
+
+            moveGlobalPartial(true,
+                    globalYController.outputPositional(odometrySubsystem.y, targetY),
+                    globalXController.outputPositional(odometrySubsystem.x, targetX),
+                    globalThetaController.outputPositional(odometrySubsystem.theta, targetTheta));
+        }
+        mecanumSubsystem.stop(true);
+    }
 
     public void purePursuit(){
         if (runPurePursuit){
