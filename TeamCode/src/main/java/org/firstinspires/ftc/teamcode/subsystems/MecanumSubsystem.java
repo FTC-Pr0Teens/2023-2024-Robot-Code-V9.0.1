@@ -99,9 +99,9 @@ public class MecanumSubsystem extends Specifications{
         rightForward = hardwareMap.get(DcMotorEx.class, FTRT_MOTOR);
 
         leftBack.setDirection(DcMotor.Direction.REVERSE);
-        leftForward.setDirection(DcMotor.Direction.REVERSE);
+        leftForward.setDirection(DcMotor.Direction.FORWARD);
         rightBack.setDirection(DcMotor.Direction.FORWARD);
-        rightForward.setDirection(DcMotor.Direction.FORWARD);
+        rightForward.setDirection(DcMotor.Direction.REVERSE);
         leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftForward.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -269,6 +269,32 @@ public class MecanumSubsystem extends Specifications{
 //    }
 
     //Don't use this move
+    public void fieldOrientedMove(double x, double y, double z, double theta) {
+
+        // translate the field relative movement (joystick) into the robot relative movement
+        double newX = x * Math.cos(theta) + y * Math.sin(theta);
+        double newY = - x * Math.sin(theta) + y * Math.cos(theta);
+
+        double frontRightPow = - newX + newY - z;
+        double frontLeftPow = newX + newY + z;
+        double backRightPow = newX + newY - z;
+        double backLeftPow = - newX + newY + z;
+
+        double largest = Math.max(
+                Math.max(Math.abs(frontRightPow), Math.abs(frontLeftPow)),
+                Math.max(Math.abs(backRightPow), Math.abs(backLeftPow)));
+        if (largest > 1) {
+            frontRightPow /= largest;
+            frontLeftPow /= largest;
+            backRightPow /= largest;
+            backLeftPow /= largest;
+        }
+
+        rightForward.setPower(frontRightPow);
+        leftForward.setPower(frontLeftPow);
+        rightBack.setPower(backRightPow);
+        leftBack.setPower(backLeftPow);
+    }
 
 
 

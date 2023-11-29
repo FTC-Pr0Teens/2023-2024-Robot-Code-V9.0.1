@@ -137,6 +137,8 @@ public class MecanumCommand {
             mecanumSubsystem.partialMove(true, localVertical, localHorizontal, rotational);
         }
     }
+
+    // this method is designed to be used in an autonomous (linear) opmode
 //
 //    public void movePartial(boolean run, double vertical, double horizontal, double rotational){
 //        if (run){
