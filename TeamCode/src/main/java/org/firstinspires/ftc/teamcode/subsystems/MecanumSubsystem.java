@@ -13,6 +13,7 @@ public class MecanumSubsystem extends Specifications{
     private DcMotorEx rightBack;
     private DcMotorEx leftForward;
     private DcMotorEx rightForward;
+    private final double SCALE = 1;
 
     //rf: right front/forward
     //rb: right back
@@ -271,7 +272,7 @@ public class MecanumSubsystem extends Specifications{
     //Don't use this move
     public void fieldOrientedMove(double x, double y, double z, double theta) {
 
-        // translate the field relative movement (joystick) into the robot relative movement
+        // translate the field relative movement (joystick) into the robot relative movement based off of the current angle
         double newX = x * Math.cos(theta) + y * Math.sin(theta);
         double newY = - x * Math.sin(theta) + y * Math.cos(theta);
 
@@ -290,10 +291,10 @@ public class MecanumSubsystem extends Specifications{
             backLeftPow /= largest;
         }
 
-        rightForward.setPower(frontRightPow);
-        leftForward.setPower(frontLeftPow);
-        rightBack.setPower(backRightPow);
-        leftBack.setPower(backLeftPow);
+        rightForward.setPower(frontRightPow*SCALE);
+        leftForward.setPower(frontLeftPow*SCALE);
+        rightBack.setPower(backRightPow*SCALE);
+        leftBack.setPower(backLeftPow*SCALE);
     }
 
 
