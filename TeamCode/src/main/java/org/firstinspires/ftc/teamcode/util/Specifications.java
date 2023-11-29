@@ -4,28 +4,15 @@ package org.firstinspires.ftc.teamcode.util;
 
 public class Specifications {
     public final double length = 43.18;
-    public final double wheelCir = 0;
     public final int FINALPOS = 1230;
     //b
-    public final double SideOdometryToCentre = 16.188;
-    public final double lengthFromOdometrySideToFront = 13.0705;
+    public final double SideOdometryToCentre = 18.415;
+    public final double lengthFromOdometrySideToFront = 3.81;
     public final double odometryCir = 3.5*Math.PI;
     public final double odometryTick = 8192;
     //beta
     public final double sideOdometryAngleFromCentre = 0;
-    public final double frontOdometryAngleFromCentre = 0;
-
-    public final double distance_sensor_back_margin = 18.8;
-    public final double distance_sensor_back_space = 18.2;
-    public final double distance_sensor_left_margin = 16.4;
-    public final double distance_sensor_right_margin = 16.4;
-    public final double distance_sensor_front_margin = 0;
-    public final double distance_sensor_front_space = 0;
-    public final double distance_sensor_right_space = 13.6;
-    public final double distance_sensor_left_space = 13.6;
-    public final double front_sensors_to_middle = 0;
-    public final double right_sensors_to_middle = 0;
-    public final double side_to_center = 0;
+    public final double frontOdometryAngleFromCentre = Math.toRadians(67.9);
 
 
     public static double WHEEL_RADIUS = 4.8;

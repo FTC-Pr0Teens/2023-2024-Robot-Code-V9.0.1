@@ -19,13 +19,9 @@ public class MecanumCommand {
     private boolean run;
     private OpMode opMode;
     private ElapsedTime elapsedTime;
-    private PIDCore globalPositionController;
     public PIDCore globalXController;
     public PIDCore globalYController;
     public PIDCore globalThetaController;
-    public PIDCore globalVXController;
-    public PIDCore globalVYController;
-    public PIDCore globalVThetaController;
     private static double kp = 0.066;
     private static double ki = 0;
     private static double kd = 0.08;
@@ -38,17 +34,6 @@ public class MecanumCommand {
     private static double kptheta = 2;
     private static double kdtheta = 0.2;
     private static double kitheta = 0.0;
-    private static double kpvx = 0.25;
-    private static double kdvx = 0.2;
-    private static double kivx = 0;
-    private static double kpvy = 0.25;
-    private static double kdvy = 0.2;
-    private static double kivy = 0;
-    private static double kpvtheta = 5;
-    private static double kdvtheta = 0.2;
-    private static double kivtheta = 0;
-    private double e = 0;
-    private double heading = 0;
     private double ex = 0;
     private double ey = 0;
     private double etheta = 0;
@@ -56,11 +41,6 @@ public class MecanumCommand {
     private double yFinal;
     private double thetaFinal;
     private double velocity;
-//    public double currentTime;
-    public double positionTime;
-    private PurePursuit purePursuit;
-    private boolean runPurePursuit = false;
-    public VectorCartesian currentTargetPoint;
 
     public void setthetaConstants(double kptheta, double kdtheta, double kitheta){
         MecanumCommand.kptheta = kptheta;
@@ -88,13 +68,9 @@ public class MecanumCommand {
         this.odometrySubsystem = odometrySubsystem;;
         this.gyroOdometry = gyroOdometry;
         this.opMode = opmode;
-        globalPositionController = new PIDCore(kp, kd, ki);
         globalXController = new PIDCore(kpx, kdx, kix);
         globalYController = new PIDCore(kpy, kdy, kiy);
         globalThetaController = new PIDCore(kptheta, kdtheta, kitheta);
-        globalVXController = new PIDCore(kpvx, kdvx, kivx);
-        globalVYController = new PIDCore(kpvy, kdvy, kivy);
-        globalVThetaController = new PIDCore(kpvtheta, kdvtheta, kivtheta);
         elapsedTime = new ElapsedTime();
         xFinal = gyroOdometry.x;
         yFinal = gyroOdometry.y;
@@ -284,92 +260,7 @@ public class MecanumCommand {
 //        mecanumSubsystem.stop(true);
 ////        mecanumSubsystem.x = xTemp;
 ////        mecanumSubsystem.y = yTemp;
-//    }
-
-//    public void HugWallRed(boolean run, double pow) {
 //
-//        if (run){
-//            elapsedTime.reset();
-//            if (distance_sensor_right.getDistance() > distance_sensor_rightBack.getDistance()){
-//                while (distance_sensor_right.getDistance() > distance_sensor_rightBack.getDistance() + 0.5 && opMode.opModeIsActive()){
-//                    mecanumSubsystem.move(true, 0, 0, -pow*0.5);
-//                    if (elapsedTime.time(TimeUnit.SECONDS) > 3){
-//                        mecanumSubsystem.move(true, 0.5, 0, 0);
-//                        opMode.sleep(500);
-//                        mecanumSubsystem.move(true, 0, 0, 0);
-//                        elapsedTime.reset();
-//                    }
-//                }
-//            } else {
-//                while (distance_sensor_right.getDistance() < distance_sensor_rightBack.getDistance() + 0.5 && opMode.opModeIsActive()){
-//                    mecanumSubsystem.move(true, 0, 0, pow*0.5);
-//                    if (elapsedTime.time(TimeUnit.SECONDS) > 3){
-//                        mecanumSubsystem.move(true, 0.5, 0, 0);
-//                        opMode.sleep(500);
-//                        mecanumSubsystem.move(true, 0, 0, 0);
-//                        elapsedTime.reset();
-//                    }
-//                }
-//            }
-//            mecanumSubsystem.Stop(true);
-//            elapsedTime.reset();
-//            if (distance_sensor_rightBack.getDistance() > 5.2){
-//                do {
-//                    mecanumSubsystem.move(true, 0, -pow, 0);
-//                    if (elapsedTime.time(TimeUnit.SECONDS) > 3){
-//                        mecanumSubsystem.move(true, 0.5, 0, 0);
-//                        opMode.sleep(500);
-//                        mecanumSubsystem.move(true, 0, 0, 0);
-//                        elapsedTime.reset();
-//                    }
-//                } while (distance_sensor_right.getDistance() > 5.2 && opMode.opModeIsActive());
-//            }
-//            mecanumSubsystem.Stop(true);
-//        }
-//    }
-//
-//    public void HugWallBlue(boolean run, double pow) {
-//
-//        elapsedTime.reset();
-//        if (run){
-//            if (distance_sensor_left.getDistance() > distance_sensor_leftBack.getDistance()){
-//                while (distance_sensor_left.getDistance() > distance_sensor_leftBack.getDistance() + 0.5 && opMode.opModeIsActive()){
-//                    mecanumSubsystem.move(true, 0, 0, pow*0.5);
-//                    if (elapsedTime.time(TimeUnit.SECONDS) > 3){
-//                        mecanumSubsystem.move(true, 0.5, 0, 0);
-//                        opMode.sleep(500);
-//                        mecanumSubsystem.move(true, 0, 0, 0);
-//                        elapsedTime.reset();
-//                    }
-//                }
-//            } else {
-//                while (distance_sensor_left.getDistance() < distance_sensor_leftBack.getDistance() + 0.5 && opMode.opModeIsActive()){
-//                    mecanumSubsystem.move(true, 0, 0, -pow*0.5);
-//                    if (elapsedTime.time(TimeUnit.SECONDS) > 3){
-//                        mecanumSubsystem.move(true, 0.5, 0, 0);
-//                        opMode.sleep(500);
-//                        mecanumSubsystem.move(true, 0, 0, 0);
-//                        elapsedTime.reset();
-//                    }
-//                }
-//            }
-//            mecanumSubsystem.Stop(true);
-//            elapsedTime.reset();
-//            if (distance_sensor_leftBack.getDistance() > 7){
-//                do {
-//                    mecanumSubsystem.move(true, 0, pow, 0);
-//                    if (elapsedTime.time(TimeUnit.SECONDS) > 3){
-//                        mecanumSubsystem.move(true, 0.5, 0, 0);
-//                        opMode.sleep(500);
-//                        mecanumSubsystem.move(true, 0, 0, 0);
-//                        elapsedTime.reset();
-//                    }
-//                } while (distance_sensor_left.getDistance() > 7 && opMode.opModeIsActive());
-//            }
-//            mecanumSubsystem.Stop(true);
-//        }
-//    }
-
 //    public void ToCoordVel(boolean run, ArrayList<VectorCartesian> vtGraph, double xf, double yf){
 //        if (run){
 //            followVelocity(MecanumSubsystem.vtVector);
@@ -737,13 +628,6 @@ public class MecanumCommand {
         mecanumSubsystem.stop(true);
     }
 
-    public void purePursuit(){
-        if (runPurePursuit){
-            currentTargetPoint = purePursuit.getTarget(gyroOdometry.y, gyroOdometry.x);
-            setFinalPosition(true, velocity, currentTargetPoint.y, currentTargetPoint.x, thetaFinal);
-        }
-    }
-
     public void setFinalPosition(boolean run, double velocity, double x, double y, double theta){
         if (run){
             xFinal = x;
@@ -752,28 +636,6 @@ public class MecanumCommand {
             this.velocity = velocity;
         }
     }
-
-    public void startPurePursuit(double velocity){
-        runPurePursuit = true;
-        this.velocity = velocity;
-    }
-
-    public void stopPurePursuit(){
-        runPurePursuit = false;
-    }
-
-    public boolean isPurePursuitRunning(){
-        return runPurePursuit;
-    }
-
-    public void nextPoint(){
-        purePursuit.nextPoint();
-    }
-
-    public boolean isFinalPositionReached(){
-        return Math.abs(gyroOdometry.x - purePursuit.finalPoints.get(purePursuit.currentFinalTargetPoint).getX()) < 2 && Math.abs(gyroOdometry.y - purePursuit.finalPoints.get(purePursuit.currentFinalTargetPoint).getY()) < 2;
-    }
-
     public double getXFinal() {
         return xFinal;
     }

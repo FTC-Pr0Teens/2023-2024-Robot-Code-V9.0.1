@@ -4,6 +4,7 @@ import android.os.Build;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.command.MecanumCommand;
@@ -16,6 +17,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+@Autonomous(name="coordinate testing")
 public class CoordinateTesting extends LinearOpMode {
     private MecanumSubsystem mecanumSubsystem;
     private MecanumCommand mecanumCommand;

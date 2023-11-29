@@ -57,12 +57,9 @@ public class Reading extends LinearOpMode {
         FtcDashboard dashboard = FtcDashboard.getInstance();
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry()); // allows telemetry to output to phone and dashboard
 
-        odometrySubsystem.reset();
+//        odometrySubsystem.reset();
 
         waitForStart();
-
-        Executor executor = Executors.newFixedThreadPool(4);
-        CompletableFuture.runAsync(this::updateOdometry, executor);
 
         while (opModeIsActive()) {
             if(gamepad1.a){
@@ -95,11 +92,6 @@ public class Reading extends LinearOpMode {
                 backLeft.setPower(0);
                 backRight.setPower(0);
             }
-        }
-    }
-    public void updateOdometry() {
-        while (opModeIsActive()) {
-            odo.odometryProcess();
         }
     }
 }
