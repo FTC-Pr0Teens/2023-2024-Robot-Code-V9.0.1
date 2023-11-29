@@ -47,7 +47,7 @@ public class CoordinateTesting extends LinearOpMode {
         CompletableFuture.runAsync(this::updateOdometry, executor);
         CompletableFuture.runAsync(this::updateTelemetry, executor);
 
-        sleep(8000);
+//        sleep(8000);
         mecanumCommand.moveToGlobalPosition(100, 100, 0);
         sleep(4000);
         mecanumCommand.moveToGlobalPosition(100, 100, Math.PI);
