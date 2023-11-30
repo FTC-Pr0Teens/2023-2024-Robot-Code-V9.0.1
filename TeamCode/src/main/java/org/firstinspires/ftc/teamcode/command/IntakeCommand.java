@@ -27,7 +27,7 @@ public class IntakeCommand {
     }
 
     public void intakeIn() {
-        intake.motorTurnPower(true, 0.7);
+        intake.motorTurnPower(true, 1);
         intakeRoller.setPower(-1);
     }
 
