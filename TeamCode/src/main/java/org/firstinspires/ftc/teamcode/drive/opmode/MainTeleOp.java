@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.MecanumCommand;
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.threadopmode.subsystems.OdometrySubsystem;
 import org.firstinspires.ftc.teamcode.util.GridAutoCentering;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
 
+@TeleOp(name="Main TeleOp")
 public class MainTeleOp extends LinearOpMode{
 
     private MultiMotorSubsystem multiMotorSubsystem;
@@ -63,7 +65,7 @@ public class MainTeleOp extends LinearOpMode{
                 multiMotorSubsystem.moveLift(0);
             }
 
-            mecanumCommand.moveGlobalPartial(true, gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            mecanumSubsystem.fieldOrientedMove(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, 0);
 
             if(gamepad1.right_trigger > 0.5){
                 intakeCommand.intakeIn();

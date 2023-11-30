@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.command;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -9,10 +10,12 @@ import org.firstinspires.ftc.teamcode.util.Specifications;
 public class IntakeCommand {
     private SingleMotorSubsystem intake;
     private Servo intakeServo;
+    private CRServo intakeRoller;
 
     public IntakeCommand(HardwareMap hardwareMap) {
         intake = new SingleMotorSubsystem(hardwareMap, Specifications.INTAKE_MOTOR);
         intakeServo = hardwareMap.get(Servo.class, Specifications.INTAKE_SERVO);
+        intakeRoller = hardwareMap.get(CRServo.class, Specifications.INTAKE_ROLLER);
     }
 
     public void raiseIntake() {
@@ -24,7 +27,8 @@ public class IntakeCommand {
     }
 
     public void intakeIn() {
-        intake.motorTurnPower(true, 1);
+        intake.motorTurnPower(true, 0.7);
+        intakeRoller.setPower(-1);
     }
 
     public void intakeOut() {
@@ -33,5 +37,6 @@ public class IntakeCommand {
 
     public void stopIntake() {
         intake.motorTurnPower(true, 0);
+        intakeRoller.setPower(0);
     }
 }
