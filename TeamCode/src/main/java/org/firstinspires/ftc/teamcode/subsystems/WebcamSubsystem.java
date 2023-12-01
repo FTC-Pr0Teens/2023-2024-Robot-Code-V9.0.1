@@ -23,7 +23,7 @@ public class WebcamSubsystem extends Specifications {
     public ContourPipeline contourPipeline;
     boolean initial;
     public enum PipelineName{
-        ELEMENT, RED_INTAKE, APRIL_TAG, CONTOUR
+        ELEMENT, RED_INTAKE, APRIL_TAG, CONTOUR_RED, CONTOUR_BLUE
     }
 
     public static final int VIEW_WIDTH = 320;
@@ -91,8 +91,12 @@ public class WebcamSubsystem extends Specifications {
             redIntakePipeline = new RedIntakePipeline();
             webcam.setPipeline(redIntakePipeline);
         }
-        else if(pipelineName == PipelineName.CONTOUR){
-            contourPipeline = new ContourPipeline();
+        else if(pipelineName == PipelineName.CONTOUR_BLUE){
+            contourPipeline = new ContourPipeline(55, 165, 0, 69.5, 255, 255);
+            webcam.setPipeline(contourPipeline);
+        }
+        else if(pipelineName == PipelineName.CONTOUR_RED){
+            contourPipeline = new ContourPipeline(64.5, 124, 0, 90, 255, 255);
             webcam.setPipeline(contourPipeline);
         }
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener(){

@@ -39,7 +39,6 @@ public class ContourPipeline extends OpenCvPipeline {
     // for tracking pipeline processing speed
     private final ElapsedTime timer = new ElapsedTime();
     private double processTime = 0;
-
     // constants
     public static final int CENTER_X = WebcamSubsystem.VIEW_WIDTH / 2;
     public static final int CENTER_Y = WebcamSubsystem.VIEW_HEIGHT / 2;
@@ -47,11 +46,15 @@ public class ContourPipeline extends OpenCvPipeline {
     private final Scalar WHITE = new Scalar(255, 255, 255);
     private final Scalar CONTOUR_COLOR = new Scalar(255, 255, 255);
     private final Scalar CONTOUR_CENTER_COLOUR = new Scalar(255,0,255);
-    private final Scalar UPPER_HSV = new Scalar(30, 255, 255);
-    private final Scalar LOWER_HSV = new Scalar(12, 130, 130);
+    private final Scalar UPPER_HSV;
+    private final Scalar LOWER_HSV;
 
     // final output image
     Mat output = new Mat();
+    public ContourPipeline(double upperH, double upperS, double upperV, double lowerH, double lowerS, double lowerV){
+        UPPER_HSV = new Scalar(upperH, upperS, upperV);
+        LOWER_HSV = new Scalar(lowerH, lowerS, lowerV);
+    }
 
     // for contour detection
     private List<Double> contourAreas = new ArrayList<>(); // records contour areas with pixels as the unit

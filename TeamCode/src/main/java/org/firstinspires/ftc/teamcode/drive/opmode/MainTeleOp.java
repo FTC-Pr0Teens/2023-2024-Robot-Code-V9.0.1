@@ -67,37 +67,37 @@ public class MainTeleOp extends LinearOpMode{
 
             mecanumSubsystem.fieldOrientedMove(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, 0);
 
-            if(gamepad1.right_trigger > 0.5){
-                intakeCommand.intakeIn();
+            if(gamepad1.right_trigger > 0.3){
+                intakeCommand.intakeIn(gamepad1.right_trigger);
             }
-            else if(gamepad1.left_trigger > 0.5){
-                intakeCommand.intakeOut();
+            else if(gamepad1.left_trigger > 0.3){
+                intakeCommand.intakeOut(gamepad1.right_trigger);
             }
             else{
                 intakeCommand.stopIntake();
             }
 
-            if(gamepad1.dpad_left){
-                gridAutoCentering.offsetTargetAngle(-Math.PI/2);
-                gridAutoCentering.process(true);
-            }
-            else if(gamepad1.dpad_right){
-                gridAutoCentering.offsetTargetAngle(Math.PI/2);
-                gridAutoCentering.process(true);
-            }
-            else if(gamepad1.dpad_up){
-                gridAutoCentering.offsetTargetAngle(0);
-                gridAutoCentering.process(true);
-            }
-            else if(gamepad1.dpad_down){
-                gridAutoCentering.offsetTargetAngle(Math.PI);
-                gridAutoCentering.process(true);
-            } else if (gamepad1.right_bumper) {
-                gridAutoCentering.reset();
-            }
-            else{
-                gridAutoCentering.process(false);
-            }
+//            if(gamepad1.dpad_left){
+//                gridAutoCentering.offsetTargetAngle(-Math.PI/2);
+//                gridAutoCentering.process(true);
+//            }
+//            else if(gamepad1.dpad_right){
+//                gridAutoCentering.offsetTargetAngle(Math.PI/2);
+//                gridAutoCentering.process(true);
+//            }
+//            else if(gamepad1.dpad_up){
+//                gridAutoCentering.offsetTargetAngle(0);
+//                gridAutoCentering.process(true);
+//            }
+//            else if(gamepad1.dpad_down){
+//                gridAutoCentering.offsetTargetAngle(Math.PI);
+//                gridAutoCentering.process(true);
+//            } else if (gamepad1.right_bumper) {
+//                gridAutoCentering.reset();
+//            }
+//            else{
+//                gridAutoCentering.process(false);
+//            }
         }
     }
 }
