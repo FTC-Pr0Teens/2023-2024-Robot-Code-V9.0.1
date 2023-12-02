@@ -13,6 +13,8 @@ import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
 import org.firstinspires.ftc.teamcode.util.GridAutoCentering;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
 
+import java.util.concurrent.CompletableFuture;
+
 @TeleOp(name="Main TeleOp")
 public class MainTeleOp extends LinearOpMode{
 
@@ -47,6 +49,8 @@ public class MainTeleOp extends LinearOpMode{
         gridAutoCentering = new GridAutoCentering(mecanumSubsystem, gyroOdometry);
 
         waitForStart();
+
+        CompletableFuture.runAsync(this::updateOdometry);
 
         while(opModeIsActive()){
             if(gamepad1.a){
@@ -98,6 +102,12 @@ public class MainTeleOp extends LinearOpMode{
 //            else{
 //                gridAutoCentering.process(false);
 //            }
+        }
+    }
+
+    private void updateOdometry(){
+        while(opModeIsActive()){
+            gyroOdometry.odometryProcess();
         }
     }
 }
