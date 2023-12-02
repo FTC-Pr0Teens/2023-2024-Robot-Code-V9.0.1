@@ -61,6 +61,8 @@ public class Reading extends LinearOpMode {
 
         waitForStart();
 
+        CompletableFuture.runAsync(this::runOdometry);
+
         while (opModeIsActive()) {
             if(gamepad1.a){
                 frontLeft.setPower(1);
@@ -92,6 +94,14 @@ public class Reading extends LinearOpMode {
                 backLeft.setPower(0);
                 backRight.setPower(0);
             }
+            telemetry.addData("x", odo.x);
+            telemetry.addData("y", odo.y);
+            telemetry.addData("heading", odo.theta);
+        }
+    }
+    public void runOdometry(){
+        while(opModeIsActive()){
+            odo.process();
         }
     }
 }
