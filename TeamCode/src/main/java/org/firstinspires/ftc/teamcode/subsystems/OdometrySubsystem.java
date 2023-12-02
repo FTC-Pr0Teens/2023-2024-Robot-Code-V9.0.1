@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.threadopmode.subsystems;
+package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -68,16 +68,10 @@ public class OdometrySubsystem extends Specifications {
 //            x = x - (dx*Math.cos(Theta)) + (dy*Math.sin(Theta));
 //            y = y - (dy*Math.cos(Theta)) - (dx*Math.sin(Theta));
 //        }
-        tempX = (dx*Math.cos(theta))+(dy*Math.sin(theta));
-        tempY = (dy*Math.cos(theta))-(dx*Math.sin(theta));
+        x += dx * Math.cos(theta) - dy * Math.sin(theta);
+        y += dx * Math.sin(theta) + dy * Math.cos(theta);
         x = x+tempX;
         y = y+tempY;
-        vxGlobal = tempX/time.time(TimeUnit.SECONDS);
-        vyGlobal = tempY/time.time(TimeUnit.SECONDS);
-        vxLocal = dx/time.time(TimeUnit.SECONDS);
-        vyLocal = dy/time.time(TimeUnit.SECONDS);
-        vTheta = dTheta/time.time(TimeUnit.SECONDS);
-//        y += dy;
         theta += dTheta/*1.03746397695*/;
         if (theta > twoPi){
             theta -= twoPi;
