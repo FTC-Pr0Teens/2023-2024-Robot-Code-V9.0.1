@@ -29,7 +29,9 @@ public class CameraTest extends LinearOpMode {
             packet.put("x", camera.contourPipeline.largestContourCenter().x);
             packet.put("y", camera.contourPipeline.largestContourCenter().y);
             packet.put("area", camera.contourPipeline.largestContourArea());
-
+            telemetry.addData("x", camera.contourPipeline.largestContourCenter().x);
+            telemetry.addData("y", camera.contourPipeline.largestContourCenter().y);
+            telemetry.addData("area", camera.contourPipeline.largestContourArea());
             sleep(20);
         }
     }

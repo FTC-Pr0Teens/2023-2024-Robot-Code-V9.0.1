@@ -41,34 +41,6 @@ public class WebcamSubsystem extends Specifications {
     double fy = 578.272;
     double cx = 402.145;
     double cy = 221.506;
-
-    // UNITS ARE METERS
-    double tagsize = 0.166;
-
-    public WebcamSubsystem(HardwareMap hardwareMap, boolean initial){
-        String name;
-        this.initial = initial;
-        name = INITIAL_CAM;
-        this.cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        this.webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, name), cameraMonitorViewId);
-
-        elementPipeline2 = new ElementPipeline2();
-        webcam.setPipeline(elementPipeline2);
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
-            @Override
-            public void onOpened()
-            {
-                webcam.startStreaming(320, 240, OpenCvCameraRotation.SIDEWAYS_RIGHT);
-            }
-
-            @Override
-            public void onError(int errorCode)
-            {
-
-            }
-        });
-    }
     public WebcamSubsystem(HardwareMap hardwareMap, PipelineName pipelineName){
         contourPipeline = new ContourPipeline(30, 255, 255, 10, 130, 130);
 //        if(pipelineName == PipelineName.APRIL_TAG){
