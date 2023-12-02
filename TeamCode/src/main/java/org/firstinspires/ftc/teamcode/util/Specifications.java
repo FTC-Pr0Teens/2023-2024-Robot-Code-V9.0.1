@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.util;
 
 //Cir is circumference
 
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.Servo;
+
 public class Specifications {
     public final double length = 43.18;
     public final int FINALPOS = 1230;
@@ -52,6 +55,15 @@ public class Specifications {
     public static final String IMU = "imu";
     public static final String INITIAL_CAM = "Webcam";
 
+    //output stuff, fill in names later
+    public static final String LEFT_OUTPUT_ARM = "";
+    public static final String RIGHT_OUTPUT_ARM = "";
+    public static final String LEFT_OUTPUT_TILT = "";
+    public static final String RIGHT_OUTPUT_TILT = "";
+    public static final String PIXEL_GATE = "";
+    public static final String PIXEL_WHEEL = "";
+    public static final String FIRST_COLOR_SENSOR = "";
+    public static final String SECOND_COLOR_SENSOR = "";
     public enum NavSystem{
         IMU,
         ODOMETRY,
