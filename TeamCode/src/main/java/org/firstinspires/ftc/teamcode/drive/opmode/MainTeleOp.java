@@ -81,33 +81,34 @@ public class MainTeleOp extends LinearOpMode{
                 intakeCommand.stopIntake();
             }
 
-//            if(gamepad1.dpad_left){
-//                gridAutoCentering.offsetTargetAngle(-Math.PI/2);
-//                gridAutoCentering.process(true);
-//            }
-//            else if(gamepad1.dpad_right){
-//                gridAutoCentering.offsetTargetAngle(Math.PI/2);
-//                gridAutoCentering.process(true);
-//            }
-//            else if(gamepad1.dpad_up){
-//                gridAutoCentering.offsetTargetAngle(0);
-//                gridAutoCentering.process(true);
-//            }
-//            else if(gamepad1.dpad_down){
-//                gridAutoCentering.offsetTargetAngle(Math.PI);
-//                gridAutoCentering.process(true);
-//            } else if (gamepad1.right_bumper) {
-//                gridAutoCentering.reset();
-//            }
-//            else{
-//                gridAutoCentering.process(false);
-//            }
+            if(gamepad1.dpad_left){
+                gridAutoCentering.offsetTargetAngle(-Math.PI/2);
+                gridAutoCentering.process(true);
+            }
+            else if(gamepad1.dpad_right){
+                gridAutoCentering.offsetTargetAngle(Math.PI/2);
+                gridAutoCentering.process(true);
+            }
+            else if(gamepad1.dpad_up){
+                gridAutoCentering.offsetTargetAngle(0);
+                gridAutoCentering.process(true);
+            }
+            else if(gamepad1.dpad_down){
+                gridAutoCentering.offsetTargetAngle(Math.PI);
+                gridAutoCentering.process(true);
+            } else if (gamepad1.right_bumper) {
+                gridAutoCentering.reset();
+            }
+            else{
+                gridAutoCentering.process(false);
+            }
         }
     }
 
     private void updateOdometry(){
         while(opModeIsActive()){
             gyroOdometry.odometryProcess();
+            gridAutoCentering.secondaryProcess(true);
         }
     }
 }

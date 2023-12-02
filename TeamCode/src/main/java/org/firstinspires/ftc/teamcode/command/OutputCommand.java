@@ -21,6 +21,7 @@ public class OutputCommand {
     private Servo gate;
     private IntakeCommand intakeCommand;
     private TimerList timers = new TimerList();
+    private MultiMotorCommand multiMotorCommand;
 
 
     public OutputCommand(HardwareMap hardwareMap) {
@@ -74,6 +75,22 @@ public class OutputCommand {
         //TODO: Find value
         leftTilt.setPosition(0.3);
         rightTilt.setPosition(0.3);
+    }
+
+    public double getGatePosition(){
+        return gate.getPosition();
+    }
+    public double getLeftArmPosition(){
+        return leftArm.getPosition();
+    }
+    public double getRightArmPosition(){
+        return rightArm.getPosition();
+    }
+    public double getLeftTiltPosition(){
+        return leftTilt.getPosition();
+    }
+    public double getRightTiltPosition(){
+        return rightTilt.getPosition();
     }
 
 
