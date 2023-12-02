@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.util;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.subsystems.IMUSubsystem;
-import org.firstinspires.ftc.teamcode.threadopmode.subsystems.OdometrySubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
 
 import java.util.concurrent.TimeUnit;
 

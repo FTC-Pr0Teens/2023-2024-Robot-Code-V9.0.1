@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import org.firstinspires.ftc.teamcode.threadopmode.subsystems.OdometrySubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
 
 @TeleOp(name="Reading")
 public class Reading extends LinearOpMode {
@@ -33,6 +33,7 @@ public class Reading extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         imu = new IMUSubsystem(hardwareMap);
+        odometrySubsystem = new OdometrySubsystem(hardwareMap);
         odo = new GyroOdometry(odometrySubsystem, imu);
 
         frontLeft = hardwareMap.get(DcMotor.class, "leftForward");
@@ -96,12 +97,18 @@ public class Reading extends LinearOpMode {
             }
             telemetry.addData("x", odo.x);
             telemetry.addData("y", odo.y);
+            telemetry.addData("x", odometrySubsystem.x);
+            telemetry.addData("y", odometrySubsystem.y);
             telemetry.addData("heading", odo.theta);
+            telemetry.addData("leftEncoder", odometrySubsystem.leftEncoder());
+            telemetry.addData("rightEncoder", odometrySubsystem.rightEncoder());
+            telemetry.addData("aux", odometrySubsystem.backEncoder());
+            telemetry.update();
         }
     }
     public void runOdometry(){
         while(opModeIsActive()){
-            odo.process();
+            odo.odometryProcess();
         }
     }
 }

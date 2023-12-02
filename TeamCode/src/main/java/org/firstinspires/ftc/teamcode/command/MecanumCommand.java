@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
-import org.firstinspires.ftc.teamcode.threadopmode.subsystems.OdometrySubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
 import org.firstinspires.ftc.teamcode.util.PIDCore;
 import org.firstinspires.ftc.teamcode.util.PurePursuit;
