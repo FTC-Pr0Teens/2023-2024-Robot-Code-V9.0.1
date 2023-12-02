@@ -8,9 +8,11 @@ import org.firstinspires.ftc.teamcode.util.Pipelines.ContourPipeline;
 import org.firstinspires.ftc.teamcode.util.Pipelines.ElementPipeline2;
 import org.firstinspires.ftc.teamcode.util.Pipelines.RedIntakePipeline;
 import org.firstinspires.ftc.teamcode.util.Specifications;
+import org.opencv.core.Scalar;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.nio.channels.Pipe;
 
@@ -68,7 +70,25 @@ public class WebcamSubsystem extends Specifications {
         });
     }
     public WebcamSubsystem(HardwareMap hardwareMap, PipelineName pipelineName){
-
+        contourPipeline = new ContourPipeline(30, 255, 255, 10, 130, 130);
+//        if(pipelineName == PipelineName.APRIL_TAG){
+//            aprilTagPipeline = new AprilTagPipeline(0.166, fy, fx, cy, cx);
+//            webcam.setPipeline(aprilTagPipeline);
+//        }
+//        else if(pipelineName == PipelineName.ELEMENT){
+//            elementPipeline2 = new ElementPipeline2();
+//            webcam.setPipeline(elementPipeline2);
+//        }
+//        else if(pipelineName == PipelineName.RED_INTAKE){
+//            redIntakePipeline = new RedIntakePipeline();
+//            webcam.setPipeline(redIntakePipeline);
+//        }
+        if(pipelineName == PipelineName.CONTOUR_BLUE){
+            contourPipeline = new ContourPipeline(146, 255, 255, 103, 102, 62);
+        }
+        else if(pipelineName == PipelineName.CONTOUR_RED){
+            contourPipeline = new ContourPipeline(32, 255, 255, 0, 124, 64.5);
+        }
         // initiate the needed parameters
         cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId","id",hardwareMap.appContext.getPackageName());
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
@@ -76,29 +96,9 @@ public class WebcamSubsystem extends Specifications {
         // initiate the camera object with created parameters and pipeline
         webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
 
-        // connect whichever pipeline is desired and comment the other one
+        webcam.setPipeline(contourPipeline);
 
         // runs camera on a separate thread so it can run simultaneously with everything else
-        if(pipelineName == PipelineName.APRIL_TAG){
-            aprilTagPipeline = new AprilTagPipeline(0.166, fy, fx, cy, cx);
-            webcam.setPipeline(aprilTagPipeline);
-        }
-        else if(pipelineName == PipelineName.ELEMENT){
-            elementPipeline2 = new ElementPipeline2();
-            webcam.setPipeline(elementPipeline2);
-        }
-        else if(pipelineName == PipelineName.RED_INTAKE){
-            redIntakePipeline = new RedIntakePipeline();
-            webcam.setPipeline(redIntakePipeline);
-        }
-        else if(pipelineName == PipelineName.CONTOUR_BLUE){
-            contourPipeline = new ContourPipeline(55, 165, 0, 69.5, 255, 255);
-            webcam.setPipeline(contourPipeline);
-        }
-        else if(pipelineName == PipelineName.CONTOUR_RED){
-            contourPipeline = new ContourPipeline(64.5, 124, 0, 90, 255, 255);
-            webcam.setPipeline(contourPipeline);
-        }
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener(){
             @Override
             public void onOpened() {

@@ -68,10 +68,10 @@ public class MainTeleOp extends LinearOpMode{
             mecanumSubsystem.fieldOrientedMove(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, 0);
 
             if(gamepad1.right_trigger > 0.3){
-                intakeCommand.intakeIn(gamepad1.right_trigger);
+                intakeCommand.intakeIn(0.7);
             }
             else if(gamepad1.left_trigger > 0.3){
-                intakeCommand.intakeOut(gamepad1.right_trigger);
+                intakeCommand.intakeOut(0.7);
             }
             else{
                 intakeCommand.stopIntake();
