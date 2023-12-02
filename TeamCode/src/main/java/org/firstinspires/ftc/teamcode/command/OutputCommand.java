@@ -19,20 +19,61 @@ public class OutputCommand {
     private Servo leftTilt;
     private Servo rightTilt;
     private Servo gate;
-    private CRServo outputWheel;
-
+    private IntakeCommand intakeCommand;
     private TimerList timers = new TimerList();
 
 
     public OutputCommand(HardwareMap hardwareMap) {
         leftArm = hardwareMap.get(Servo.class, Specifications.LEFT_OUTPUT_ARM);
         rightArm = hardwareMap.get(Servo.class, Specifications.RIGHT_OUTPUT_ARM);
+        leftTilt = hardwareMap.get(Servo.class, Specifications.LEFT_OUTPUT_TILT);
+        rightTilt = hardwareMap.get(Servo.class, Specifications.RIGHT_OUTPUT_TILT);
+        gate = hardwareMap.get(Servo.class, Specifications.PIXEL_GATE);
+        intakeCommand = new IntakeCommand(hardwareMap);
+
+        leftArm.setDirection(Servo.Direction.FORWARD);
+        rightArm.setDirection(Servo.Direction.REVERSE);
+
+        leftTilt.setDirection(Servo.Direction.FORWARD);
+        rightTilt.setDirection(Servo.Direction.REVERSE);
+
+        gate.setDirection(Servo.Direction.FORWARD);
+
     }
 
-    public void dropPixel(Gamepad gamepad){
-        //i might actualy put this back in teleop ngl
+    public void openGate(){
+        //TODO: Find value
+        gate.setPosition(0.3);
+    }
+    public void closeGate(){
+        //TODO: Find value
+        gate.setPosition(0);
+    }
+    public void outputWheelOut(){
+        //TODO: Find value
+        intakeCommand.intakeRollerOut();
+    }
+    public void armToIdle(){
+        //TODO: Find value
+        leftArm.setPosition(0);
+        rightArm.setPosition(0);
+    }
 
-        // check block code for specific timings. It is 200 ms for the gate, 200 ms for the wheel.
+    public void armToBoard(){
+        //TODO: Find value
+        leftArm.setPosition(0.3);
+        rightArm.setPosition(0.3);
+    }
+
+    public void tiltToIdle(){
+        //TODO: Find value
+        leftTilt.setPosition(0);
+        rightTilt.setPosition(0);
+    }
+    public void tiltToBoard(){
+        //TODO: Find value
+        leftTilt.setPosition(0.3);
+        rightTilt.setPosition(0.3);
     }
 
 

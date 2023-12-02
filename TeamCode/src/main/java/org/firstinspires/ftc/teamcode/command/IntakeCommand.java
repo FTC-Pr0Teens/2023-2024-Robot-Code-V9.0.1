@@ -25,10 +25,16 @@ public class IntakeCommand {
     public void lowerIntake() {
         intakeServo.setPosition(0);
     }
+    public void intakeRollerIn(){
+        intakeRoller.setPower(-1);
+    }
+    public void intakeRollerOut(){
+        intakeRoller.setPower(1);
+    }
 
     public void intakeIn(double power) {
         intake.motorTurnPower(true, Math.abs(power));
-        intakeRoller.setPower(-1);
+        intakeRollerIn();
     }
 
     public void intakeOut(double power) {
