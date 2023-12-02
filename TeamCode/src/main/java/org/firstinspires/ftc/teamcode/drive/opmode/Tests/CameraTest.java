@@ -18,9 +18,9 @@ public class CameraTest extends LinearOpMode {
     private TelemetryPacket packet;
     @Override
     public void runOpMode(){
-        camera = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR);
+        camera = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
         dashboard = FtcDashboard.getInstance();
-        dashboard.startCameraStream(camera.webcam, 30);
+        dashboard.startCameraStream(camera.webcam, 24);
         packet = new TelemetryPacket();
 
         waitForStart();

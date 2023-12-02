@@ -100,13 +100,14 @@ public class MecanumSubsystem extends Specifications{
         rightForward = hardwareMap.get(DcMotorEx.class, FTRT_MOTOR);
 
         leftBack.setDirection(DcMotor.Direction.REVERSE);
-        leftForward.setDirection(DcMotor.Direction.FORWARD);
+        leftForward.setDirection(DcMotor.Direction.REVERSE);
         rightBack.setDirection(DcMotor.Direction.FORWARD);
-        rightForward.setDirection(DcMotor.Direction.REVERSE);
-        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftForward.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightForward.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightForward.setDirection(DcMotor.Direction.FORWARD);
+
+//        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        leftForward.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        rightForward.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftForward.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -272,7 +273,7 @@ public class MecanumSubsystem extends Specifications{
     //Don't use this move
     public void fieldOrientedMove(double x, double y, double z, double theta) {
 
-        // translate the field relative movement (joystick) into the robot relative movement based off of the current angle
+        // translate the field relative movement (joystick) into the robot relative movement
         double newX = x * Math.cos(theta) + y * Math.sin(theta);
         double newY = - x * Math.sin(theta) + y * Math.cos(theta);
 
@@ -291,10 +292,10 @@ public class MecanumSubsystem extends Specifications{
             backLeftPow /= largest;
         }
 
-        rightForward.setPower(frontRightPow*SCALE);
-        leftForward.setPower(frontLeftPow*SCALE);
-        rightBack.setPower(backRightPow*SCALE);
-        leftBack.setPower(backLeftPow*SCALE);
+        rightForward.setPower(frontRightPow * SCALE);
+        leftForward.setPower(frontLeftPow * SCALE);
+        rightBack.setPower(backRightPow * SCALE);
+        leftBack.setPower(backLeftPow * SCALE);
     }
 
 
