@@ -41,7 +41,7 @@ public class Specifications {
     //DS: distance sensor
 
     public static final String INTAKE_MOTOR = "intakeMotor";
-    public static final String INTAKE_SERVO = "intakeServo";
+    public static final String INTAKE_SERVO = "intakeLinkage";
     public static final String INTAKE_ROLLER = "intakeRoller";
     public static final String EXTENSION_MOTOR_MAIN = "extension1";
     public static final String EXTENSION_MOTOR_AUX1 = "extension2";
@@ -55,14 +55,13 @@ public class Specifications {
     public static final String IMU = "imu";
 
     //output stuff, fill in names later
-    public static final String LEFT_OUTPUT_ARM = "";
-    public static final String RIGHT_OUTPUT_ARM = "";
-    public static final String LEFT_OUTPUT_TILT = "";
-    public static final String RIGHT_OUTPUT_TILT = "";
-    public static final String PIXEL_GATE = "";
-    public static final String PIXEL_WHEEL = "";
-    public static final String FIRST_COLOR_SENSOR = "";
-    public static final String SECOND_COLOR_SENSOR = "";
+    public static final String LEFT_OUTPUT_ARM = "leftArm";
+    public static final String RIGHT_OUTPUT_ARM = "rightArm";
+    public static final String LEFT_OUTPUT_TILT = "leftTilt";
+    public static final String RIGHT_OUTPUT_TILT = "rightTilt";
+    public static final String PIXEL_GATE = "pixelGate";
+    public static final String FIRST_COLOR_SENSOR = "pixelSensor";
+    public static final String SECOND_COLOR_SENSOR = "pixelSensor2";
     public enum NavSystem{
         IMU,
         ODOMETRY,

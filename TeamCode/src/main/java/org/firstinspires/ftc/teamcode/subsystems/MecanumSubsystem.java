@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -99,15 +100,16 @@ public class MecanumSubsystem extends Specifications{
         leftForward = hardwareMap.get(DcMotorEx.class, FTLF_MOTOR);
         rightForward = hardwareMap.get(DcMotorEx.class, FTRT_MOTOR);
 
-        leftBack.setDirection(DcMotor.Direction.REVERSE);
-        leftForward.setDirection(DcMotor.Direction.REVERSE);
-        rightBack.setDirection(DcMotor.Direction.FORWARD);
-        rightForward.setDirection(DcMotor.Direction.FORWARD);
+        rightForward.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftForward.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
-//        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        leftForward.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        rightForward.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftForward.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightForward.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        turnOffInternalPID();
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftForward.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
