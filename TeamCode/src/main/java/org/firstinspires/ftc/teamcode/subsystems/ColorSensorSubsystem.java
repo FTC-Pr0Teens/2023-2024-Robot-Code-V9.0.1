@@ -98,7 +98,7 @@ public class ColorSensorSubsystem {
             return "Lilac Purple";
         } else if (isYellow(red, green, blue)) {
             return "Yellow";
-        } else if (isDominant(green, red, blue)) {
+        } else if (isGreen(green, red, blue)) {
             return "Green";
         } else if (isSignificantlyDominant(red, blue, green)) {
             return "Red";
@@ -121,8 +121,11 @@ public class ColorSensorSubsystem {
 //        return r > g && g > b && b < 100;
         return g > r && r > b && b < 1000;
     }
+    private boolean isGreen(int r, int g, int b) {
+        return g > r && g > b && g > 2000;
 
-    private boolean isDominant(int a, int b, int c) {
+    }
+     private boolean isDominant(int a, int b, int c) {
         return a > b && a > c;
     }
 
