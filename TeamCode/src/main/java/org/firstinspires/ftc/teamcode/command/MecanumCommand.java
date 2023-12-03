@@ -25,11 +25,11 @@ public class MecanumCommand {
     private static double kpx = 0.07;
     private static double kdx = 0.01;
     private static double kix = 0;
-    private static double kpy = 0.05;
+    private static double kpy = 0.07;
     private static double kdy = 0.0005;
     private static double kiy = 0;
-    private static double kptheta = 1;
-    private static double kdtheta = 0.2;
+    private static double kptheta = 0.9;
+    private static double kdtheta = 0.05;
     private static double kitheta = 0.0;
     private double ex = 0;
     private double ey = 0;
@@ -620,10 +620,10 @@ public class MecanumCommand {
                 || Math.abs(targetTheta - odometrySubsystem.theta) > 0.1) {
 
             mecanumSubsystem.fieldOrientedMove(
-                    globalYController.outputPositional(odometrySubsystem.y, targetY),
-                    -globalXController.outputPositional(odometrySubsystem.x, targetX),
-                    -globalThetaController.outputPositional(odometrySubsystem.theta, targetTheta),
-                    gyroOdometry.theta);
+                    globalYController.outputPositional(targetY, odometrySubsystem.y),
+                   -globalXController.outputPositional(targetX, odometrySubsystem.x),
+                    -globalThetaController.outputPositional(targetTheta, odometrySubsystem.theta),
+                    odometrySubsystem.theta);
         }
         mecanumSubsystem.stop(true);
     }

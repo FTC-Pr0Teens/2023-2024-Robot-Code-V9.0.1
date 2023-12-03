@@ -302,7 +302,7 @@ public class LeoTeleOp extends LinearOpMode{
 
         //movement
 
-        mecanumSubsystem.fieldOrientedMove(gamepad1.left_stick_x, -gamepad1.left_stick_y, rotation, 0);
+        mecanumCommand.moveGlobalPartial(true, gamepad1.left_stick_x, -gamepad1.left_stick_y, rotation);
     }
 
 
@@ -344,15 +344,19 @@ public class LeoTeleOp extends LinearOpMode{
      *
      */
     private void updateIMU(){
-        imuSubsystem.gyroProcess(); //potentially redundant as it is processed in the gyroOdometry.angleProcess()
-        gyroOdometry.angleProcess();
+        while(opModeIsActive()) {
+            imuSubsystem.gyroProcess(); //potentially redundant as it is processed in the gyroOdometry.angleProcess()
+            gyroOdometry.angleProcess();
+        }
     }
 
     /**
      *
      */
     private void updateMovement(){
-        gridAutoCentering.process(true);
-        mecanumSubsystem.motorProcessTeleOp();
+        while(opModeIsActive()) {
+            gridAutoCentering.process(true);
+            mecanumSubsystem.motorProcessTeleOp();
+        }
     }
 }

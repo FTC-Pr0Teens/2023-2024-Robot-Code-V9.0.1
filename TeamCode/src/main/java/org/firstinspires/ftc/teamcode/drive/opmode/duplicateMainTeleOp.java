@@ -10,11 +10,11 @@ import org.firstinspires.ftc.teamcode.subsystems.DroneShooter;
 import org.firstinspires.ftc.teamcode.subsystems.IMUSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MultiMotorSubsystem;
-import org.firstinspires.ftc.teamcode.threadopmode.subsystems.OdometrySubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
 import org.firstinspires.ftc.teamcode.util.GridAutoCentering;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
 
-@TeleOp(name="Main TeleOp")
+@TeleOp(name="Duplicate Main TeleOp")
 public class duplicateMainTeleOp extends LinearOpMode{
 
     private MultiMotorSubsystem multiMotorSubsystem;

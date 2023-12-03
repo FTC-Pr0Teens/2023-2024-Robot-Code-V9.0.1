@@ -19,7 +19,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-@Config
 @Autonomous(name="coordinate testing")
 public class CoordinateTesting extends LinearOpMode {
     private MecanumSubsystem mecanumSubsystem;
@@ -33,8 +32,8 @@ public class CoordinateTesting extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         imu = new IMUSubsystem(hardwareMap);
-        odometrySubsystem = new OdometrySubsystem(hardwareMap);
         mecanumSubsystem = new MecanumSubsystem(hardwareMap);
+        odometrySubsystem = new OdometrySubsystem(hardwareMap);
         gyroOdometry = new GyroOdometry(odometrySubsystem, imu);
         mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem, gyroOdometry, this);
 
@@ -45,28 +44,35 @@ public class CoordinateTesting extends LinearOpMode {
         dashboard = FtcDashboard.getInstance();
 
         waitForStart();
+        odometrySubsystem.reset();
 
         Executor executor = Executors.newFixedThreadPool(4);
         CompletableFuture.runAsync(this::updateOdometry, executor);
         CompletableFuture.runAsync(this::updateTelemetry, executor);
 
-        sleep(8000);
-        mecanumCommand.moveToGlobalPosition(100, 100, 0);
+//        sleep(8000);
+        mecanumCommand.moveToGlobalPosition(0, 0, Math.PI);
         sleep(4000);
-        mecanumCommand.moveToGlobalPosition(100, 100, Math.PI);
-        sleep(4000);
-        mecanumCommand.moveToGlobalPosition(100, 100, 2*Math.PI);
+//        mecanumCommand.moveToGlobalPosition(100, 100, Math.PI);
+//        sleep(4000);
+//        mecanumCommand.moveToGlobalPosition(100, 100, 2*Math.PI);
 
     }
 
     public void updateOdometry() {
         while (opModeIsActive()) {
             gyroOdometry.odometryProcess();
+            telemetry.addData("x", gyroOdometry.x);
+            telemetry.addData("y", gyroOdometry.y);
+            telemetry.addData("theta", gyroOdometry.theta);
+            telemetry.update();
         }
     }
 
     public void updateTelemetry() {
         while (opModeIsActive()) {
+            packet.put("x", gyroOdometry.x);
+            packet.put("y", gyroOdometry.y);
             telemetry.addData("x", gyroOdometry.x);
             telemetry.addData("y", gyroOdometry.y);
             packet.put("x", gyroOdometry.x);
