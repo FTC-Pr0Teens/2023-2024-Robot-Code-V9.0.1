@@ -66,6 +66,7 @@ public class CoordinateTesting extends LinearOpMode {
     public void updateTelemetry() {
         while (opModeIsActive()) {
             telemetry.addData("x", gyroOdometry.x);
+            telemetry.addData("y", gyroOdometry.y);
             dashboard.sendTelemetryPacket(packet);
             telemetry.update();
         }

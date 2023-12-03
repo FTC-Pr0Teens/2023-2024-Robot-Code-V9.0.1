@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.command.MecanumCommand;
 import org.firstinspires.ftc.teamcode.subsystems.IMUSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
 
 @TeleOp(name="drive test")
@@ -13,6 +14,7 @@ public class MecanumTest extends LinearOpMode {
     private MecanumSubsystem mecanumSubsystem;
     private IMUSubsystem imu;
     private MecanumCommand drive;
+    private OdometrySubsystem odo;
     @Override
     public void runOpMode() throws InterruptedException {
 
