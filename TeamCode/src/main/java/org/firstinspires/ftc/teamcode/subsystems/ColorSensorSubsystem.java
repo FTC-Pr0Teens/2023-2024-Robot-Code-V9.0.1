@@ -1,11 +1,8 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import android.graphics.Color;
-
-import com.qualcomm.hardware.rev.RevColorSensorV3;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class ColorSensorSubsystem {
 
@@ -67,8 +64,8 @@ public class ColorSensorSubsystem {
             return "error";
         }
     }
-    
-    
+
+
     public String findColor1(){
         int red = colorSensor1.red();
         int green = colorSensor1.green();
@@ -78,7 +75,7 @@ public class ColorSensorSubsystem {
             return "Lilac Purple";
         } else if (isYellow(red, green, blue)) {
             return "Yellow";
-        } else if (isSignificantlyDominant(green, red, blue)) {
+        } else if (isDominant(green, red, blue)) {
             return "Green";
         } else if (isSignificantlyDominant(red, blue, green)) {
             return "Red";
@@ -101,7 +98,7 @@ public class ColorSensorSubsystem {
             return "Lilac Purple";
         } else if (isYellow(red, green, blue)) {
             return "Yellow";
-        } else if (isSignificantlyDominant(green, red, blue)) {
+        } else if (isDominant(green, red, blue)) {
             return "Green";
         } else if (isSignificantlyDominant(red, blue, green)) {
             return "Red";
