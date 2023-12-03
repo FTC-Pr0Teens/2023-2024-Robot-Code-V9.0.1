@@ -32,8 +32,8 @@ public class OutputCommand {
         gate = hardwareMap.get(Servo.class, Specifications.PIXEL_GATE);
         intakeCommand = new IntakeCommand(hardwareMap);
 
-        leftArm.setDirection(Servo.Direction.FORWARD);
-        rightArm.setDirection(Servo.Direction.REVERSE);
+        leftArm.setDirection(Servo.Direction.REVERSE);
+        rightArm.setDirection(Servo.Direction.FORWARD);
 
         leftTilt.setDirection(Servo.Direction.FORWARD);
         rightTilt.setDirection(Servo.Direction.REVERSE);
@@ -42,39 +42,49 @@ public class OutputCommand {
 
     }
 
+    public void initialize(){
+        closeGate();
+//        leftArm.setPosition(0);
+//        rightArm.setPosition(0);
+//        leftTilt.setPosition(0);
+//        rightTilt.setPosition(0);
+    }
+
     public void openGate(){
-        //TODO: Find value
-        gate.setPosition(0.3);
+        gate.setPosition(0.225);
     }
     public void closeGate(){
-        //TODO: Find value
-        gate.setPosition(0);
+        gate.setPosition(0.27);
     }
     public void outputWheelOut(){
-        //TODO: Find value
         intakeCommand.intakeRollerOut();
+    }
+    public void outputWheelStop(){
+        intakeCommand.intakeRollerStop();
+    }
+    public void armToPos(double position){
+        leftArm.setPosition(position);
+        rightArm.setPosition(position);
     }
     public void armToIdle(){
         //TODO: Find value
-        leftArm.setPosition(0);
-        rightArm.setPosition(0);
+        leftArm.setPosition(0.52);
+        rightArm.setPosition(0.52);
     }
 
     public void armToBoard(){
         //TODO: Find value
-        leftArm.setPosition(0.3);
-        rightArm.setPosition(0.3);
+        leftArm.setPosition(0.66);
+        rightArm.setPosition(0.66);
     }
 
     public void tiltToIdle(){
-        //TODO: Find value
-        leftTilt.setPosition(0);
-        rightTilt.setPosition(0);
+        leftTilt.setPosition(0.46);
+        rightTilt.setPosition(0.46);
     }
     public void tiltToBoard(){
-        //TODO: Find value
-        leftTilt.setPosition(0.3);
-        rightTilt.setPosition(0.3);
+        leftTilt.setPosition(0.1);
+        rightTilt.setPosition(0.1);
     }
 
     public double getGatePosition(){
