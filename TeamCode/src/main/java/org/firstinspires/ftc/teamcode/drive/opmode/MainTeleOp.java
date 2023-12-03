@@ -2,10 +2,12 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.MecanumCommand;
 import org.firstinspires.ftc.teamcode.command.MultiMotorCommand;
+import org.firstinspires.ftc.teamcode.command.OutputCommand;
 import org.firstinspires.ftc.teamcode.subsystems.IMUSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MultiMotorSubsystem;
@@ -14,6 +16,7 @@ import org.firstinspires.ftc.teamcode.util.GridAutoCentering;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 @TeleOp(name="Main TeleOp")
 public class MainTeleOp extends LinearOpMode{
@@ -22,12 +25,14 @@ public class MainTeleOp extends LinearOpMode{
     private MultiMotorCommand multiMotorCommand;
     private OdometrySubsystem odometrySubsystem;
     private MecanumSubsystem mecanumSubsystem;
-    private MecanumCommand mecanumCommand;
+//    private MecanumCommand mecanumCommand;
 //    private OutputCommand outputCommand;
     private IntakeCommand intakeCommand;
     private IMUSubsystem imuSubsystem;
     private GyroOdometry gyroOdometry;
     private GridAutoCentering gridAutoCentering;
+    private OutputCommand outputCommand;
+    private ElapsedTime timer;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -41,12 +46,17 @@ public class MainTeleOp extends LinearOpMode{
         odometrySubsystem = new OdometrySubsystem(hardwareMap);
 
         mecanumSubsystem = new MecanumSubsystem(hardwareMap);
-        mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem,  gyroOdometry, this);
+//        mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem,  gyroOdometry, this);
 
 //        outputCommand = new OutputCommand(hardwareMap);
         intakeCommand = new IntakeCommand(hardwareMap);
+        outputCommand = new OutputCommand(hardwareMap);
 
         gridAutoCentering = new GridAutoCentering(mecanumSubsystem, gyroOdometry);
+        timer = new ElapsedTime();
+
+        odometrySubsystem.reset();
+        imuSubsystem.resetAngle();
 
         waitForStart();
 
@@ -54,13 +64,28 @@ public class MainTeleOp extends LinearOpMode{
 
         while(opModeIsActive()){
             if(gamepad1.a){
+                timer.reset();
+                outputCommand.armToIdle();
+                outputCommand.tiltToIdle();
+                while(timer.time(TimeUnit.SECONDS) < 2){}
                 multiMotorCommand.LiftUp(true, 0);
+                while(timer.time(TimeUnit.SECONDS) < 5);
             }
             else if(gamepad1.b){
                 multiMotorCommand.LiftUp(true, 3);
             }
             else if(gamepad1.y){
                 multiMotorCommand.LiftUp(true, 1);
+                outputCommand.armToBoard();
+                outputCommand.tiltToBoard();
+                if(gamepad1.right_bumper){
+                    timer.reset();
+                    outputCommand.openGate();
+                    while(timer.time(TimeUnit.MILLISECONDS) < 100){}
+                    outputCommand.closeGate();
+                    outputCommand.outputWheelOut();
+                    while(timer.time(TimeUnit.MILLISECONDS) < 100){}
+                }
             }
             else if(gamepad1.x){
                 multiMotorCommand.LiftUp(true, 2);
@@ -69,7 +94,7 @@ public class MainTeleOp extends LinearOpMode{
                 multiMotorSubsystem.moveLift(0);
             }
 
-            mecanumSubsystem.fieldOrientedMove(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, 0);
+            mecanumSubsystem.fieldOrientedMove(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x, imuSubsystem.getTheta());
 
             if(gamepad1.right_trigger > 0.3){
                 intakeCommand.intakeIn(0.7);
@@ -102,6 +127,7 @@ public class MainTeleOp extends LinearOpMode{
             else{
                 gridAutoCentering.process(false);
             }
+            telemetry.addData("liftHeight", multiMotorSubsystem.getPosition());
         }
     }
 

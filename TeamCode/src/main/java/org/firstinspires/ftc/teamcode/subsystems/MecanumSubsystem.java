@@ -100,8 +100,8 @@ public class MecanumSubsystem extends Specifications{
         leftForward = hardwareMap.get(DcMotorEx.class, FTLF_MOTOR);
         rightForward = hardwareMap.get(DcMotorEx.class, FTRT_MOTOR);
 
-        rightForward.setDirection(DcMotorSimple.Direction.FORWARD);
-        leftForward.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightForward.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftForward.setDirection(DcMotorSimple.Direction.FORWARD);
         rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
