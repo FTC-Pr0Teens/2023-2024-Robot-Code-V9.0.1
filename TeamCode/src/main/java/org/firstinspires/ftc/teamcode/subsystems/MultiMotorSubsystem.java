@@ -348,13 +348,10 @@ public class MultiMotorSubsystem extends Specifications {
         IntervalControl velocityInterval = new IntervalControl(interval);
 //        angularVelocity = -main.getVelocity(AngleUnit.RADIANS);
 
-        if(runToPosition){
-            //only for up
-            intervalValue = velocityInterval.getOutput(getPosition());
-            cascadeOutput = cascadePID.cascadeOutput(targetPos, getPosition(), intervalValue, getDerivativeValue());
-            moveLift(cascadeOutput);
-        }
-
+        //only for up
+        intervalValue = velocityInterval.getOutput(getPosition());
+        cascadeOutput = cascadePID.cascadeOutput(targetPos, getPosition(), intervalValue, getDerivativeValue());
+        moveLift(cascadeOutput);
     }
 
 

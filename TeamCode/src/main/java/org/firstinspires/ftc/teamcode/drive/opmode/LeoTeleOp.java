@@ -104,11 +104,10 @@ public class LeoTeleOp extends LinearOpMode{
         multiMotorCommand = new MultiMotorCommand(multiMotorSubsystem);
 
         imuSubsystem = new IMUSubsystem(hardwareMap);
-
+        mecanumSubsystem = new MecanumSubsystem(hardwareMap);
         gyroOdometry = new GyroOdometry(odometrySubsystem, imuSubsystem);
         odometrySubsystem = new OdometrySubsystem(hardwareMap);
 
-        mecanumSubsystem = new MecanumSubsystem(hardwareMap);
         mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem,  gyroOdometry, this);
 
 //        outputCommand = new OutputCommand(hardwareMap);

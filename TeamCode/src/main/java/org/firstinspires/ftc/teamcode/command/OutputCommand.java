@@ -44,10 +44,8 @@ public class OutputCommand {
 
     public void initialize(){
         closeGate();
-//        leftArm.setPosition(0);
-//        rightArm.setPosition(0);
-//        leftTilt.setPosition(0);
-//        rightTilt.setPosition(0);
+        armToIdle();
+        tiltToIdle();
     }
 
     public void openGate(){

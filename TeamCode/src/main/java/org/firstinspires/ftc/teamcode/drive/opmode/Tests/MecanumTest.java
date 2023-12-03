@@ -15,7 +15,6 @@ import java.util.concurrent.CompletableFuture;
 public class MecanumTest extends LinearOpMode {
     private MecanumSubsystem mecanumSubsystem;
     private IMUSubsystem imu;
-    private MecanumCommand drive;
     private OdometrySubsystem odo;
     @Override
     public void runOpMode() throws InterruptedException {
@@ -42,9 +41,12 @@ public class MecanumTest extends LinearOpMode {
             telemetry.addData("rightFront", mecanumSubsystem.getRightForward().getPower());
             telemetry.addData("leftBack", mecanumSubsystem.getLeftBack().getPower());
             telemetry.addData("rightBack", mecanumSubsystem.getRightBack().getPower());
-            telemetry.addData("gamepad1.left_stick_y", gamepad1.left_stick_y);
-            telemetry.addData("gamepad1.left_stick_x", gamepad1.left_stick_x);
-            telemetry.addData("gamepad1.right_stick_x", gamepad1.right_stick_x);
+//            telemetry.addData("gamepad1.left_stick_y", gamepad1.left_stick_y);
+//            telemetry.addData("gamepad1.left_stick_x", gamepad1.left_stick_x);
+//            telemetry.addData("gamepad1.right_stick_x", gamepad1.right_stick_x);
+//
+            telemetry.addData("x", odo.x);
+            telemetry.addData("y", odo.y);
             telemetry.addData("theta", odo.theta);
             telemetry.update();
         }
