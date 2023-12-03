@@ -30,15 +30,16 @@ public class MultiMotorCommand {
                 }
                 break;
             case 1:
-                interval1 = new Interval(-400, 200, -600);
-                interval2 = new Interval(200, 2800, 0);
+                interval1 = new Interval(-400, 300, -1000);
+                interval2 = new Interval(300, 400, -400);
+                interval3 = new Interval(400, 2000, 0);
                 if(run) {
-                    multiMotorSubsystem.LiftCascadeProcess(247, interval1, interval2);
+                    multiMotorSubsystem.LiftCascadeProcess(493, interval1, interval2, interval3);
                 }
                 break;
             case 2:
-                interval1 = new Interval(-400, 700, -2500);
-                interval2 = new Interval(700, 1000, -2000);
+                interval1 = new Interval(-400, 700, -2000);
+                interval2 = new Interval(700, 1000, -1700);
                 interval3 = new Interval(1000, 1250, -1000);
                 interval4 = new Interval(1250, 1350+2000, 0);
                 if(run) {
@@ -46,8 +47,8 @@ public class MultiMotorCommand {
                 }
                 break;
             case 3:
-                interval1 = new Interval(-400, 1950, -2500);
-                interval2 = new Interval(1950, 2100, -2000);
+                interval1 = new Interval(-400, 1950, -2000);
+                interval2 = new Interval(1950, 2100, -1700);
                 interval3 = new Interval(2100, 2200, -1000);
                 interval4 = new Interval(2200, 3000, 0);
                 if(run) {
@@ -55,8 +56,8 @@ public class MultiMotorCommand {
                 }
                 break;
             case 4:
-                interval1 = new Interval(-400, 2700, -2500);
-                interval2 = new Interval(2700, 2800, -2000);
+                interval1 = new Interval(-400, 2700, -2000);
+                interval2 = new Interval(2700, 2800, -1700);
                 interval3 = new Interval(2800, 3000, -1000);
                 interval4 = new Interval(3000, 3400, 0);
                 if(run) {
