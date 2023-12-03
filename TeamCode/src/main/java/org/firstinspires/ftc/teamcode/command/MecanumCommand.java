@@ -28,7 +28,7 @@ public class MecanumCommand {
     private static double kpy = 0.07;
     private static double kdy = 0.0005;
     private static double kiy = 0;
-    private static double kptheta = 0.9;
+    private static double kptheta = 1;
     private static double kdtheta = 0.05;
     private static double kitheta = 0.0;
     private double ex = 0;
@@ -624,6 +624,17 @@ public class MecanumCommand {
                    -globalXController.outputPositional(targetX, odometrySubsystem.x),
                     /*-globalThetaController.outputPositional(targetTheta, odometrySubsystem.theta)*/0,
                     odometrySubsystem.theta);
+        }
+        mecanumSubsystem.stop(true);
+    }
+    public void moveRotation(double targetTheta) {
+        // stop moving if within 5 ticks or 0.2 radians from the position
+        while (Math.abs(targetTheta - odometrySubsystem.theta) > 0.1) {
+
+            mecanumSubsystem.fieldOrientedMove(
+                    0, 0,
+                    -globalThetaController.outputPositional(targetTheta, odometrySubsystem.theta),
+                    0);
         }
         mecanumSubsystem.stop(true);
     }

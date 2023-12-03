@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.drive.opmode.Tests;
+package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import android.os.Build;
 
@@ -7,35 +7,48 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.MecanumCommand;
+import org.firstinspires.ftc.teamcode.command.OutputCommand;
 import org.firstinspires.ftc.teamcode.subsystems.IMUSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 
 import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.WebcamSubsystem;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
-@Autonomous(name="coordinate testing")
-public class CoordinateTesting extends LinearOpMode {
+@Autonomous(name="Autonomous Back Red")
+public class AutonomousBackRed extends LinearOpMode {
     private MecanumSubsystem mecanumSubsystem;
     private MecanumCommand mecanumCommand;
     private IMUSubsystem imu;
     private OdometrySubsystem odometrySubsystem;
     private GyroOdometry gyroOdometry;
+    private IntakeCommand intakeCommand;
+    private WebcamSubsystem webcamSubsystem;
     FtcDashboard dashboard;
     TelemetryPacket packet;
+    private ElapsedTime timer;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
+        //contour location before 60
         imu = new IMUSubsystem(hardwareMap);
         mecanumSubsystem = new MecanumSubsystem(hardwareMap);
         odometrySubsystem = new OdometrySubsystem(hardwareMap);
         gyroOdometry = new GyroOdometry(odometrySubsystem, imu);
         mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem, gyroOdometry, this);
+        intakeCommand = new IntakeCommand(hardwareMap);
+        webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
+        timer = new ElapsedTime();
 
         mecanumCommand.turnOffInternalPID();
         imu.resetAngle();
@@ -43,6 +56,7 @@ public class CoordinateTesting extends LinearOpMode {
 
         dashboard = FtcDashboard.getInstance();
 
+        intakeCommand.raiseIntake();
         waitForStart();
         odometrySubsystem.reset();
 
@@ -50,13 +64,32 @@ public class CoordinateTesting extends LinearOpMode {
         CompletableFuture.runAsync(this::updateOdometry, executor);
         CompletableFuture.runAsync(this::updateTelemetry, executor);
 
+        double propPosition = 0;
+        timer.reset();
+        while(timer.milliseconds() < 2000) {
+            propPosition = webcamSubsystem.getXProp();
+        }
 //        sleep(8000);
-        mecanumCommand.moveRotation(Math.PI);
-//        mecanumCommand.moveToGlobalPosition(64.3, 1, 0);
-        sleep(4000);
-//        mecanumCommand.moveToGlobalPosition(100, 100, Math.PI);
-//        sleep(4000);
-//        mecanumCommand.moveToGlobalPosition(100, 100, 2*Math.PI);
+        if(propPosition < 60 && propPosition > 0){
+            //pos 2
+            mecanumCommand.moveToGlobalPosition(65, 3.5, 0);
+        }
+        else if(propPosition > 60){
+
+        }
+        else{
+            mecanumCommand.moveToGlobalPosition(43, 30, 0);
+        }
+//        mecanumCommand.moveToGlobalPosition(65, -3.5, 0);
+        sleep(3000);
+        timer.reset();
+
+        while(timer.milliseconds() < 500) {
+            intakeCommand.intakeOut(0.15);
+        }
+        intakeCommand.stopIntake();
+        mecanumCommand.moveToGlobalPosition(0, 0, 0);
+
 
     }
 
@@ -66,6 +99,7 @@ public class CoordinateTesting extends LinearOpMode {
             telemetry.addData("x", gyroOdometry.x);
             telemetry.addData("y", gyroOdometry.y);
             telemetry.addData("theta", gyroOdometry.theta);
+            telemetry.addData("xprop", webcamSubsystem.getXProp());
             telemetry.update();
         }
     }

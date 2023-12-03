@@ -116,4 +116,8 @@ public class WebcamSubsystem extends Specifications {
     public void stopCamera(){
         webcam.stopStreaming();
     }
+
+    public double getXProp(){
+        return contourPipeline.largestContourCenter().x;
+    }
 }
