@@ -78,7 +78,7 @@ public class AutonomousBackRed extends LinearOpMode {
 
         }
         else{
-            mecanumCommand.moveToGlobalPosition(43, 30, 0);
+            mecanumCommand.moveToGlobalPosition(43, 29, 0);
         }
 //        mecanumCommand.moveToGlobalPosition(65, -3.5, 0);
         sleep(3000);
