@@ -38,8 +38,12 @@ public class TimerList {
         if(timerList.containsKey(timerName)){
             return timerList.get(timerName).milliseconds() >= milliseconds;
         } else {
-            return true; //if timer hasn't been started and this has been called, assume elapsed time is liek 918273123 seconds or somethign
+            return false; //if timer hasn't been started and this has been called, assume elapsed time is none seconds or somethign
         }
+    }
+
+    public boolean checkTimerExist(String timerName){
+        return timerList.containsKey(timerName);
     }
 
 

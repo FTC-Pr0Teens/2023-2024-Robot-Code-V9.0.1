@@ -43,6 +43,10 @@ public class IntakeCommand {
         intakeRollerIn();
     }
 
+    public void slowIntakeIn(){
+        intake.motorTurnPower(true, -0.5);
+    }
+
     public void intakeOut(double power) {
         intake.motorTurnPower(true, Math.abs(power));
     }

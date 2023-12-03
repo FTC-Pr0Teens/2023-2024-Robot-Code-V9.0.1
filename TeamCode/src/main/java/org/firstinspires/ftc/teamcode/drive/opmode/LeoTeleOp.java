@@ -46,6 +46,8 @@ public class LeoTeleOp extends LinearOpMode{
         purple,
         green
     }
+    private ArrayList<PIXEL_COLOR> pixelQueue = new ArrayList<>(); // queue of pixels ready to be deposited
+
 
     //state variables
     private double rotation = 0;
@@ -57,7 +59,6 @@ public class LeoTeleOp extends LinearOpMode{
     private double autoCenterAngle = 0;
     private TimerList timers = new TimerList();
 
-    private ArrayList<PIXEL_COLOR> pixelQueue = new ArrayList<>(); // queue of pixels ready to be deposited
 
     private RevColorSensorV3 firstColorSensor;
     private RevColorSensorV3 secondColorSensor;

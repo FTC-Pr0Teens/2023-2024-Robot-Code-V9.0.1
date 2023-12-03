@@ -62,6 +62,8 @@ public class Specifications {
     public static final String PIXEL_GATE = "pixelGate";
     public static final String FIRST_COLOR_SENSOR = "pixelSensor";
     public static final String SECOND_COLOR_SENSOR = "pixelSensor2";
+    public static final String LED = "led";
+
     public enum NavSystem{
         IMU,
         ODOMETRY,

@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 
+import org.firstinspires.ftc.teamcode.util.Specifications;
+
 public class ColorSensorSubsystem {
 
     private RevBlinkinLedDriver Light;
@@ -14,8 +16,8 @@ public class ColorSensorSubsystem {
     private RevColorSensorV3 colorSensor2;
     public ColorSensorSubsystem(HardwareMap hardwareMap) {
         Light = hardwareMap.get(RevBlinkinLedDriver.class, "led");
-        colorSensor1 = hardwareMap.get(RevColorSensorV3.class, "colorSensor");
-        colorSensor2 = hardwareMap.get(RevColorSensorV3.class, "colorSensor2");
+        colorSensor1 = hardwareMap.get(RevColorSensorV3.class, Specifications.FIRST_COLOR_SENSOR);
+        colorSensor2 = hardwareMap.get(RevColorSensorV3.class, Specifications.SECOND_COLOR_SENSOR);
     }
 
     public void setColor(String color){
@@ -28,9 +30,6 @@ public class ColorSensorSubsystem {
                 break;
             case "Green":
                 setPatternGreen();
-                break;
-            case "Red":
-                setPatternRed();
                 break;
             case "White":
                 setPatternWhite();
@@ -54,9 +53,6 @@ public class ColorSensorSubsystem {
         } else if (isSignificantlyDominant(green, red, blue)) {
             setPatternGreen();
             return "Green";
-        } else if (isSignificantlyDominant(red, blue, green)) {
-            setPatternRed();
-            return "Red";
         } else if (isWhite(red, green, blue)) {
             setPatternWhite();
             return "White";
@@ -76,6 +72,8 @@ public class ColorSensorSubsystem {
 
         if (isDominant(blue, red, green)) {
             return "Lilac Purple";
+        } else if (isBlack(red, green, blue)) {
+            return "none";
         } else if (isYellow(red, green, blue)) {
             return "Yellow";
         } else if (isSignificantlyDominant(green, red, blue)) {
@@ -84,8 +82,6 @@ public class ColorSensorSubsystem {
             return "Red";
         } else if (isWhite(red, green, blue)) {
             return "White";
-        } else if (isBlack(red, green, blue)) {
-            return "none";
         } else {
             return "error";
         }
@@ -99,6 +95,8 @@ public class ColorSensorSubsystem {
 
         if (isDominant(blue, red, green)) {
             return "Lilac Purple";
+        }  else if (isBlack(red, green, blue)) {
+            return "none";
         } else if (isYellow(red, green, blue)) {
             return "Yellow";
         } else if (isSignificantlyDominant(green, red, blue)) {
@@ -107,8 +105,6 @@ public class ColorSensorSubsystem {
             return "Red";
         } else if (isWhite(red, green, blue)) {
             return "White";
-        } else if (isBlack(red, green, blue)) {
-            return "none";
         } else {
             return "error";
         }
@@ -118,11 +114,11 @@ public class ColorSensorSubsystem {
         return r > threshold && g > threshold && b > threshold;
     }
     private  boolean isBlack(int r, int g, int b) {
-        return g < 400 && b < 400 && r < 400;
+        return g < 900 && b < 700 && r < 500;
     }
     private boolean isYellow(int r, int g, int b) {
 //        return r > g && g > b && b < 100;
-        return g > r && r > b && b < 1000;
+        return g > r && r < b && b < 1000;
     }
 
     private boolean isDominant(int a, int b, int c) {
