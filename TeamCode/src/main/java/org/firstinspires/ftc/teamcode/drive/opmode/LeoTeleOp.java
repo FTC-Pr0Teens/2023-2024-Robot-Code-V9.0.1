@@ -121,6 +121,10 @@ public class LeoTeleOp extends LinearOpMode{
         secondColorSensor = hardwareMap.get(RevColorSensorV3.class, Specifications.SECOND_COLOR_SENSOR);
 
         waitForStart();
+
+        imuSubsystem.resetAngle();
+        doCentering = false;
+        gridAutoCentering.reset();
         CompletableFuture.runAsync(this::updateIMU, executor);
         CompletableFuture.runAsync(this::updateMovement, executor);
 

@@ -42,10 +42,10 @@ public class MainTeleOp extends LinearOpMode{
 
         imuSubsystem = new IMUSubsystem(hardwareMap);
 
+        mecanumSubsystem = new MecanumSubsystem(hardwareMap);
         gyroOdometry = new GyroOdometry(odometrySubsystem, imuSubsystem);
         odometrySubsystem = new OdometrySubsystem(hardwareMap);
 
-        mecanumSubsystem = new MecanumSubsystem(hardwareMap);
 //        mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem,  gyroOdometry, this);
 
 //        outputCommand = new OutputCommand(hardwareMap);
@@ -58,6 +58,8 @@ public class MainTeleOp extends LinearOpMode{
         odometrySubsystem.reset();
         imuSubsystem.resetAngle();
 
+        //TODO: Initialize
+
         waitForStart();
 
         CompletableFuture.runAsync(this::updateOdometry);
@@ -65,11 +67,13 @@ public class MainTeleOp extends LinearOpMode{
         while(opModeIsActive()){
             if(gamepad1.a){
                 timer.reset();
-                outputCommand.armToIdle();
-                outputCommand.tiltToIdle();
-                while(timer.time(TimeUnit.SECONDS) < 2){}
-                multiMotorCommand.LiftUp(true, 0);
-                while(timer.time(TimeUnit.SECONDS) < 5);
+                if(timer.milliseconds() < 2000) {
+                    outputCommand.armToIdle();
+                    outputCommand.tiltToIdle();
+                }
+                else {
+                    multiMotorCommand.LiftUp(true, 0);
+                }
             }
             else if(gamepad1.b){
                 multiMotorCommand.LiftUp(true, 3);
@@ -108,19 +112,19 @@ public class MainTeleOp extends LinearOpMode{
 
             if(gamepad1.dpad_left){
                 gridAutoCentering.offsetTargetAngle(-Math.PI/2);
-                gridAutoCentering.process(true);
+                gridAutoCentering.secondaryProcess(true);
             }
             else if(gamepad1.dpad_right){
                 gridAutoCentering.offsetTargetAngle(Math.PI/2);
-                gridAutoCentering.process(true);
+                gridAutoCentering.secondaryProcess(true);
             }
             else if(gamepad1.dpad_up){
                 gridAutoCentering.offsetTargetAngle(0);
-                gridAutoCentering.process(true);
+                gridAutoCentering.secondaryProcess(true);
             }
             else if(gamepad1.dpad_down){
                 gridAutoCentering.offsetTargetAngle(Math.PI);
-                gridAutoCentering.process(true);
+                gridAutoCentering.secondaryProcess(true);
             } else if (gamepad1.right_bumper) {
                 gridAutoCentering.reset();
             }
@@ -128,6 +132,7 @@ public class MainTeleOp extends LinearOpMode{
                 gridAutoCentering.process(false);
             }
             telemetry.addData("liftHeight", multiMotorSubsystem.getPosition());
+            telemetry.update();
         }
     }
 

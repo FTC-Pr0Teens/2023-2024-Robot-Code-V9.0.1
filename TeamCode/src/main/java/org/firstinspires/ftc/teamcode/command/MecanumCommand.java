@@ -616,13 +616,13 @@ public class MecanumCommand {
     public void moveToGlobalPosition(double targetX, double targetY, double targetTheta) {
         // stop moving if within 5 ticks or 0.2 radians from the position
         while (Math.abs(targetX - odometrySubsystem.x) > 2
-                || Math.abs(targetY - odometrySubsystem.y) > 2
-                || Math.abs(targetTheta - odometrySubsystem.theta) > 0.1) {
+                || Math.abs(targetY - odometrySubsystem.y) > 2)
+                /*|| Math.abs(targetTheta - odometrySubsystem.theta) > 0.1)*/ {
 
             mecanumSubsystem.fieldOrientedMove(
                     globalYController.outputPositional(targetY, odometrySubsystem.y),
                    -globalXController.outputPositional(targetX, odometrySubsystem.x),
-                    -globalThetaController.outputPositional(targetTheta, odometrySubsystem.theta),
+                    /*-globalThetaController.outputPositional(targetTheta, odometrySubsystem.theta)*/0,
                     odometrySubsystem.theta);
         }
         mecanumSubsystem.stop(true);

@@ -4,26 +4,29 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.OutputCommand;
 
 @Config
 @TeleOp(name="Output Test")
 public class OutputTest extends LinearOpMode {
     private OutputCommand outputCommand;
+    private IntakeCommand intakeCommand;
 
     public static double position = 0.5;
     @Override
     public void runOpMode() throws InterruptedException {
         outputCommand = new OutputCommand(hardwareMap);
+        intakeCommand = new IntakeCommand(hardwareMap);
 //        outputCommand.initialize();
         waitForStart();
 
         while(opModeIsActive()){
             if(gamepad1.a){
-                outputCommand.openGate();
+                intakeCommand.raiseIntake();
             }
             else if(gamepad1.b){
-                outputCommand.closeGate();
+                intakeCommand.lowerIntake();
             }
             else if(gamepad1.x){
                 outputCommand.armToBoard();
