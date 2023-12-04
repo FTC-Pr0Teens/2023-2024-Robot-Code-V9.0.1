@@ -65,10 +65,10 @@ public class ColorSensorSubsystem {
     }
     
     
-    public String findColor1(){
-        int red = colorSensor1.red();
-        int green = colorSensor1.green();
-        int blue = colorSensor1.blue();
+    public String findColor(int r, int g, int b){
+        int red = r;
+        int green = g;
+        int blue = b;
 
         if (isDominant(blue, red, green)) {
             return "Lilac Purple";
@@ -99,7 +99,7 @@ public class ColorSensorSubsystem {
             return "none";
         } else if (isYellow(red, green, blue)) {
             return "Yellow";
-        } else if (isSignificantlyDominant(green, red, blue)) {
+        } else if (isSignificantlyDominant(green, blue, red)) {
             return "Green";
         } else if (isSignificantlyDominant(red, blue, green)) {
             return "Red";

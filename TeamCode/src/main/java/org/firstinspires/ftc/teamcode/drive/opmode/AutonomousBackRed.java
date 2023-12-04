@@ -72,7 +72,7 @@ public class AutonomousBackRed extends LinearOpMode {
 //        sleep(8000);
         if(propPosition < 60 && propPosition > 0){
             //pos 2
-            mecanumCommand.moveToGlobalPosition(65, 3.5, 0);
+            mecanumCommand.moveToGlobalPosition(66, 10.5, 0);
         }
         else if(propPosition > 60){
 

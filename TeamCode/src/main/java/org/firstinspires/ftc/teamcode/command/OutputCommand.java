@@ -49,7 +49,7 @@ public class OutputCommand {
     }
 
     public void openGate(){
-        gate.setPosition(0.235);
+        gate.setPosition(0.245);
     }
     public void closeGate(){
         gate.setPosition(0.3);

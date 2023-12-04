@@ -20,7 +20,6 @@ import org.firstinspires.ftc.teamcode.util.TimerList;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 @TeleOp(name="Main TeleOp")
 public class MainTeleOp extends LinearOpMode{
@@ -37,9 +36,8 @@ public class MainTeleOp extends LinearOpMode{
     private GridAutoCentering gridAutoCentering;
     private OutputCommand outputCommand;
     private ColorSensorSubsystem colorSensorSubsystem;
-
-
-    private boolean left_bumper_pressed = false;
+    
+    private SensorData sensorData = new SensorData();
 
 
     private ElapsedTime timer;
@@ -49,9 +47,13 @@ public class MainTeleOp extends LinearOpMode{
     private boolean runOutput = false;
 
     private byte heightLevel = 1;
+    private byte liftTarget = 0;
 
     private boolean liftRaised = false;
+    private boolean armExtended = false;
     private MecanumCommand mecanumCommand;
+
+    boolean disableAutoLift = false;
 
     private enum RUNNING_STATE { //mini "threads" to run (is actually run in main thread, just controlled simultaneously)
         DROP_PIXEL,
@@ -96,16 +98,21 @@ public class MainTeleOp extends LinearOpMode{
         outputCommand.armToIdle();
         outputCommand.tiltToIdle();
 
+        disableAutoLift = false;
+
+
         //TODO: Initialize
 
         waitForStart();
 
         CompletableFuture.runAsync(this::updateOdometry);
-
+        CompletableFuture.runAsync(this::updateLift);
+        CompletableFuture.runAsync(this.sensorData::updateColor);
         while(opModeIsActive()){
 
             //Bring down
             runOutput();
+
 
             if(gamepad1.right_trigger > 0.5 && liftRaised){
                 if(!runningState.contains(RUNNING_STATE.DROP_PIXEL)) { //runs once
@@ -114,42 +121,54 @@ public class MainTeleOp extends LinearOpMode{
                 }
             }
 
-            if(gamepad1.x) heightLevel = 1;
-            if(gamepad1.a) heightLevel = 2;
-            if(gamepad2.b) heightLevel = 3;
-
             if(gamepad1.left_trigger > 0.5){
                 if(!runningState.contains(RUNNING_STATE.RAISE_LIFT) && !runningState.contains(RUNNING_STATE.LOWER_LIFT)) { //runs once
                     pixelQueue.clear();
 
-                    if(!colorSensorSubsystem.findColor2().equals("none")){
-                        pixelQueue.add(colorSensorSubsystem.findColor1());
+                    if(!sensorData.findColor1().equals("none")){
+                        pixelQueue.add(sensorData.findColor1());
                     }
-                    if(!colorSensorSubsystem.findColor2().equals("none")){
-                        pixelQueue.add(colorSensorSubsystem.findColor2());
+                    if(!sensorData.findColor2().equals("none")){
+                        pixelQueue.add(sensorData.findColor2());
                     }
 
                     timers.resetTimer("raiseLift");
                     runningState.add(RUNNING_STATE.RAISE_LIFT);
-                    multiMotorCommand.LiftUp(true, heightLevel);
+                    liftTarget = heightLevel;
 
                     //lock in color sensor
 
                 }
             }
 
+            if(gamepad1.x){
+                disableAutoLift = true;
+            } if(gamepad1.right_stick_button){
+                disableAutoLift = false;
+            };
+
             if(!liftRaised){
-                colorSensorSubsystem.setColor(colorSensorSubsystem.findColor1());
+                sensorData.setColor(sensorData.findColor1());
             }
 
+            if(sensorData.contains1() && sensorData.contains2()){
+                intakeCommand.intakeRollerOut(0.1);
+            }
 
+            if(gamepad1.dpad_left){
+                heightLevel = 1;
+            } else if(gamepad1.dpad_down){
+                heightLevel = 2;
+            } else if(gamepad1.dpad_right){
+                heightLevel = 3;
+            }
 
-
-            if(liftRaised && gamepad1.left_trigger > 0.5){
+            if(gamepad1.b){
                 if(!runningState.contains(RUNNING_STATE.LOWER_LIFT)){
+                    armExtended = false;
                     runningState.add(RUNNING_STATE.LOWER_LIFT);
                     timers.resetTimer("lowerLift");
-                    multiMotorCommand.LiftUp(true, 1);
+                    liftTarget = 1;
                 }
             }
 
@@ -193,30 +212,25 @@ public class MainTeleOp extends LinearOpMode{
 //            }
 
 //            mecanumCommand.moveGlobalPartial(true, -gamepad1.left_stick_y, gamepad1.left_stick_x, -gamepad1.right_stick_x * 0.5);
-            mecanumSubsystem.fieldOrientedMove(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x, imuSubsystem.getTheta());
+            mecanumSubsystem.fieldOrientedMove((runningState.contains(RUNNING_STATE.RAISE_LIFT) ? -0.7* gamepad1.left_stick_x : -gamepad1.left_stick_x), (runningState.contains(RUNNING_STATE.RAISE_LIFT) ? 0.7*gamepad1.left_stick_y : gamepad1.left_stick_y), -gamepad1.right_stick_x, Math.PI);
+
+
             if(gamepad1.left_bumper){
-                intakeCommand.intakeIn(0.2);
-
-                if(!left_bumper_pressed){
-                    left_bumper_pressed = true;
-                    if(runningState.contains(RUNNING_STATE.LOWER_LIFT)){
-                        multiMotorCommand.LiftUp(true, 0);
-                    }
-                }
-
+                intakeCommand.intakeIn(0.6);
             }
             else if(gamepad1.right_bumper){
-                left_bumper_pressed = false;
-                intakeCommand.intakeOut(0.6);
+                intakeCommand.intakeOut(0.7);
             }
             else{
-                left_bumper_pressed = false;
                 intakeCommand.stopIntake();
             }
 
-            if(gamepad1.dpad_up){
-                odometrySubsystem.reset();
-                imuSubsystem.resetAngle();
+            if(gamepad1.a){
+                multiMotorSubsystem.moveLift(-0.7);
+            } else if(gamepad1.y){
+                multiMotorSubsystem.moveLift(0.7);
+            } else {
+                multiMotorSubsystem.moveLift(0);
             }
 //
 //            if(gamepad1.x){
@@ -240,19 +254,20 @@ public class MainTeleOp extends LinearOpMode{
 
             telemetry.addData("liftHeight", multiMotorSubsystem.getPosition());
             telemetry.addData("currentLevel", multiMotorCommand.getLevel());
-            telemetry.addData("setLevel", 1);
+            telemetry.addData("READ THIS: SETLEVEL", heightLevel);
             telemetry.addData("hashset", runningState);
             telemetry.addData("pixels", pixelQueue);
 
-            telemetry.addData("red1", colorSensorSubsystem.getRed1());
-            telemetry.addData("green1", colorSensorSubsystem.getGreen1());
-            telemetry.addData("blue1", colorSensorSubsystem.getBlue1());
-            telemetry.addData("red2", colorSensorSubsystem.getRed2());
-            telemetry.addData("green2", colorSensorSubsystem.getGreen2());
-            telemetry.addData("blue2", colorSensorSubsystem.getBlue2());
-            telemetry.addData("detected1", colorSensorSubsystem.findColor1());
-            telemetry.addData("detected2", colorSensorSubsystem.findColor2());
+            telemetry.addData("red1", sensorData.red1);
+            telemetry.addData("green1", sensorData.green1);
+            telemetry.addData("blue1", sensorData.blue1);
+            telemetry.addData("red2", sensorData.red2);
+            telemetry.addData("green2", sensorData.green2);
+            telemetry.addData("blue2", sensorData.blue2);
+            telemetry.addData("detected1", sensorData.findColor1());
+            telemetry.addData("detected2", sensorData.findColor2());
             telemetry.addData("liftRaised", liftRaised);
+            telemetry.addData("targetHeight", liftTarget);
             telemetry.update();
         }
     }
@@ -275,14 +290,14 @@ public class MainTeleOp extends LinearOpMode{
                 colorSensorSubsystem.setColor("none");
             }
 
-            if (timerTime > 400) { //yes, order matters. Higher first
+            if (timerTime > 700) { //yes, order matters. Higher first
                 outputCommand.outputWheelStop();
 
                 //now that its done is done, remove dropPixel as a running process
+                if(pixelQueue.size() != 0) pixelQueue.remove(0);
                 runningState.remove(RUNNING_STATE.DROP_PIXEL);
-                pixelQueue.remove(0);
 
-            } else if (timers.checkTimePassed("dropPixel", 200)) {
+            } else if (timers.checkTimePassed("dropPixel", 250)) {
                 outputCommand.closeGate();
                 outputCommand.outputWheelIn();
             } else {
@@ -290,27 +305,42 @@ public class MainTeleOp extends LinearOpMode{
             }
         }
 
+
         if (runningState.contains(RUNNING_STATE.LOWER_LIFT)) {
-            if (timers.checkTimePassed("lowerLift", 2500)) {
-                if (timers.checkTimePassed("lowerLift", 2500)) {
+            if (timers.checkTimePassed("lowerLift", 2200)) {
+                liftTarget = 0;
+                if (timers.checkTimePassed("lowerLift", 2800)) {
                     liftRaised = false;
                     runningState.remove(RUNNING_STATE.LOWER_LIFT); //if at bottom, cancel lowerlift
                 }
             } else {
                 outputCommand.armToIdle();
                 outputCommand.tiltToIdle();
+                liftTarget = 1;
             }
         }
 
         if (runningState.contains(RUNNING_STATE.RAISE_LIFT)) {
-
+            outputCommand.outputWheelIn();
             outputCommand.armToBoard();
             outputCommand.tiltToBoard();
+            armExtended = true;
+
+            if(!sensorData.contains2() || (sensorData.contains2() && !sensorData.contains1())) intakeCommand.intakeOut(0.1);
 
             if (timers.checkTimePassed("raiseLift",2000)) {
                 runningState.remove(RUNNING_STATE.RAISE_LIFT);
                 liftRaised = true;
+
             }
+        }
+
+        if (gamepad1.start) {
+
+            runningState.add(RUNNING_STATE.LOWER_LIFT);
+            liftRaised = false;
+            armExtended = false;
+
         }
 
 
@@ -342,5 +372,54 @@ public class MainTeleOp extends LinearOpMode{
 //                outputCommand.outputWheelOut();
 //                while(timer.time(TimeUnit.MILLISECONDS) < 100){}
 //            }
+    }
+
+    private void updateLift(){
+        while(opModeIsActive()){
+
+            multiMotorCommand.LiftUp(!disableAutoLift, liftTarget);
+//            gridAutoCentering.secondaryProcess(true);
+        }
+    }
+    
+    private class SensorData {
+        public void updateColor(){
+            timers.resetTimer("colorLoop");
+            while(opModeIsActive()){
+                if(timers.checkTimePassed("colorLoop", 250)){
+                    timers.resetTimer("colorLoop");
+                    red1 = colorSensorSubsystem.getRed1();
+                    green1 = colorSensorSubsystem.getGreen1();
+                    blue1 = colorSensorSubsystem.getBlue1();
+                    red2 = colorSensorSubsystem.getRed2();
+                    green2 = colorSensorSubsystem.getGreen2();
+                    blue2 = colorSensorSubsystem.getBlue2();
+                }
+            }
+        }
+        
+        public int red1 = 0;
+        public int green1 = 0;
+        public int blue1 = 0;
+
+        public int red2 = 0;
+        public int green2 = 0;
+        public int blue2 = 0;
+        public void setColor(String color){
+            colorSensorSubsystem.setColor(color);
+        }
+        public boolean contains1(){
+            return !colorSensorSubsystem.findColor(red1, green1, blue1).equals("none");
+        }
+        public boolean contains2(){
+            return !colorSensorSubsystem.findColor(red1, green1, blue1).equals("none");
+        }
+
+        public String findColor1(){
+            return colorSensorSubsystem.findColor(red1,green1, blue1);
+        }
+        public String findColor2(){
+            return colorSensorSubsystem.findColor(red2,green2, blue2);
+        }
     }
 }

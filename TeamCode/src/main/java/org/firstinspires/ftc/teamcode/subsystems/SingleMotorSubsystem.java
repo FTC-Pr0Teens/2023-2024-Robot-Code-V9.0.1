@@ -74,6 +74,14 @@ public class SingleMotorSubsystem extends Specifications {
         }
     }
 
+    //purely power, no encoder
+    public void motorTurnPurePower(boolean run, double power){
+        if (run){
+            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            motor.setPower(power);
+        }
+    }
+
     public void motorTurnVelocity(boolean run, double velocity){
         if (run){
             motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
