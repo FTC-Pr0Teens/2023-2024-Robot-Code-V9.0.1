@@ -1,11 +1,8 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import android.graphics.Color;
-
-import com.qualcomm.hardware.rev.RevColorSensorV3;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.util.Specifications;
 
@@ -63,20 +60,19 @@ public class ColorSensorSubsystem {
             return "error";
         }
     }
-    
-    
-    public String findColor(int r, int g, int b){
-        int red = r;
-        int green = g;
-        int blue = b;
 
+    public String findColor1(){
+        int red = colorSensor1.red();
+        int green = colorSensor1.green();
+        int blue = colorSensor1.blue();
+        
         if (isDominant(blue, red, green)) {
             return "Lilac Purple";
         } else if (isBlack(red, green, blue)) {
             return "none";
         } else if (isYellow(red, green, blue)) {
             return "Yellow";
-        } else if (isSignificantlyDominant(green, red, blue)) {
+        } else if (isDominant(green, red, blue)) {
             return "Green";
         } else if (isSignificantlyDominant(red, blue, green)) {
             return "Red";
@@ -99,7 +95,7 @@ public class ColorSensorSubsystem {
             return "none";
         } else if (isYellow(red, green, blue)) {
             return "Yellow";
-        } else if (isSignificantlyDominant(green, blue, red)) {
+        } else if (isGreen(green, red, blue)) {
             return "Green";
         } else if (isSignificantlyDominant(red, blue, green)) {
             return "Red";
@@ -120,8 +116,11 @@ public class ColorSensorSubsystem {
 //        return r > g && g > b && b < 100;
         return g > r && r < b && b < 1000;
     }
+    private boolean isGreen(int r, int g, int b) {
+        return g > r && g > b && g > 2000;
 
-    private boolean isDominant(int a, int b, int c) {
+    }
+     private boolean isDominant(int a, int b, int c) {
         return a > b && a > c;
     }
 
