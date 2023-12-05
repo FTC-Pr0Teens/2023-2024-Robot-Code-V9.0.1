@@ -57,7 +57,7 @@ public class OdometrySubsystem extends Specifications {
         rEncoderf = rightEncoder();
         bEncoderf = backEncoder();
         dx = dxc*((lEncoderf-lEncoderi)+(rEncoderf-rEncoderi));
-        dTheta = dThetac*((rEncoderf-rEncoderi)-(lEncoderf-lEncoderi)); //unit circle direction
+        dTheta = -dThetac*((rEncoderf-rEncoderi)-(lEncoderf-lEncoderi)); //unit circle direction
         dy = (dyc*(bEncoderf-bEncoderi))+(lengthFromOdometrySideToFront*dTheta);
         //ThetaTemp = 0.96388888888*Theta+(dTheta/2);
 //        x = x+(dx*Math.cos(Theta))-(dy*Math.sin(Theta));
@@ -75,7 +75,7 @@ public class OdometrySubsystem extends Specifications {
         theta += dTheta/*1.03746397695*/;
         if (theta > twoPi){
             theta -= twoPi;
-        } else if (theta < 0){
+        } else if (theta < -twoPi){
             theta += twoPi;
         }
         rEncoderi = rEncoderf;

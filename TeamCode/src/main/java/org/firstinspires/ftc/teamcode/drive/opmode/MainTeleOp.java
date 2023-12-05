@@ -409,17 +409,21 @@ public class MainTeleOp extends LinearOpMode{
             colorSensorSubsystem.setColor(color);
         }
         public boolean contains1(){
-            return !colorSensorSubsystem.findColor(red1, green1, blue1).equals("none");
+//            return !colorSensorSubsystem.findColor(red1, green1, blue1).equals("none");
+            return false;
         }
         public boolean contains2(){
-            return !colorSensorSubsystem.findColor(red1, green1, blue1).equals("none");
+//            return !colorSensorSubsystem.findColor(red1, green1, blue1).equals("none");
+            return false;
         }
 
         public String findColor1(){
-            return colorSensorSubsystem.findColor(red1,green1, blue1);
+//            return colorSensorSubsystem.findColor(red1,green1, blue1);
+            return "false";
         }
         public String findColor2(){
-            return colorSensorSubsystem.findColor(red2,green2, blue2);
+//            return colorSensorSubsystem.findColor(red2,green2, blue2);
+            return "false";
         }
     }
 }

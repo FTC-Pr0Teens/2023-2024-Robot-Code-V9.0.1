@@ -51,8 +51,8 @@ public class CoordinateTesting extends LinearOpMode {
         CompletableFuture.runAsync(this::updateTelemetry, executor);
 
 //        sleep(8000);
-        mecanumCommand.moveRotation(Math.PI);
-//        mecanumCommand.moveToGlobalPosition(64.3, 1, 0);
+//        mecanumCommand.moveRotation(Math.PI);
+        mecanumCommand.moveToGlobalPosition(0, 0, Math.PI);
         sleep(4000);
 //        mecanumCommand.moveToGlobalPosition(100, 100, Math.PI);
 //        sleep(4000);
@@ -63,10 +63,7 @@ public class CoordinateTesting extends LinearOpMode {
     public void updateOdometry() {
         while (opModeIsActive()) {
             gyroOdometry.odometryProcess();
-            telemetry.addData("x", gyroOdometry.x);
-            telemetry.addData("y", gyroOdometry.y);
             telemetry.addData("theta", gyroOdometry.theta);
-            telemetry.update();
         }
     }
 

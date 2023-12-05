@@ -16,12 +16,14 @@ public class MecanumTest extends LinearOpMode {
     private MecanumSubsystem mecanumSubsystem;
     private IMUSubsystem imu;
     private OdometrySubsystem odo;
+    private GyroOdometry gyroOdometry;
     @Override
     public void runOpMode() throws InterruptedException {
 
         mecanumSubsystem = new MecanumSubsystem(hardwareMap);
         imu = new IMUSubsystem(hardwareMap);
         odo = new OdometrySubsystem(hardwareMap);
+        gyroOdometry = new GyroOdometry(odo, imu);
 
 //        drive = new MecanumCommand(mecanumSubsystem, odo, new GyroOdometry(null, null), this);
 
@@ -45,15 +47,18 @@ public class MecanumTest extends LinearOpMode {
             telemetry.addData("gamepad1.left_stick_x", gamepad1.left_stick_x);
             telemetry.addData("gamepad1.right_stick_x", gamepad1.right_stick_x);
 //
-            telemetry.addData("x", odo.x);
-            telemetry.addData("y", odo.y);
-            telemetry.addData("theta", odo.theta);
+            telemetry.addData("x", gyroOdometry.x);
+            telemetry.addData("y", gyroOdometry.y);
+            telemetry.addData("theta", imu.Theta);
+            telemetry.addData("theta2", imu.getTheta());
+            telemetry.addData("gyrotheta", gyroOdometry.theta);
             telemetry.update();
         }
     }
     public void runOdometry(){
         while(opModeIsActive()){
-            odo.process();
+//            imu.gyroProcess();
+            gyroOdometry.odometryProcess();
         }
     }
 }

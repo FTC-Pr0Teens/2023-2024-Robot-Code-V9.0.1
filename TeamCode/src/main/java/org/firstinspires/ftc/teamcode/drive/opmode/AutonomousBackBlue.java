@@ -72,13 +72,13 @@ public class AutonomousBackBlue extends LinearOpMode {
 //        sleep(8000);
         if(propPosition < 60 && propPosition > 0){
             //pos 2
-            mecanumCommand.moveToGlobalPosition(68.5, -3.5, 0);
+            mecanumCommand.moveToGlobalPosition(66, -9.5, 0);
         }
         else if(propPosition > 60){
-            mecanumCommand.moveToGlobalPosition(34, -39.5, 0);
+            mecanumCommand.moveToGlobalPosition(55, 15, 0);
         }
         else{
-
+            mecanumCommand.moveToGlobalPosition(62, -15, -1.5);
         }
 //        mecanumCommand.moveToGlobalPosition(65, -3.5, 0);
         sleep(3000);
