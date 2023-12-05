@@ -15,6 +15,10 @@ import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
 import org.firstinspires.ftc.teamcode.util.GridAutoCentering;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 public class COTeleOp extends LinearOpMode {
     private MultiMotorSubsystem multiMotorSubsystem;
     private MultiMotorCommand multiMotorCommand;
@@ -73,6 +77,10 @@ public class COTeleOp extends LinearOpMode {
         int pixelCounter = 0;
 
 //        disableAutoLift = false;
+
+        Executor executor = Executors.newFixedThreadPool(4);
+        CompletableFuture.runAsync(this::LiftProcess, executor);
+        CompletableFuture.runAsync(this::odometryProcess, executor);
 
 
         waitForStart();
@@ -156,6 +164,7 @@ public class COTeleOp extends LinearOpMode {
             else{
                 intakeCommand.stopIntake();
             }
+            updateTelemetry();
         }
 
     }
@@ -167,6 +176,21 @@ public class COTeleOp extends LinearOpMode {
             }
         }
     }
+
+    public void odometryProcess(){
+        while(opModeIsActive()){
+            gyroOdometry.odometryProcess();
+        }
+    }
+    public void updateTelemetry(){
+        telemetry.addData("x", gyroOdometry.x);
+        telemetry.addData("y", gyroOdometry.y);
+        telemetry.addData("theta", gyroOdometry.theta);
+        telemetry.addData("lift level", level);
+        telemetry.addData("lift state", state);
+        telemetry.update();
+    }
+
     public void dropPixel(){
         //TODO: put code to drop and close
     }
