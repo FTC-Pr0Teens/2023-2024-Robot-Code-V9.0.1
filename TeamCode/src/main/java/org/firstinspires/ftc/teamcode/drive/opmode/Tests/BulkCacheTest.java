@@ -2,12 +2,14 @@ package org.firstinspires.ftc.teamcode.drive.opmode.Tests;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
 import org.firstinspires.ftc.teamcode.util.ExpandedHardware;
 import org.firstinspires.ftc.teamcode.util.TimerList;
 
+@TeleOp(name = "balls")
 public class BulkCacheTest extends LinearOpMode {
     ExpandedHardware eh = new ExpandedHardware(hardwareMap);
 
@@ -19,7 +21,7 @@ public class BulkCacheTest extends LinearOpMode {
     // In addition,
     //call the function that gets movement positions and see if that's accurate as well.
     // Before you do this second step, plug the most important odometry encoders into port 0 and port 3 of the control hub.
-    // 
+    //
     boolean enableCache = false;
 
     @Override
