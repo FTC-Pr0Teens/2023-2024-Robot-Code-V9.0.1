@@ -113,25 +113,25 @@ public class COTeleOp extends LinearOpMode {
 
             //when lift is raised
             if (state == RUNNING_STATE.RAISE_LIFT) {
-                //TODO: raise and align tilt + arm
                 outputCommand.armToBoard();
                 outputCommand.tiltToBoard();
                 //change state
                 if(gamepad2.right_bumper){
                     //drop pixel (one)
-                    pixelCounter += 1;
-                    dropPixel();
+                    pixelTimer.reset();
                     state = RUNNING_STATE.DROP;
                 }
             }
 
             if(state == RUNNING_STATE.DROP){
+                dropPixel();
                 if(gamepad2.right_bumper){
                     //drop second pixel
-                    dropPixel();
+                    pixelTimer.reset();
                     pixelCounter += 1;
+
                 }
-                else if(gamepad2.b && pixelCounter >= 2){
+                else if(gamepad2.b && pixelCounter >= 1){
                     //retract
                     liftTimer.reset();
                     state = RUNNING_STATE.RETRACT_LIFT;
@@ -154,21 +154,23 @@ public class COTeleOp extends LinearOpMode {
             //emergency lift controls
             if(Math.abs(gamepad2.left_stick_y) > 0.8){
                 state = RUNNING_STATE.LIFT_STOP;
-                multiMotorSubsystem.moveLift(gamepad2.right_stick_y);
+                multiMotorSubsystem.moveLift(-gamepad2.right_stick_y);
             }
             if(gamepad2.x){
-                level = 1;
+                level = 2;
+                liftTimer.reset();
                 state = RUNNING_STATE.RETRACT_LIFT;
             }
             else if(gamepad2.y){
                 //reset the lift condition after manually reaching the bottom
                 state = RUNNING_STATE.LIFT_STOP;
-                multiMotorSubsystem.reset(); 
+                multiMotorSubsystem.reset();
+                level = 0;
             }
 
             //intake
             if(gamepad2.right_trigger > 0.5){
-                intakeCommand.intakeIn(0.7);
+                intakeCommand.intakeIn(1);
             }
             else if(gamepad2.left_trigger > 0.5){
                 intakeCommand.intakeOut(0.7);
@@ -208,10 +210,8 @@ public class COTeleOp extends LinearOpMode {
 
     public void dropPixel(){
 
-        pixelTimer.reset();
-
         outputCommand.outputWheelStop();
-        while(pixelTimer.milliseconds() < 700) {
+        if(pixelTimer.milliseconds() < 700) {
             if (pixelTimer.milliseconds() >= 250) {
                 outputCommand.closeGate();
                 outputCommand.outputWheelIn();
@@ -219,5 +219,6 @@ public class COTeleOp extends LinearOpMode {
                 outputCommand.openGate();
             }
         }
+
     }
 }

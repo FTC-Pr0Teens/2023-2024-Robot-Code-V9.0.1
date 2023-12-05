@@ -60,7 +60,7 @@ public class AutonomousBackRed extends LinearOpMode {
         waitForStart();
         odometrySubsystem.reset();
 
-        Executor executor = Executors.newFixedThreadPool(4);
+        Executor executor = Executors.newFixedThreadPool(6);
         CompletableFuture.runAsync(this::updateOdometry, executor);
         CompletableFuture.runAsync(this::updateTelemetry, executor);
 
@@ -72,15 +72,16 @@ public class AutonomousBackRed extends LinearOpMode {
 //        sleep(8000);
         if(propPosition < 60 && propPosition > 0){
             //pos 2
-            mecanumCommand.moveToGlobalPosition(66, 10.5, 0);
+            mecanumCommand.moveToGlobalPosition(66, -9.5, 0);
         }
         else if(propPosition > 60){
-
+            mecanumCommand.moveToGlobalPosition(62, 0, -1.5);
+            sleep(2000);
+            mecanumCommand.moveToGlobalPosition(62, -15, -1.5);
         }
         else{
-            mecanumCommand.moveToGlobalPosition(43, 29, 0);
+            mecanumCommand.moveToGlobalPosition(55, 15, 0);
         }
-//        mecanumCommand.moveToGlobalPosition(65, -3.5, 0);
         sleep(3000);
         timer.reset();
 
@@ -96,23 +97,20 @@ public class AutonomousBackRed extends LinearOpMode {
     public void updateOdometry() {
         while (opModeIsActive()) {
             gyroOdometry.odometryProcess();
-            telemetry.addData("x", gyroOdometry.x);
-            telemetry.addData("y", gyroOdometry.y);
-            telemetry.addData("theta", gyroOdometry.theta);
-            telemetry.addData("xprop", webcamSubsystem.getXProp());
-            telemetry.update();
         }
     }
 
     public void updateTelemetry() {
         while (opModeIsActive()) {
-            packet.put("x", gyroOdometry.x);
-            packet.put("y", gyroOdometry.y);
+            dashboard.sendTelemetryPacket(packet);
             telemetry.addData("x", gyroOdometry.x);
             telemetry.addData("y", gyroOdometry.y);
+            telemetry.addData("theta", gyroOdometry.theta);
+            telemetry.addData("xprop", webcamSubsystem.getXProp());
             packet.put("x", gyroOdometry.x);
             packet.put("y", gyroOdometry.y);
-            dashboard.sendTelemetryPacket(packet);
+            packet.put("theta", gyroOdometry.theta);
+            packet.put("xprop", webcamSubsystem.getXProp());
             telemetry.update();
         }
     }
