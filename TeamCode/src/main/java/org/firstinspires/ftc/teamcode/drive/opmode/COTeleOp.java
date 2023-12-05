@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.command.IntakeCommand;
@@ -19,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+@TeleOp
 public class COTeleOp extends LinearOpMode {
     private MultiMotorSubsystem multiMotorSubsystem;
     private MultiMotorCommand multiMotorCommand;
@@ -32,8 +34,9 @@ public class COTeleOp extends LinearOpMode {
     private GridAutoCentering gridAutoCentering;
     private OutputCommand outputCommand;
     private ColorSensorSubsystem colorSensorSubsystem;
-    private ElapsedTime timer;
+    private ElapsedTime pixelTimer, liftTimer;
     private int level = -1;
+    private int pixelCounter;
 
     private enum RUNNING_STATE {
         LIFT_STOP,
@@ -64,7 +67,8 @@ public class COTeleOp extends LinearOpMode {
 
         colorSensorSubsystem = new ColorSensorSubsystem(hardwareMap);
 
-        timer = new ElapsedTime();
+        pixelTimer = new ElapsedTime();
+        liftTimer = new ElapsedTime();
 
         odometrySubsystem.reset();
         imuSubsystem.resetAngle();
@@ -74,16 +78,15 @@ public class COTeleOp extends LinearOpMode {
 
         outputCommand.armToIdle();
         outputCommand.tiltToIdle();
-        int pixelCounter = 0;
+        pixelCounter = 0;
 
 //        disableAutoLift = false;
 
-        Executor executor = Executors.newFixedThreadPool(4);
+        waitForStart();
+
+        Executor executor = Executors.newFixedThreadPool(7);
         CompletableFuture.runAsync(this::LiftProcess, executor);
         CompletableFuture.runAsync(this::odometryProcess, executor);
-
-
-        waitForStart();
 
         //emergency lift change for owen
 
@@ -111,28 +114,37 @@ public class COTeleOp extends LinearOpMode {
             //when lift is raised
             if (state == RUNNING_STATE.RAISE_LIFT) {
                 //TODO: raise and align tilt + arm
-                //drop pixel when button is pressed
+                outputCommand.armToBoard();
+                outputCommand.tiltToBoard();
+                //change state
                 if(gamepad2.right_bumper){
                     //drop pixel (one)
+                    pixelCounter += 1;
+                    dropPixel();
                     state = RUNNING_STATE.DROP;
                 }
             }
 
             if(state == RUNNING_STATE.DROP){
-                if(gamepad2.left_bumper){
+                if(gamepad2.right_bumper){
                     //drop second pixel
                     dropPixel();
                     pixelCounter += 1;
                 }
                 else if(gamepad2.b && pixelCounter >= 2){
                     //retract
+                    liftTimer.reset();
                     state = RUNNING_STATE.RETRACT_LIFT;
                 }
             }
 
-            if(state == RUNNING_STATE.RETRACT_LIFT && (gamepad2.dpad_down || gamepad1.dpad_down)){
-                level = 0;
-                if(multiMotorSubsystem.getPosition() < 35){
+            if(state == RUNNING_STATE.RETRACT_LIFT){
+                outputCommand.tiltToIdle();
+                outputCommand.armToIdle();
+                if(liftTimer.milliseconds() > 2000){
+                    level = 0;
+                }
+                if(multiMotorSubsystem.getPosition() < 18){
                     pixelCounter = 0;
                     state = RUNNING_STATE.LIFT_STOP;
                 }
@@ -140,18 +152,18 @@ public class COTeleOp extends LinearOpMode {
 
 
             //emergency lift controls
-            if(Math.abs(gamepad2.left_stick_y) > 0.4){
+            if(Math.abs(gamepad2.left_stick_y) > 0.8){
                 state = RUNNING_STATE.LIFT_STOP;
-                multiMotorSubsystem.moveLift(gamepad2.left_stick_y);
+                multiMotorSubsystem.moveLift(gamepad2.right_stick_y);
             }
             if(gamepad2.x){
+                level = 1;
                 state = RUNNING_STATE.RETRACT_LIFT;
             }
             else if(gamepad2.y){
                 //reset the lift condition after manually reaching the bottom
                 state = RUNNING_STATE.LIFT_STOP;
-                multiMotorSubsystem.reset();
-                //TODO: add conditions for changing tilt and arm before resetting lift
+                multiMotorSubsystem.reset(); 
             }
 
             //intake
@@ -172,7 +184,7 @@ public class COTeleOp extends LinearOpMode {
     public void LiftProcess(){
         while(opModeIsActive()){
             if(state != RUNNING_STATE.LIFT_STOP) {
-                multiMotorCommand.LiftUp(true, level);
+                multiMotorCommand.LiftUp(true,level);
             }
         }
     }
@@ -188,10 +200,24 @@ public class COTeleOp extends LinearOpMode {
         telemetry.addData("theta", gyroOdometry.theta);
         telemetry.addData("lift level", level);
         telemetry.addData("lift state", state);
+        telemetry.addData("pixelnumber", pixelCounter);
+        telemetry.addData("pixeltimer time", pixelTimer.milliseconds());
+        telemetry.addData("liftTimer time", liftTimer.milliseconds());
         telemetry.update();
     }
 
     public void dropPixel(){
-        //TODO: put code to drop and close
+
+        pixelTimer.reset();
+
+        outputCommand.outputWheelStop();
+        while(pixelTimer.milliseconds() < 700) {
+            if (pixelTimer.milliseconds() >= 250) {
+                outputCommand.closeGate();
+                outputCommand.outputWheelIn();
+            } else {
+                outputCommand.openGate();
+            }
+        }
     }
 }

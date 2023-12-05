@@ -59,9 +59,9 @@ public class DualMotorPowerTest extends LinearOpMode {
                 level = 0;
                 targetPosition = 0;
             }
-            else {
-                multiMotorSubsystem.moveLift(gamepad1.left_stick_y);
-            }
+//            else {
+//                multiMotorSubsystem.moveLift(gamepad1.left_stick_y);
+//            }
             mecanumSubsystem.fieldOrientedMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, 0);
 
             packet.put("position", multiMotorSubsystem.getPosition());

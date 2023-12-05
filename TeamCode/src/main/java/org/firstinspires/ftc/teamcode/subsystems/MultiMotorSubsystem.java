@@ -59,7 +59,7 @@ public class MultiMotorSubsystem extends Specifications {
     private LUT<Integer, Double> lut = new LUT<>();
 
     private PIDCore cascadePID;
-    private double cascadeKp = (double) 1/1000;
+    private double cascadeKp = (double) 1/750;
     private double cascadeKi = 0;
     private double cascadeKd = 0.0;
     private double cascadeKpVel = (double) 1/2000;

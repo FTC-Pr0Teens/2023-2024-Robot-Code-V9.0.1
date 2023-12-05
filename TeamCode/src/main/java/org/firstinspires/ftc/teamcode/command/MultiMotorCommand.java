@@ -23,8 +23,8 @@ public class MultiMotorCommand {
             case 0:
                 interval1 = new Interval(1000, 3400, 2000);
                 interval2 = new Interval(500, 1000, 1500);
-                interval3 = new Interval(30, 500, 500);
-                interval4 = new Interval(-400, 30, 0);
+                interval3 = new Interval(18, 500, 500);
+                interval4 = new Interval(-400, 18, 0);
                 if(run) {
                     multiMotorSubsystem.LiftCascadeProcess(0, interval1, interval2, interval3, interval4);
                 }
