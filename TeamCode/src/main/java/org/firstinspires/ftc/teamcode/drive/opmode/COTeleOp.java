@@ -70,6 +70,7 @@ public class COTeleOp extends LinearOpMode {
 
         outputCommand.armToIdle();
         outputCommand.tiltToIdle();
+        int pixelCounter = 0;
 
 //        disableAutoLift = false;
 
@@ -105,7 +106,6 @@ public class COTeleOp extends LinearOpMode {
                 //drop pixel when button is pressed
                 if(gamepad2.right_bumper){
                     //drop pixel (one)
-                    dropPixel();
                     state = RUNNING_STATE.DROP;
                 }
             }
@@ -114,10 +114,10 @@ public class COTeleOp extends LinearOpMode {
                 if(gamepad2.left_bumper){
                     //drop second pixel
                     dropPixel();
-                    state = RUNNING_STATE.RETRACT_LIFT;
+                    pixelCounter += 1;
                 }
-                else if(gamepad2.b){
-                    //just retract no drop
+                else if(gamepad2.b && pixelCounter >= 2){
+                    //retract
                     state = RUNNING_STATE.RETRACT_LIFT;
                 }
             }
@@ -125,6 +125,7 @@ public class COTeleOp extends LinearOpMode {
             if(state == RUNNING_STATE.RETRACT_LIFT && (gamepad2.dpad_down || gamepad1.dpad_down)){
                 level = 0;
                 if(multiMotorSubsystem.getPosition() < 35){
+                    pixelCounter = 0;
                     state = RUNNING_STATE.LIFT_STOP;
                 }
             }
@@ -135,8 +136,14 @@ public class COTeleOp extends LinearOpMode {
                 state = RUNNING_STATE.LIFT_STOP;
                 multiMotorSubsystem.moveLift(gamepad2.left_stick_y);
             }
-            if(gamepad2.a){
+            if(gamepad2.x){
                 state = RUNNING_STATE.RETRACT_LIFT;
+            }
+            else if(gamepad2.y){
+                //reset the lift condition after manually reaching the bottom
+                state = RUNNING_STATE.LIFT_STOP;
+                multiMotorSubsystem.reset();
+                //TODO: add conditions for changing tilt and arm before resetting lift
             }
 
             //intake
@@ -161,6 +168,6 @@ public class COTeleOp extends LinearOpMode {
         }
     }
     public void dropPixel(){
-        //TODO: put code
+        //TODO: put code to drop and close
     }
 }
