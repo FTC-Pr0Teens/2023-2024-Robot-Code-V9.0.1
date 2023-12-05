@@ -116,6 +116,10 @@ public class COTeleOp extends LinearOpMode {
                     dropPixel();
                     state = RUNNING_STATE.RETRACT_LIFT;
                 }
+                else if(gamepad2.b){
+                    //just retract no drop
+                    state = RUNNING_STATE.RETRACT_LIFT;
+                }
             }
 
             if(state == RUNNING_STATE.RETRACT_LIFT && (gamepad2.dpad_down || gamepad1.dpad_down)){
