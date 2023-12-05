@@ -26,6 +26,13 @@ public class TimerList {
         }
     }
 
+    public double getTimerNano(String timerName){
+        if(timerList.containsKey(timerName)){
+            return timerList.get(timerName).nanoseconds();
+        } else {
+            return 0;
+        }
+    }
     public double getTimer(String timerName){
         if(timerList.containsKey(timerName)){
             return timerList.get(timerName).time();
