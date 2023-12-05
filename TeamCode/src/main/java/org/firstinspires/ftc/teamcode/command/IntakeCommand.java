@@ -34,21 +34,28 @@ public class IntakeCommand {
     public void intakeRollerOut(){
         intakeRoller.setPower(1);
     }
+    public void intakeRollerOut(double power){
+        intakeRoller.setPower(power);
+    }
     public void intakeRollerStop(){
         intakeRoller.setPower(0);
     }
 
     public void intakeIn(double power) {
-        intake.motorTurnPower(true, -Math.abs(power));
+        intake.motorTurnPurePower(true, -Math.abs(power));
         intakeRollerIn();
     }
 
+    public void slowIntakeIn(){
+        intake.motorTurnPurePower(true, -0.5);
+    }
+
     public void intakeOut(double power) {
-        intake.motorTurnPower(true, Math.abs(power));
+        intake.motorTurnPurePower(true, Math.abs(power));
     }
 
     public void stopIntake() {
-        intake.motorTurnPower(true, 0);
+        intake.motorTurnPurePower(true, 0);
         intakeRoller.setPower(0);
     }
 }

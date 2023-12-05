@@ -72,7 +72,7 @@ public class AutonomousBackBlue extends LinearOpMode {
 //        sleep(8000);
         if(propPosition < 60 && propPosition > 0){
             //pos 2
-            mecanumCommand.moveToGlobalPosition(65, -3.5, 0);
+            mecanumCommand.moveToGlobalPosition(68.5, -3.5, 0);
         }
         else if(propPosition > 60){
             mecanumCommand.moveToGlobalPosition(34, -39.5, 0);
@@ -84,8 +84,8 @@ public class AutonomousBackBlue extends LinearOpMode {
         sleep(3000);
         timer.reset();
 
-        while(timer.milliseconds() < 500) {
-            intakeCommand.intakeOut(0.15);
+        while(timer.milliseconds() < 1000) {
+            intakeCommand.intakeOut(0.3);
         }
         intakeCommand.stopIntake();
         mecanumCommand.moveToGlobalPosition(0, 0, 0);

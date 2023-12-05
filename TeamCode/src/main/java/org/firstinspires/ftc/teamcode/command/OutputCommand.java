@@ -49,13 +49,16 @@ public class OutputCommand {
     }
 
     public void openGate(){
-        gate.setPosition(0.225);
+        gate.setPosition(0.245);
     }
     public void closeGate(){
-        gate.setPosition(0.27);
+        gate.setPosition(0.3);
     }
     public void outputWheelOut(){
         intakeCommand.intakeRollerOut();
+    }
+    public void outputWheelIn(){
+        intakeCommand.intakeRollerIn();
     }
     public void outputWheelStop(){
         intakeCommand.intakeRollerStop();
