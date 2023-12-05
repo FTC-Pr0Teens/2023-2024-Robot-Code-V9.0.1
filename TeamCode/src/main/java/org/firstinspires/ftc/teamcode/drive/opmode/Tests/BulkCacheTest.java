@@ -33,9 +33,9 @@ public class BulkCacheTest extends LinearOpMode {
 
         tl.resetTimer("randomtimerlol");
         while(opModeIsActive()){
-            odo.backEncoder();
-            odo.leftEncoder();
-            odo.rightEncoder();
+            telemetry.addData("back encoder", odo.backEncoder());
+            telemetry.addData("right encoder", odo.rightEncoder());
+            telemetry.addData("left encoder", odo.leftEncoder());
             telemetry.addData("looptime milliseconds", tl.getTimerMillis("randomtimerlol"));
             telemetry.addData("looptime nanoseconds", tl.getTimerNano("randomtimerlol"));
             telemetry.update();
