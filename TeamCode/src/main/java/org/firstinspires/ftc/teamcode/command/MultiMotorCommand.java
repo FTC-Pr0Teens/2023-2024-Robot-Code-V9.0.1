@@ -75,7 +75,7 @@ public class MultiMotorCommand {
 //                }
                 break;
             default:
-                multiMotorSubsystem.moveLift(0);
+//                multiMotorSubsystem.moveLift(0);
                 break;
         }
     }

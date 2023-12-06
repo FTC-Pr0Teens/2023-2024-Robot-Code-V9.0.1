@@ -37,6 +37,7 @@ public class COTeleOp extends LinearOpMode {
     private ElapsedTime pixelTimer, liftTimer;
     private int level = -1;
     private int pixelCounter;
+    private boolean running = true;
 
     private enum RUNNING_STATE {
         LIFT_STOP,
@@ -87,7 +88,7 @@ public class COTeleOp extends LinearOpMode {
         Executor executor = Executors.newFixedThreadPool(7);
         CompletableFuture.runAsync(this::LiftProcess, executor);
         CompletableFuture.runAsync(this::odometryProcess, executor);
-        
+
         while(opModeIsActive()) {
             mecanumSubsystem.fieldOrientedMove(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x, imuSubsystem.getTheta());
 
@@ -142,13 +143,19 @@ public class COTeleOp extends LinearOpMode {
                 }
                 if(multiMotorSubsystem.getPosition() < 18){
                     pixelCounter = 0;
+                    level = /*-1*/0;
                     state = RUNNING_STATE.LIFT_STOP;
                 }
             }
             //emergency lift controls
             if(Math.abs(gamepad2.left_stick_y) > 0.8){
-                state = RUNNING_STATE.RAISE_LIFT;
+                running = false;
+                state = RUNNING_STATE.DROP;
+                level = /*-1*/0;
                 multiMotorSubsystem.moveLift(-gamepad2.right_stick_y);
+            }
+            else{
+                running = true;
             }
             if(gamepad2.x){
                 level = 2;
@@ -159,7 +166,7 @@ public class COTeleOp extends LinearOpMode {
                 //reset the lift condition after manually reaching the bottom
                 state = RUNNING_STATE.LIFT_STOP;
                 multiMotorSubsystem.reset();
-                level = 0;
+                level = /*-1*/0;
             }
             if(gamepad2.dpad_up){
                 intakeCommand.raiseIntake();
@@ -186,9 +193,7 @@ public class COTeleOp extends LinearOpMode {
     }
     public void LiftProcess(){
         while(opModeIsActive()){
-            if(state != RUNNING_STATE.LIFT_STOP) {
-                multiMotorCommand.LiftUp(true,level);
-            }
+            multiMotorCommand.LiftUp(running,level);
         }
     }
     public void odometryProcess(){
