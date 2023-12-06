@@ -87,9 +87,7 @@ public class COTeleOp extends LinearOpMode {
         Executor executor = Executors.newFixedThreadPool(7);
         CompletableFuture.runAsync(this::LiftProcess, executor);
         CompletableFuture.runAsync(this::odometryProcess, executor);
-
-        //emergency lift change for owen
-
+        
         while(opModeIsActive()) {
             mecanumSubsystem.fieldOrientedMove(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x, imuSubsystem.getTheta());
 
@@ -110,7 +108,6 @@ public class COTeleOp extends LinearOpMode {
                     state = RUNNING_STATE.RAISE_LIFT;
                 }
             }
-
             //when lift is raised
             if (state == RUNNING_STATE.RAISE_LIFT) {
                 outputCommand.armToBoard();
@@ -137,7 +134,6 @@ public class COTeleOp extends LinearOpMode {
                     state = RUNNING_STATE.RETRACT_LIFT;
                 }
             }
-
             if(state == RUNNING_STATE.RETRACT_LIFT){
                 outputCommand.tiltToIdle();
                 outputCommand.armToIdle();
@@ -149,11 +145,9 @@ public class COTeleOp extends LinearOpMode {
                     state = RUNNING_STATE.LIFT_STOP;
                 }
             }
-
-
             //emergency lift controls
             if(Math.abs(gamepad2.left_stick_y) > 0.8){
-                state = RUNNING_STATE.LIFT_STOP;
+                state = RUNNING_STATE.RAISE_LIFT;
                 multiMotorSubsystem.moveLift(-gamepad2.right_stick_y);
             }
             if(gamepad2.x){
@@ -190,7 +184,6 @@ public class COTeleOp extends LinearOpMode {
         }
 
     }
-
     public void LiftProcess(){
         while(opModeIsActive()){
             if(state != RUNNING_STATE.LIFT_STOP) {
@@ -198,7 +191,6 @@ public class COTeleOp extends LinearOpMode {
             }
         }
     }
-
     public void odometryProcess(){
         while(opModeIsActive()){
             gyroOdometry.odometryProcess();
@@ -213,6 +205,7 @@ public class COTeleOp extends LinearOpMode {
         telemetry.addData("pixelnumber", pixelCounter);
         telemetry.addData("pixeltimer time", pixelTimer.milliseconds());
         telemetry.addData("liftTimer time", liftTimer.milliseconds());
+        telemetry.addData("lift position", multiMotorSubsystem.getPosition());
         telemetry.update();
     }
 
