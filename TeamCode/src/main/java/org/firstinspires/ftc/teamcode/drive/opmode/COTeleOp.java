@@ -91,7 +91,7 @@ public class COTeleOp extends LinearOpMode {
         //emergency lift change for owen
 
         while(opModeIsActive()) {
-            mecanumSubsystem.fieldOrientedMove(gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x, imuSubsystem.getTheta());
+            mecanumSubsystem.fieldOrientedMove(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x, imuSubsystem.getTheta());
 
             //setting levels for running lift
             if (state == RUNNING_STATE.LIFT_STOP) {
@@ -118,16 +118,16 @@ public class COTeleOp extends LinearOpMode {
                 //change state
                 if(gamepad2.right_bumper){
                     //drop pixel (one)
-                    pixelTimer.reset();
+                    dropPixel();
+                    pixelCounter +=1;
                     state = RUNNING_STATE.DROP;
                 }
             }
 
             if(state == RUNNING_STATE.DROP){
-                dropPixel();
                 if(gamepad2.right_bumper){
                     //drop second pixel
-                    pixelTimer.reset();
+                    dropPixel();
                     pixelCounter += 1;
 
                 }
@@ -167,10 +167,16 @@ public class COTeleOp extends LinearOpMode {
                 multiMotorSubsystem.reset();
                 level = 0;
             }
+            if(gamepad2.dpad_up){
+                intakeCommand.raiseIntake();
+            }
+            else if(gamepad2.dpad_down){
+                intakeCommand.lowerIntake();
+            }
 
             //intake
             if(gamepad2.right_trigger > 0.5){
-                intakeCommand.intakeIn(1);
+                intakeCommand.intakeIn(0.9);
             }
             else if(gamepad2.left_trigger > 0.5){
                 intakeCommand.intakeOut(0.7);
@@ -178,6 +184,8 @@ public class COTeleOp extends LinearOpMode {
             else{
                 intakeCommand.stopIntake();
             }
+
+            //TODO: auto center/change zero
             updateTelemetry();
         }
 
@@ -211,7 +219,8 @@ public class COTeleOp extends LinearOpMode {
     public void dropPixel(){
 
         outputCommand.outputWheelStop();
-        if(pixelTimer.milliseconds() < 700) {
+        pixelTimer.reset();
+        while(pixelTimer.milliseconds() < 700) {
             if (pixelTimer.milliseconds() >= 250) {
                 outputCommand.closeGate();
                 outputCommand.outputWheelIn();
