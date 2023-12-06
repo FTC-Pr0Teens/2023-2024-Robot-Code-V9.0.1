@@ -138,7 +138,7 @@ public class COTeleOp extends LinearOpMode {
             if(state == RUNNING_STATE.RETRACT_LIFT){
                 outputCommand.tiltToIdle();
                 outputCommand.armToIdle();
-                if(liftTimer.milliseconds() > 2000){
+                if(liftTimer.milliseconds() > 2500){
                     level = 0;
                 }
                 if(multiMotorSubsystem.getPosition() < 18){

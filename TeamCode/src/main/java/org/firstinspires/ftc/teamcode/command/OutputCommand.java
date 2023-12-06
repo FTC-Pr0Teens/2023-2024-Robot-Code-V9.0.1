@@ -84,8 +84,8 @@ public class OutputCommand {
         rightTilt.setPosition(0.48);
     }
     public void tiltToBoard(){
-        leftTilt.setPosition(0.08);
-        rightTilt.setPosition(0.08);
+        leftTilt.setPosition(0);
+        rightTilt.setPosition(0);
     }
 
     public double getGatePosition(){

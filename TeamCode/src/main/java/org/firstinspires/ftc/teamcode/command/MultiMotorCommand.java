@@ -32,19 +32,19 @@ public class MultiMotorCommand {
             case 1:
                 interval1 = new Interval(-400, 300, -1000);
                 interval2 = new Interval(300, 400, -400);
-                interval3 = new Interval(400, 2000, 0);
+                interval3 = new Interval(250, 2000, 0);
                 //TODO: deceleration intervals
                 if(run) {
-                    multiMotorSubsystem.LiftCascadeProcess(493, interval1, interval2, interval3);
+                    multiMotorSubsystem.LiftCascadeProcess(450, interval1, interval2, interval3);
                 }
                 break;
             case 2:
-                interval1 = new Interval(-400, 700, -2000);
-                interval2 = new Interval(700, 1000, -1700);
-                interval3 = new Interval(1000, 1250, -1000);
-                interval4 = new Interval(1250, 1350+2000, 0);
+                interval1 = new Interval(-400, 900, -2000);
+                interval2 = new Interval(900, 1075, -1700);
+                interval3 = new Interval(1075, 1150, -900);
+                interval4 = new Interval(1150, 1350+2000, 0);
                 if(run) {
-                    multiMotorSubsystem.LiftCascadeProcess(1324, interval1, interval2, interval3, interval4);
+                    multiMotorSubsystem.LiftCascadeProcess(1200, interval1, interval2, interval3, interval4);
                 }
                 break;
             case 3:
