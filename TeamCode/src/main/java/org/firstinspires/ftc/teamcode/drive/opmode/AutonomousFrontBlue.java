@@ -85,16 +85,17 @@ public class AutonomousFrontBlue extends LinearOpMode {
         }
 //        sleep(8000);
         timer.reset();
-        while(timer.milliseconds() < 4000) {
-            if (propPosition < 60 && propPosition > 0) {
+        while(timer.milliseconds() < 3500) {
+            if (propPosition < 100 && propPosition > 0) {
                 //pos 2
                 mecanumCommand.moveToGlobalPosition(67, -3, 0);
-            } else if (propPosition > 60) {
-                mecanumCommand.moveToGlobalPosition(54, 24, 0);
-            } else {
+            } else if (propPosition > 100) {
                 mecanumCommand.moveToGlobalPosition(57, 0, 0);
                 sleep(1500);
-                mecanumCommand.moveToGlobalPosition(57, -18, -0.832);
+                mecanumCommand.moveToGlobalPosition(55, -17, -0.832);
+                sleep(1000);
+            } else {
+                mecanumCommand.moveToGlobalPosition(54, 24, 0);
             }
         }
         timer.reset();
@@ -103,28 +104,30 @@ public class AutonomousFrontBlue extends LinearOpMode {
             intakeCommand.intakeOut(0.3);
         }
         intakeCommand.stopIntake();
+        level = 1;
+        outputCommand.armToBoard();
+        outputCommand.tiltToBoard();
         timer.reset();
-        while(timer.milliseconds() < 3000) {
-            if (propPosition < 60 && propPosition > 0) {
+        while(timer.milliseconds() < 3500) {
+            if (propPosition < 100 && propPosition > 0) {
                 //pos 2
-//            mecanumCommand.moveToGlobalPosition(67, -3, 0);
-            } else if (propPosition > 60) {
-//            mecanumCommand.moveToGlobalPosition(54, 24, 0);
+                mecanumCommand.moveToGlobalPosition(53, 81, -1.58);
+            } else if (propPosition >= 100) {
+                mecanumCommand.moveToGlobalPosition(62.5, 81.5, -1.58);
             } else {
-                mecanumCommand.moveToGlobalPosition(38, 82, -1.58);
+                mecanumCommand.moveToGlobalPosition(38, 78.5, -1.58);
             }
         }
         timer.reset();
-        while(timer.milliseconds() < 3000) {
-            level = 1;
-            outputCommand.armToBoard();
-            outputCommand.tiltToBoard();
-            if(timer.milliseconds() < 2500){
-                outputCommand.openGate();
-            }
+        while (timer.milliseconds() < 500){
+            outputCommand.openGate();
         }
-
-//        mecanumCommand.moveToGlobalPosition(0, 0, 0);
+        outputCommand.closeGate();
+        outputCommand.tiltToIdle();
+        outputCommand.armToIdle();
+        sleep(6000);
+        level = 0;
+        mecanumCommand.moveToGlobalPosition(0, 84, -1.58);
 
 
     }
@@ -141,6 +144,7 @@ public class AutonomousFrontBlue extends LinearOpMode {
 //            packet.put("y", gyroOdometry.y);
             telemetry.addData("x", gyroOdometry.x);
             telemetry.addData("y", gyroOdometry.y);
+            telemetry.addData("theta", gyroOdometry.theta);
 //            packet.put("x", gyroOdometry.x);
 //            packet.put("y", gyroOdometry.y);
 //            dashboard.sendTelemetryPacket(packet);
