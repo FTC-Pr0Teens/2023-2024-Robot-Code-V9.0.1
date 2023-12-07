@@ -22,10 +22,10 @@ public class MecanumCommand {
     public PIDCore globalXController;
     public PIDCore globalYController;
     public PIDCore globalThetaController;
-    private static double kpx = 0.07;
+    private static double kpx = 0.06;
     private static double kdx = 0.01;
     private static double kix = 0.07/12.;
-    private static double kpy = 0.07;
+    private static double kpy = 0.06;
     private static double kdy = 0.0005;
     private static double kiy = 0.07/12;
     private static double kptheta = 1.4;
@@ -623,9 +623,9 @@ public class MecanumCommand {
                 || Math.abs(targetTheta - gyroOdometry.theta) > 0.1) {
 
             mecanumSubsystem.fieldOrientedMove(
-                    globalYController.outputPositional(targetY, gyroOdometry.y),
-                   -globalXController.outputPositional(targetX, gyroOdometry.x),
-                    globalThetaController.outputPositional(targetTheta, gyroOdometry.theta),
+                    globalYController.outputPositionalIntegral(targetY, gyroOdometry.y),
+                   -globalXController.outputPositionalIntegral(targetX, gyroOdometry.x),
+                    globalThetaController.outputPositionalIntegral(targetTheta, gyroOdometry.theta),
                     gyroOdometry.theta);
         }
         mecanumSubsystem.stop(true);

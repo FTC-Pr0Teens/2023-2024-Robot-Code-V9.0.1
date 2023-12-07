@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.util;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import java.util.concurrent.TimeUnit;
+
 public class PIDCore {
     private double Kp;
     private double Kd;
@@ -114,7 +116,7 @@ public class PIDCore {
 
         error = setPoint - feedback;
         if(activateIntegral()){
-            integralSum += error * timer.time();
+            integralSum += error * timer.time(TimeUnit.SECONDS);
             if (integralSum > 15){
                 integralSum = 15;
             } else if (integralSum < -15) {

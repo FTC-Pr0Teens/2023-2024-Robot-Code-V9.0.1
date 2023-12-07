@@ -56,8 +56,9 @@ public class COTeleOp extends LinearOpMode {
 
         mecanumSubsystem = new MecanumSubsystem(hardwareMap); //MAKE SURE THIS IS INSTANTIATED BEFORE ODOMETRY SUBSYSTEM
 
-        gyroOdometry = new GyroOdometry(odometrySubsystem, imuSubsystem);
         odometrySubsystem = new OdometrySubsystem(hardwareMap);
+
+        gyroOdometry = new GyroOdometry(odometrySubsystem,imuSubsystem);
 
 //        mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem,  gyroOdometry, this);
 
@@ -85,9 +86,9 @@ public class COTeleOp extends LinearOpMode {
 
         waitForStart();
 
-        Executor executor = Executors.newFixedThreadPool(7);
-        CompletableFuture.runAsync(this::LiftProcess, executor);
-        CompletableFuture.runAsync(this::odometryProcess, executor);
+//        Executor executor = Executors.newFixedThreadPool(7);
+        CompletableFuture.runAsync(this::odometryProcess);
+        CompletableFuture.runAsync(this::LiftProcess);
 
         while(opModeIsActive()) {
             mecanumSubsystem.fieldOrientedMove(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x, imuSubsystem.getTheta());

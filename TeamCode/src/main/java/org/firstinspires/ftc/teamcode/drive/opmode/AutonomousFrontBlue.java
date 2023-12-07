@@ -84,36 +84,36 @@ public class AutonomousFrontBlue extends LinearOpMode {
             propPosition = webcamSubsystem.getXProp();
         }
 //        sleep(8000);
-        if(propPosition < 60 && propPosition > 0){
-            //pos 2
-            mecanumCommand.moveToGlobalPosition(67, -3, 0);
+        timer.reset();
+        while(timer.milliseconds() < 4000) {
+            if (propPosition < 60 && propPosition > 0) {
+                //pos 2
+                mecanumCommand.moveToGlobalPosition(67, -3, 0);
+            } else if (propPosition > 60) {
+                mecanumCommand.moveToGlobalPosition(54, 24, 0);
+            } else {
+                mecanumCommand.moveToGlobalPosition(57, 0, 0);
+                sleep(1500);
+                mecanumCommand.moveToGlobalPosition(57, -18, -0.832);
+            }
         }
-        else if(propPosition > 60){
-            mecanumCommand.moveToGlobalPosition(54, 24, 0);
-        }
-        else{
-            mecanumCommand.moveToGlobalPosition(57, 0, 0);
-            sleep(1500);
-            mecanumCommand.moveToGlobalPosition(57, -18, -0.832);
-        }
-        sleep(4000);
         timer.reset();
 
         while(timer.milliseconds() < 1000) {
             intakeCommand.intakeOut(0.3);
         }
         intakeCommand.stopIntake();
-        if(propPosition < 60 && propPosition > 0){
-            //pos 2
+        timer.reset();
+        while(timer.milliseconds() < 3000) {
+            if (propPosition < 60 && propPosition > 0) {
+                //pos 2
 //            mecanumCommand.moveToGlobalPosition(67, -3, 0);
-        }
-        else if(propPosition > 60){
+            } else if (propPosition > 60) {
 //            mecanumCommand.moveToGlobalPosition(54, 24, 0);
+            } else {
+                mecanumCommand.moveToGlobalPosition(38, 82, -1.58);
+            }
         }
-        else{
-            mecanumCommand.moveToGlobalPosition(38, 82, -1.58);
-        }
-        sleep(3000);
         timer.reset();
         while(timer.milliseconds() < 3000) {
             level = 1;
@@ -137,13 +137,13 @@ public class AutonomousFrontBlue extends LinearOpMode {
 
     public void updateTelemetry() {
         while (opModeIsActive()) {
-            packet.put("x", gyroOdometry.x);
-            packet.put("y", gyroOdometry.y);
+//            packet.put("x", gyroOdometry.x);
+//            packet.put("y", gyroOdometry.y);
             telemetry.addData("x", gyroOdometry.x);
             telemetry.addData("y", gyroOdometry.y);
-            packet.put("x", gyroOdometry.x);
-            packet.put("y", gyroOdometry.y);
-            dashboard.sendTelemetryPacket(packet);
+//            packet.put("x", gyroOdometry.x);
+//            packet.put("y", gyroOdometry.y);
+//            dashboard.sendTelemetryPacket(packet);
             telemetry.update();
         }
     }
