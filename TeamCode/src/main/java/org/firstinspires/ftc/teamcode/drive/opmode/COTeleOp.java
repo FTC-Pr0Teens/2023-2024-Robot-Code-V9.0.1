@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.subsystems.MultiMotorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
 import org.firstinspires.ftc.teamcode.util.GridAutoCentering;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
+import org.firstinspires.ftc.teamcode.util.TimerList;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -46,6 +47,8 @@ public class COTeleOp extends LinearOpMode {
         DROP
     }
     private RUNNING_STATE state = RUNNING_STATE.LIFT_STOP;
+
+    private final TimerList timerList = new TimerList();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -99,15 +102,23 @@ public class COTeleOp extends LinearOpMode {
                 if (gamepad1.a) {
                     level = 1;
                     state = RUNNING_STATE.RAISE_LIFT;
+                    timerList.resetTimer("armTilt");
+                    pixelCounter = 0;
                 } else if (gamepad1.b) {
                     level = 2;
                     state = RUNNING_STATE.RAISE_LIFT;
+                    timerList.resetTimer("armTilt");
+                    pixelCounter = 0;
                 } else if (gamepad1.y) {
                     level = 3;
                     state = RUNNING_STATE.RAISE_LIFT;
+                    timerList.resetTimer("armTilt");
+                    pixelCounter = 0;
                 } else if (gamepad1.x) {
                     level = 4;
                     state = RUNNING_STATE.RAISE_LIFT;
+                    timerList.resetTimer("armTilt");
+                    pixelCounter = 0;
                 }
             }
             //when lift is raised
@@ -115,33 +126,47 @@ public class COTeleOp extends LinearOpMode {
                 outputCommand.armToBoard();
                 outputCommand.tiltToBoard();
                 //change state
-                if(gamepad2.right_bumper){
-                    //drop pixel (one)
-                    dropPixel();
-                    pixelCounter +=1;
-                    state = RUNNING_STATE.DROP;
+                if(gamepad2.right_bumper && timerList.checkTimePassed("armTilt", 1500)){
+                    if(pixelCounter != 0 || timerList.checkTimePassed("armTilt", 1500))
+                        //drop pixel (one)
+                        pixelCounter += 1;
+                        timerList.resetTimer("pixelDrop");
+                        outputCommand.outputWheelStop();
+                        state = RUNNING_STATE.DROP;
+                }
+                if(gamepad2.b && timerList.checkTimePassed("armTilt", 1500)){
+                    timerList.resetTimer("liftTimer");
+                    state = RUNNING_STATE.RETRACT_LIFT;
                 }
             }
 
             if(state == RUNNING_STATE.DROP){
-                if(gamepad2.right_bumper){
-                    //drop second pixel
-                    dropPixel();
-                    pixelCounter += 1;
-
-                }
-                else if(gamepad2.b && pixelCounter >= 1){
-                    //retract
-                    liftTimer.reset();
-                    state = RUNNING_STATE.RETRACT_LIFT;
+                if(!timerList.checkTimePassed("pixelDrop", 700)) {
+                    if (timerList.checkTimePassed("pixelDrop", 250)) {
+                        outputCommand.closeGate();
+                        outputCommand.outputWheelIn();
+                    } else {
+                        outputCommand.openGate();
+                    }
+                } else {
+                    if(pixelCounter >= 2){
+                        timerList.resetTimer("liftTimer");
+                        state = RUNNING_STATE.RETRACT_LIFT;
+                    } else {
+                        state = RUNNING_STATE.RETRACT_LIFT;
+                    }
                 }
             }
             if(state == RUNNING_STATE.RETRACT_LIFT){
                 outputCommand.tiltToIdle();
                 outputCommand.armToIdle();
-                if(liftTimer.milliseconds() > 2500){
+                if(timerList.checkTimePassed("liftTimer", 2500)){
                     level = 0;
                 }
+                else {
+                     level = 1; //not sure about this
+                }
+
                 if(multiMotorSubsystem.getPosition() < 18){
                     pixelCounter = 0;
                     level = /*-1*/0;
@@ -215,18 +240,4 @@ public class COTeleOp extends LinearOpMode {
         telemetry.update();
     }
 
-    public void dropPixel(){
-
-        outputCommand.outputWheelStop();
-        pixelTimer.reset();
-        while(pixelTimer.milliseconds() < 700) {
-            if (pixelTimer.milliseconds() >= 250) {
-                outputCommand.closeGate();
-                outputCommand.outputWheelIn();
-            } else {
-                outputCommand.openGate();
-            }
-        }
-
-    }
 }
