@@ -58,7 +58,8 @@ public class MecanumTest extends LinearOpMode {
     public void runOdometry(){
         while(opModeIsActive()){
 //            imu.gyroProcess();
-            gyroOdometry.odometryProcess();
+            gyroOdometry.process();
+            imu.gyroProcess();
         }
     }
 }
