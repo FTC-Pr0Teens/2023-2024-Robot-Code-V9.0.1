@@ -126,7 +126,7 @@ public class COTeleOp extends LinearOpMode {
                 outputCommand.armToBoard();
                 outputCommand.tiltToBoard();
                 //change state
-                if(gamepad2.right_bumper && timerList.checkTimePassed("armTilt", 1500)){
+                if(gamepad2.right_bumper){
                     if(pixelCounter != 0 || timerList.checkTimePassed("armTilt", 1500))
                         //drop pixel (one)
                         pixelCounter += 1;
@@ -148,12 +148,12 @@ public class COTeleOp extends LinearOpMode {
                     } else {
                         outputCommand.openGate();
                     }
-                } else {
-                    if(pixelCounter >= 2){
+                } else { //if pixel is done dropping, reset the state
+                    if(pixelCounter >= 2){ //if both pixels drop, go to retract
                         timerList.resetTimer("liftTimer");
                         state = RUNNING_STATE.RETRACT_LIFT;
                     } else {
-                        state = RUNNING_STATE.RETRACT_LIFT;
+                        state = RUNNING_STATE.RAISE_LIFT;
                     }
                 }
             }
