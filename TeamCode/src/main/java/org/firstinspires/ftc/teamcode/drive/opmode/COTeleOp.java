@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
+import android.annotation.SuppressLint;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -50,6 +52,7 @@ public class COTeleOp extends LinearOpMode {
 
     private final TimerList timerList = new TimerList();
 
+    @SuppressLint("SuspiciousIndentation")
     @Override
     public void runOpMode() throws InterruptedException {
         multiMotorSubsystem = new MultiMotorSubsystem(hardwareMap, true, MultiMotorSubsystem.MultiMotorType.dualMotor);
@@ -127,12 +130,13 @@ public class COTeleOp extends LinearOpMode {
                 outputCommand.tiltToBoard();
                 //change state
                 if(gamepad2.right_bumper){
-                    if(pixelCounter != 0 || timerList.checkTimePassed("armTilt", 1500))
+                    if(pixelCounter != 0 || timerList.checkTimePassed("armTilt", 1500)) {
                         //drop pixel (one)
                         pixelCounter += 1;
                         timerList.resetTimer("pixelDrop");
                         outputCommand.outputWheelStop();
                         state = RUNNING_STATE.DROP;
+                    }
                 }
                 if(gamepad2.b && timerList.checkTimePassed("armTilt", 1500)){
                     timerList.resetTimer("liftTimer");
