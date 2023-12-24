@@ -27,9 +27,6 @@ public class testingteleop extends LinearOpMode {
     private DcMotorEx leftSlide;
     private DcMotorEx rightSlide;
 
-
-
-
     private enum RUNNING_STATE { //mini "threads" to run (is actually run in main thread, just controlled simultaneously)
         LOWER_LIFT, RAISE_LIFT
     }
@@ -48,6 +45,7 @@ public class testingteleop extends LinearOpMode {
         rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
+        imuSubsystem = new IMUSubsystem(hardwareMap);
         mecanumSubsystem = new MecanumSubsystem(hardwareMap); //MAKE SURE THIS IS INSTANTIATED BEFORE ODOMETRY SUBSYSTEM
 
         waitForStart();
