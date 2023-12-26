@@ -9,13 +9,13 @@ public class Specifications {
     public final double length = 43.18;
     public final int FINALPOS = 1230;
     //b
-    public final double SideOdometryToCentre = 18.45;
-    public final double lengthFromOdometrySideToFront = 4.7625;
+    public final double SideOdometryToCentre = 15.2;
+    public final double lengthFromOdometrySideToFront = 20.75;
     public final double odometryCir = 3.5*Math.PI;
     public final double odometryTick = 8192;
     //beta
     public final double sideOdometryAngleFromCentre = 0;
-    public final double frontOdometryAngleFromCentre = Math.toRadians(67.93);
+    public final double frontOdometryAngleFromCentre = Math.toRadians(13.79);
 
 
     public static double WHEEL_RADIUS = 4.8;
@@ -49,9 +49,9 @@ public class Specifications {
     public static final String FTRT_MOTOR = "rightForward";
     public static final String BKLF_MOTOR = "leftBack";
     public static final String BKRT_MOTOR = "rightBack";
-    public static final String BK_ENCODER = "intakeMotor"; //3
-    public static final String LF_ENCODER = "rightBack"; //port 1?
-    public static final String RT_ENCODER = "leftBack"; //port 2?
+    public static final String BK_ENCODER = "leftBack"; //3
+    public static final String LF_ENCODER = "rightBack"; //port 2
+    public static final String RT_ENCODER = "rightForward"; //port 0
     public static final String IMU = "imu";
 
     //output stuff, fill in names later
