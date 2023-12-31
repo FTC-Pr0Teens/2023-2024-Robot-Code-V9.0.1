@@ -65,6 +65,7 @@ public class AutonomousFrontRed extends LinearOpMode {
         webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
         timer = new ElapsedTime();
 
+        //Pre-start
         odometrySubsystem.reset();
         imu.resetAngle();
 
