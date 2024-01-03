@@ -624,7 +624,7 @@ public class MecanumCommand {
 
             mecanumSubsystem.fieldOrientedMove(
                     globalYController.outputPositional(targetY, gyroOdometry.y),
-                   -globalXController.outputPositional(targetX, gyroOdometry.x),
+                    globalXController.outputPositional(targetX, gyroOdometry.x),
                     globalThetaController.outputPositional(targetTheta, gyroOdometry.theta),
                     gyroOdometry.theta);
         }

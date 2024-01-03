@@ -40,11 +40,11 @@ public class Specifications {
 
     //DS: distance sensor
 
-    public static final String INTAKE_MOTOR = "intakeMotor";
+public static final String INTAKE_MOTOR = "intakeMotor";
     public static final String INTAKE_SERVO = "intakeLinkage";
     public static final String INTAKE_ROLLER = "intakeRoller";
-    public static final String EXTENSION_MOTOR_MAIN = "extension1";
-    public static final String EXTENSION_MOTOR_AUX1 = "extension2";
+    public static final String EXTENSION_MOTOR_MAIN = "RightSlideMotor";
+    public static final String EXTENSION_MOTOR_AUX1 = "LeftSlideMotor";
     public static final String FTLF_MOTOR = "leftForward";
     public static final String FTRT_MOTOR = "rightForward";
     public static final String BKLF_MOTOR = "leftBack";

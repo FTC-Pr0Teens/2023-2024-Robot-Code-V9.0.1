@@ -88,7 +88,7 @@ public class OdometrySubsystem extends Specifications {
         if (navSystem != NavSystem.IMU){
             if (navSystem == NavSystem.ODOMETRY){
                 leftEncoder = hardwareMap.get(DcMotor.class, LF_ENCODER);
-                leftEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
+                leftEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
                 leftEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             }
             rightEncoder = hardwareMap.get(DcMotor.class, RT_ENCODER);
