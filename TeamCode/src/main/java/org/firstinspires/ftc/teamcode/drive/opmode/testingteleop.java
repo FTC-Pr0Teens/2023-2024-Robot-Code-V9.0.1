@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.command.MecanumCommand;
 import org.firstinspires.ftc.teamcode.subsystems.DroneShooter;
 import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.MultiMotorCommand;
@@ -18,14 +19,19 @@ import org.firstinspires.ftc.teamcode.command.OutputCommand;
 import org.firstinspires.ftc.teamcode.subsystems.IMUSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MultiMotorSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
+import org.firstinspires.ftc.teamcode.util.GyroOdometry;
 import org.firstinspires.ftc.teamcode.util.TimerList;
 
 @TeleOp(name = "Pr0TeensTeleOpV1")
 public class testingteleop extends LinearOpMode {
     private MecanumSubsystem mecanumSubsystem;
+    private MecanumCommand mecanumCommand;
     private IMUSubsystem imuSubsystem;
     private MultiMotorSubsystem multiMotorSubsystem;
     private MultiMotorCommand multiMotorCommand;
+    private OdometrySubsystem odometrySubsystem;
+    private GyroOdometry gyroOdometry;
     //private DroneShooter droneShooter;
     private Servo hangingServo;
     private DcMotor hangingMotor;
@@ -38,12 +44,17 @@ public class testingteleop extends LinearOpMode {
         LOWER_LIFT, RAISE_LIFT
     }
 
+    private double rotation = 0;
+
     @SuppressLint("SuspiciousIndentation")
     @Override
     public void runOpMode() throws InterruptedException {
         // droneShooter = new DroneShooter(hardwareMap);
         imuSubsystem = new IMUSubsystem(hardwareMap);
         mecanumSubsystem = new MecanumSubsystem(hardwareMap); //MAKE SURE THIS IS INSTANTIATED BEFORE ODOMETRY SUBSYSTEM
+        gyroOdometry = new GyroOdometry(odometrySubsystem, imuSubsystem);
+        odometrySubsystem = new OdometrySubsystem(hardwareMap);
+        mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem,  gyroOdometry, this);
         multiMotorSubsystem = new MultiMotorSubsystem(hardwareMap, true, MultiMotorSubsystem.MultiMotorType.dualMotor);
         multiMotorCommand = new MultiMotorCommand(multiMotorSubsystem);
         intakeCommand = new IntakeCommand(hardwareMap);
@@ -67,7 +78,8 @@ public class testingteleop extends LinearOpMode {
             boolean lastHangingState = false;
             //timers.resetTimer("GameTimeElapsed");
             previousGamepad1.copy(currentGamepad1);
-            mecanumSubsystem.fieldOrientedMove(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x, imuSubsystem.getTheta());
+            rotation = gamepad1.right_stick_x;
+            mecanumCommand.moveGlobalPartial(true, gamepad1.left_stick_x, -gamepad1.left_stick_y, rotation);
             //x is for taking pixels in, b is for spitting pixels out
             if (gamepad1.x) {
                 intakeCommand.intakeIn(0.6);
