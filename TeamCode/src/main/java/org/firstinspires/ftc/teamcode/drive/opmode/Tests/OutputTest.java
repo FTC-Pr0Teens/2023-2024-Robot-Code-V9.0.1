@@ -42,6 +42,10 @@ public class OutputTest extends LinearOpMode {
             }
             else if(gamepad1.right_trigger > 0.5){
                 outputCommand.outputWheelOut();
+            } else if(gamepad1.dpad_left){
+                outputCommand.armToPos(0);
+            } else if(gamepad1.dpad_right){
+                outputCommand.armToPos(1);
             }
             else{
                 outputCommand.outputWheelStop();

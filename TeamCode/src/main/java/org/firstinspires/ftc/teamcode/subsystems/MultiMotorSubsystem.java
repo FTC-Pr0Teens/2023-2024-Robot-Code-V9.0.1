@@ -16,8 +16,8 @@ import org.firstinspires.ftc.teamcode.util.PIDCore;
 import org.firstinspires.ftc.teamcode.util.Specifications;
 
 public class MultiMotorSubsystem extends Specifications {
-    private DcMotorEx main; //main motor (motor with encoder)
-    private DcMotor aux1; //first auxiliary motor (motor without encoder)
+    public DcMotorEx main; //main motor (motor with encoder)
+    public DcMotor aux1; //first auxiliary motor (motor without encoder)
     private DcMotor aux2; //second auxiliary motor (motor without encoder)
     private ElapsedTime mainTimer;
     private ElapsedTime safetyTimer; //used to make sure the lift doesn't get stuck at the bottom
@@ -140,7 +140,7 @@ public class MultiMotorSubsystem extends Specifications {
             main = hardwareMap.get(DcMotorEx.class, EXTENSION_MOTOR_MAIN);
             aux1 = hardwareMap.get(DcMotor.class, EXTENSION_MOTOR_AUX1);
 
-            main.setDirection(DcMotorSimple.Direction.REVERSE);
+            main.setDirection(DcMotorSimple.Direction.REVERSE); //originally reverse
             aux1.setDirection(DcMotorSimple.Direction.FORWARD);
 
             if (reset) {

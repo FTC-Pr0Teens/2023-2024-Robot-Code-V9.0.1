@@ -35,7 +35,7 @@ public class MultiMotorCommand {
                 interval3 = new Interval(250, 2000, 0);
                 //TODO: deceleration intervals
                 if(run) {
-                    multiMotorSubsystem.LiftCascadeProcess(450, interval1, interval2, interval3);
+                    multiMotorSubsystem.LiftCascadeProcess(800, interval1, interval2, interval3);
                 }
                 break;
             case 2:
