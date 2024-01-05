@@ -23,6 +23,11 @@ import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
 import org.firstinspires.ftc.teamcode.util.TimerList;
 
+import java.lang.reflect.Executable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 @TeleOp(name = "Pr0TeensTeleOpV1")
 public class testingteleop extends LinearOpMode {
     private MecanumSubsystem mecanumSubsystem;
@@ -69,17 +74,18 @@ public class testingteleop extends LinearOpMode {
 //        hangingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //        hangingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        Executor executor = Executors.newFixedThreadPool(4);
+
         waitForStart();
         Gamepad currentGamepad1 = new Gamepad();
-
+        CompletableFuture.runAsync(this::moveRobot, executor);
         Gamepad previousGamepad1 = new Gamepad();
         while (opModeIsActive()) {
             boolean hangingTrue = false;
             boolean lastHangingState = false;
             //timers.resetTimer("GameTimeElapsed");
             previousGamepad1.copy(currentGamepad1);
-            rotation = gamepad1.right_stick_x;
-            mecanumCommand.moveGlobalPartial(true, gamepad1.left_stick_x, -gamepad1.left_stick_y, rotation);
+            mecanumCommand.moveGlobalPartial(true, gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
             //x is for taking pixels in, b is for spitting pixels out
             if (gamepad1.x) {
                 intakeCommand.intakeIn(0.6);
@@ -143,6 +149,11 @@ public class testingteleop extends LinearOpMode {
                     telemetry.update();
                 //}
             }
+
+
         }
+    }
+    private void moveRobot(){
+        mecanumSubsystem.motorProcessTeleOp();
     }
 }
