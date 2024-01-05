@@ -88,12 +88,12 @@ public class OdometrySubsystem extends Specifications {
         if (navSystem != NavSystem.IMU){
             if (navSystem == NavSystem.ODOMETRY){
                 leftEncoder = hardwareMap.get(DcMotor.class, LF_ENCODER);
-                leftEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
+                leftEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
                 leftEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             }
             rightEncoder = hardwareMap.get(DcMotor.class, RT_ENCODER);
             backEncoder = hardwareMap.get(DcMotor.class, BK_ENCODER);
-            rightEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
+            rightEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
             backEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
             rightEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             backEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -133,6 +133,6 @@ public class OdometrySubsystem extends Specifications {
     }
 
     public int rightEncoder(){
-        return rightEncoder.getCurrentPosition();
+        return -rightEncoder.getCurrentPosition();
     }
 }

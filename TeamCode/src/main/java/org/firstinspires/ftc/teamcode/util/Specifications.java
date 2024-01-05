@@ -9,13 +9,13 @@ public class Specifications {
     public final double length = 43.18;
     public final int FINALPOS = 1230;
     //b
-    public final double SideOdometryToCentre = 15.2;
-    public final double lengthFromOdometrySideToFront = 20.75;
+    public final double SideOdometryToCentre = 13.8;
+    public final double lengthFromOdometrySideToFront = 5.7;
     public final double odometryCir = 3.5*Math.PI;
     public final double odometryTick = 8192;
     //beta
     public final double sideOdometryAngleFromCentre = 0;
-    public final double frontOdometryAngleFromCentre = Math.toRadians(13.79);
+    public final double frontOdometryAngleFromCentre = Math.toRadians(22.706);
 
 
     public static double WHEEL_RADIUS = 4.8;
@@ -40,11 +40,16 @@ public class Specifications {
 
     //DS: distance sensor
 
-    public static final String INTAKE_MOTOR = "intakeMotor";
+public static final String INTAKE_MOTOR = "intakeMotor";
     public static final String INTAKE_SERVO = "intakeLinkage";
     public static final String INTAKE_ROLLER = "intakeRoller";
+<<<<<<< HEAD
     public static final String EXTENSION_MOTOR_MAIN = "LeftSlideMotor";
     public static final String EXTENSION_MOTOR_AUX1 = "RightSlideMotor";
+=======
+    public static final String EXTENSION_MOTOR_MAIN = "RightSlideMotor";
+    public static final String EXTENSION_MOTOR_AUX1 = "LeftSlideMotor";
+>>>>>>> 027ca84eb704ca632bd920a834a7d438aa8aa8ec
     public static final String FTLF_MOTOR = "leftForward";
     public static final String FTRT_MOTOR = "rightForward";
     public static final String BKLF_MOTOR = "leftBack";

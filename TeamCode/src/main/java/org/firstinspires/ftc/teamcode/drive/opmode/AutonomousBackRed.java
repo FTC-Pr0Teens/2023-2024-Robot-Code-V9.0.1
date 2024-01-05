@@ -69,19 +69,22 @@ public class AutonomousBackRed extends LinearOpMode {
         while(timer.milliseconds() < 2000) {
             propPosition = webcamSubsystem.getXProp();
         }
+        mecanumCommand.moveToGlobalPosition(20, 0, 0);
 //        sleep(8000);
-        if(propPosition < 60 && propPosition > 0){
-            //pos 2
-            mecanumCommand.moveToGlobalPosition(66, -9.5, 0);
+        /*if(propPosition > 125){
+            //middle
+            mecanumCommand.moveToGlobalPosition(20, 0, 0); //66,-9.5,0
         }
-        else if(propPosition > 60){
+        else if(propPosition < 125 && propPosition > 0){
+            //right
             mecanumCommand.moveToGlobalPosition(62, 0, -1.5);
             sleep(2000);
             mecanumCommand.moveToGlobalPosition(62, -15, -1.5);
         }
         else{
+            //left
             mecanumCommand.moveToGlobalPosition(55, 15, 0);
-        }
+        }*/
 //        mecanumCommand.moveToGlobalPosition(65, -3.5, 0);
         sleep(3000);
         timer.reset();
