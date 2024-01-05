@@ -30,7 +30,7 @@ public class WhyNotGoldenTeleOp extends LinearOpMode {
     private OdometrySubsystem odometrySubsystem;
     private MecanumSubsystem mecanumSubsystem;
 
-    //    private MecanumCommand mecanumCommand;
+        private MecanumCommand mecanumCommand;
 //    private OutputCommand outputCommand;
     private IntakeCommand intakeCommand;
     private IMUSubsystem imuSubsystem;
@@ -67,7 +67,7 @@ public class WhyNotGoldenTeleOp extends LinearOpMode {
 
         gyroOdometry = new GyroOdometry(odometrySubsystem,imuSubsystem);
 
-//        mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem,  gyroOdometry, this);
+        mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem,  gyroOdometry, this);
 
         intakeCommand = new IntakeCommand(hardwareMap);
         outputCommand = new OutputCommand(hardwareMap);
@@ -100,7 +100,7 @@ public class WhyNotGoldenTeleOp extends LinearOpMode {
 
         while(opModeIsActive()) {
 //            mecanumSubsystem.fieldOrientedMove(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x, imuSubsystem.getTheta());
-            mecanumSubsystem.partialMove(true, -gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
+           mecanumCommand.moveGlobalPartial(true, -gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
 //
 //            //setting levels for running lift
 //            if (state == RUNNING_STATE.LIFT_STOP) {
