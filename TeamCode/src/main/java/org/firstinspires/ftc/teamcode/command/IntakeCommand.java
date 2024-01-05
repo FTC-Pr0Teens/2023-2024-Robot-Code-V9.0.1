@@ -42,7 +42,7 @@ public class IntakeCommand {
     }
 
     public void intakeIn(double power) {
-        intake.motorTurnPurePower(true, -Math.abs(power));
+        intake.motorTurnPurePower(true, Math.abs(power));
         intakeRollerIn();
     }
 
@@ -51,7 +51,8 @@ public class IntakeCommand {
     }
 
     public void intakeOut(double power) {
-        intake.motorTurnPurePower(true, Math.abs(power));
+        intake.motorTurnPurePower(true, -Math.abs(power));
+        intakeRollerOut();
     }
 
     public void stopIntake() {
