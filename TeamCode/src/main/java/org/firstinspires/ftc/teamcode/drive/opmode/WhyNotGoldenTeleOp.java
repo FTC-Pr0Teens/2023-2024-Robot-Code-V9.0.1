@@ -30,7 +30,7 @@ public class WhyNotGoldenTeleOp extends LinearOpMode {
     private OdometrySubsystem odometrySubsystem;
     private MecanumSubsystem mecanumSubsystem;
 
-    //    private MecanumCommand mecanumCommand;
+        private MecanumCommand mecanumCommand;
 //    private OutputCommand outputCommand;
     private IntakeCommand intakeCommand;
     private IMUSubsystem imuSubsystem;
@@ -67,7 +67,7 @@ public class WhyNotGoldenTeleOp extends LinearOpMode {
 
         gyroOdometry = new GyroOdometry(odometrySubsystem,imuSubsystem);
 
-//        mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem,  gyroOdometry, this);
+        mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem,  gyroOdometry, this);
 
         intakeCommand = new IntakeCommand(hardwareMap);
         outputCommand = new OutputCommand(hardwareMap);
@@ -95,132 +95,133 @@ public class WhyNotGoldenTeleOp extends LinearOpMode {
         waitForStart();
 
 //        Executor executor = Executors.newFixedThreadPool(7);
-        CompletableFuture.runAsync(this::odometryProcess);
-        CompletableFuture.runAsync(this::LiftProcess);
+//        CompletableFuture.runAsync(this::odometryProcess);
+//        CompletableFuture.runAsync(this::LiftProcess);
 
         while(opModeIsActive()) {
-            mecanumSubsystem.fieldOrientedMove(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x, imuSubsystem.getTheta());
-
-            //setting levels for running lift
-            if (state == RUNNING_STATE.LIFT_STOP) {
-                //set lift level
-                if (gamepad1.a) {
-                    level = 1;
-                    state = RUNNING_STATE.RAISE_LIFT;
-                    timerList.resetTimer("armTilt");
-                    pixelCounter = 0;
-                } else if (gamepad1.b) {
-                    level = 2;
-                    state = RUNNING_STATE.RAISE_LIFT;
-                    timerList.resetTimer("armTilt");
-                    pixelCounter = 0;
-                } else if (gamepad1.y) {
-                    level = 3;
-                    state = RUNNING_STATE.RAISE_LIFT;
-                    timerList.resetTimer("armTilt");
-                    pixelCounter = 0;
-                } else if (gamepad1.x) {
-                    level = 4;
-                    state = RUNNING_STATE.RAISE_LIFT;
-                    timerList.resetTimer("armTilt");
-                    pixelCounter = 0;
-                }
-            }
-            //when lift is raised
-            if (state == RUNNING_STATE.RAISE_LIFT) {
-                outputCommand.armToBoard();
-                outputCommand.tiltToBoard();
-                //change state
-                if(gamepad2.right_bumper){
-                    if(pixelCounter != 0 || timerList.checkTimePassed("armTilt", 1500)) {
-                        //drop pixel (one)
-                        pixelCounter += 1;
-                        timerList.resetTimer("pixelDrop");
-                        outputCommand.outputWheelStop();
-                        state = RUNNING_STATE.DROP;
-                    }
-                }
-                if(gamepad2.b && timerList.checkTimePassed("armTilt", 1500)){
-                    timerList.resetTimer("liftTimer");
-                    state = RUNNING_STATE.RETRACT_LIFT;
-                }
-            }
-
-            if(state == RUNNING_STATE.DROP){
-                if(!timerList.checkTimePassed("pixelDrop", 700)) {
-                    if (timerList.checkTimePassed("pixelDrop", 250)) {
-                        outputCommand.closeGate();
-                        outputCommand.outputWheelIn();
-                    } else {
-                        outputCommand.openGate();
-                    }
-                } else { //if pixel is done dropping, reset the state
-                    if(pixelCounter >= 2){ //if both pixels drop, go to retract
-                        timerList.resetTimer("liftTimer");
-                        state = RUNNING_STATE.RETRACT_LIFT;
-                    } else {
-                        state = RUNNING_STATE.RAISE_LIFT;
-                    }
-                }
-            }
-            if(state == RUNNING_STATE.RETRACT_LIFT){
-                outputCommand.tiltToIdle();
-                outputCommand.armToIdle();
-                if(timerList.checkTimePassed("liftTimer", 2500)){
-                    level = 0;
-                }
-                else {
-                    level = 1; //not sure about this
-                }
-
-                if(multiMotorSubsystem.getPosition() < 18){
-                    pixelCounter = 0;
-                    level = /*-1*/0;
-                    state = RUNNING_STATE.LIFT_STOP;
-                }
-            }
-            //emergency lift controls
-            if(Math.abs(gamepad2.left_stick_y) > 0.8){
-                running = false;
-                state = RUNNING_STATE.DROP;
-                level = /*-1*/0;
-                multiMotorSubsystem.moveLift(-gamepad2.right_stick_y);
-            }
-            else{
-                running = true;
-            }
-            if(gamepad2.x){
-                level = 2;
-                liftTimer.reset();
-                state = RUNNING_STATE.RETRACT_LIFT;
-            }
-            else if(gamepad2.y){
-                //reset the lift condition after manually reaching the bottom
-                state = RUNNING_STATE.LIFT_STOP;
-                multiMotorSubsystem.reset();
-                level = /*-1*/0;
-            }
-            if(gamepad2.dpad_up){
-                intakeCommand.raiseIntake();
-            }
-            else if(gamepad2.dpad_down){
-                intakeCommand.lowerIntake();
-            }
-
-            //intake
-            if(gamepad2.right_trigger > 0.5){
-                intakeCommand.intakeIn(0.9);
-            }
-            else if(gamepad2.left_trigger > 0.5){
-                intakeCommand.intakeOut(0.7);
-            }
-            else{
-                intakeCommand.stopIntake();
-            }
-
-            //TODO: auto center/change zero
-            updateTelemetry();
-        }
+//            mecanumSubsystem.fieldOrientedMove(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x, imuSubsystem.getTheta());
+           mecanumCommand.moveGlobalPartial(true, -gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
+//
+//            //setting levels for running lift
+//            if (state == RUNNING_STATE.LIFT_STOP) {
+//                //set lift level
+//                if (gamepad1.a) {
+//                    level = 1;
+//                    state = RUNNING_STATE.RAISE_LIFT;
+//                    timerList.resetTimer("armTilt");
+//                    pixelCounter = 0;
+//                } else if (gamepad1.b) {
+//                    level = 2;
+//                    state = RUNNING_STATE.RAISE_LIFT;
+//                    timerList.resetTimer("armTilt");
+//                    pixelCounter = 0;
+//                } else if (gamepad1.y) {
+//                    level = 3;
+//                    state = RUNNING_STATE.RAISE_LIFT;
+//                    timerList.resetTimer("armTilt");
+//                    pixelCounter = 0;
+//                } else if (gamepad1.x) {
+//                    level = 4;
+//                    state = RUNNING_STATE.RAISE_LIFT;
+//                    timerList.resetTimer("armTilt");
+//                    pixelCounter = 0;
+//                }
+//            }
+//            //when lift is raised
+//            if (state == RUNNING_STATE.RAISE_LIFT) {
+//                outputCommand.armToBoard();
+//                outputCommand.tiltToBoard();
+//                //change state
+//                if(gamepad2.right_bumper){
+//                    if(pixelCounter != 0 || timerList.checkTimePassed("armTilt", 1500)) {
+//                        //drop pixel (one)
+//                        pixelCounter += 1;
+//                        timerList.resetTimer("pixelDrop");
+//                        outputCommand.outputWheelStop();
+//                        state = RUNNING_STATE.DROP;
+//                    }
+//                }
+//                if(gamepad2.b && timerList.checkTimePassed("armTilt", 1500)){
+//                    timerList.resetTimer("liftTimer");
+//                    state = RUNNING_STATE.RETRACT_LIFT;
+//                }
+//            }
+//
+//            if(state == RUNNING_STATE.DROP){
+//                if(!timerList.checkTimePassed("pixelDrop", 700)) {
+//                    if (timerList.checkTimePassed("pixelDrop", 250)) {
+//                        outputCommand.closeGate();
+//                        outputCommand.outputWheelIn();
+//                    } else {
+//                        outputCommand.openGate();
+//                    }
+//                } else { //if pixel is done dropping, reset the state
+//                    if(pixelCounter >= 2){ //if both pixels drop, go to retract
+//                        timerList.resetTimer("liftTimer");
+//                        state = RUNNING_STATE.RETRACT_LIFT;
+//                    } else {
+//                        state = RUNNING_STATE.RAISE_LIFT;
+//                    }
+//                }
+//            }
+//            if(state == RUNNING_STATE.RETRACT_LIFT){
+//                outputCommand.tiltToIdle();
+//                outputCommand.armToIdle();
+//                if(timerList.checkTimePassed("liftTimer", 2500)){
+//                    level = 0;
+//                }
+//                else {
+//                    level = 1; //not sure about this
+//                }
+//
+//                if(multiMotorSubsystem.getPosition() < 18){
+//                    pixelCounter = 0;
+//                    level = /*-1*/0;
+//                    state = RUNNING_STATE.LIFT_STOP;
+//                }
+//            }
+//            //emergency lift controls
+//            if(Math.abs(gamepad2.left_stick_y) > 0.8){
+//                running = false;
+//                state = RUNNING_STATE.DROP;
+//                level = /*-1*/0;
+//                multiMotorSubsystem.moveLift(-gamepad2.right_stick_y);
+//            }
+//            else{
+//                running = true;
+//            }
+//            if(gamepad2.x){
+//                level = 2;
+//                liftTimer.reset();
+//                state = RUNNING_STATE.RETRACT_LIFT;
+//            }
+//            else if(gamepad2.y){
+//                //reset the lift condition after manually reaching the bottom
+//                state = RUNNING_STATE.LIFT_STOP;
+//                multiMotorSubsystem.reset();
+//                level = /*-1*/0;
+//            }
+//            if(gamepad2.dpad_up){
+//                intakeCommand.raiseIntake();
+//            }
+//            else if(gamepad2.dpad_down){
+//                intakeCommand.lowerIntake();
+//            }
+//
+//            //intake
+//            if(gamepad2.right_trigger > 0.5){
+//                intakeCommand.intakeIn(0.9);
+//            }
+//            else if(gamepad2.left_trigger > 0.5){
+//                intakeCommand.intakeOut(0.7);
+//            }
+//            else{
+//                intakeCommand.stopIntake();
+//            }
+//
+//            //TODO: auto center/change zero
+//            updateTelemetry();
+         }
 
     }
     public void LiftProcess(){
