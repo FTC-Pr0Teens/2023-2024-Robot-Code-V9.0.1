@@ -69,6 +69,11 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
         timer = new ElapsedTime();
 
+        //initializing some variables
+        boolean middle = false;
+        boolean left = false;
+        boolean right = false;
+
         //resets the different subsystems to for preparation
         odometrySubsystem.reset();
         imu.resetAngle();
@@ -136,15 +141,15 @@ public class AutonomousBackBlueRough extends LinearOpMode {
             if (propPosition > 100) {
                 //pos right
                 mecanumCommand.moveToGlobalPosition(46, -78.5, 1.65); //1.65 radians = 94.53804 degrees
-               //move to board
-                mecanumCommand.moveToGlobalPosition(46, -78.5, 1.65);
-
+                right = true;
             } else if (propPosition <= 100 && propPosition > 0) {
                 //pos middle
                 mecanumCommand.moveToGlobalPosition(61, -80, 1.65);
+                middle = true;
             } else {
                 //pos left
                 mecanumCommand.moveToGlobalPosition(68, -81.5, 1.65);
+                left = true;
             }
         }
         timer.reset();
@@ -158,20 +163,45 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         sleep(6000);
         level = 0;
 
-        //attempt on getting more pixels
+        //attempt on getting more pixels(rough values)
+        if(right == true) {
+            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //strafe leftward to the middle: 180 degrees?
+        }else if(middle = true) {
 
-        mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //strafe leftward to the middle: 180 degrees?
-        mecanumCommand.moveToGlobalPosition(-10, 100,   0); //going forward to white pixels
+        }else if(left = true) {
+
+        }
+
+        mecanumCommand.moveToGlobalPosition(-10, 100, 0); //going forward to white pixels
 
         timer.reset();
         while (timer.milliseconds() < 1000){
             intakeCommand.intakeIn(0.3);
         }
+        intakeCommand.stopIntake();
+        //prep for putting a pixel on to the backboard
+        level = 1; //rise the lift to level 1
+        outputCommand.armToBoard(); // arm towards the board
+        outputCommand.tiltToBoard(); //tilt the output to the board
+        timer.reset();
+
+        mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //going backward
+        mecanumCommand.moveToGlobalPosition(46, -78.5, 0); //going leftward to the board
+
+        timer.reset();
+        while (timer.milliseconds() < 500){
+            outputCommand.openGate();
+        }
+        //sets every output related components to its idle position in preparation of the driver period
+        outputCommand.closeGate();
+        outputCommand.tiltToIdle();
+        outputCommand.armToIdle();
+        sleep(6000);
+        level = 0;
 
 
         mecanumCommand.moveToGlobalPosition(0, -84, 1.65); //checkpoint
-
-
+        
 
     }
 
