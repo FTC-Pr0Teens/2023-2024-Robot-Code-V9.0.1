@@ -106,6 +106,8 @@ public class testingteleop extends LinearOpMode {
             if (gamepad1.back) {
                 droneShooter.setContinuousServoPower(0.7);
                 telemetry.addLine("Paper airplane launched");
+            }else{
+                droneShooter.setContinuousServoPower(0);
             }
 //          //hangingServo toggle
             if (gamepad1.right_trigger > 0.5) {
