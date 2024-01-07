@@ -43,20 +43,15 @@ public class Specifications {
 public static final String INTAKE_MOTOR = "intakeMotor";
     public static final String INTAKE_SERVO = "intakeLinkage";
     public static final String INTAKE_ROLLER = "intakeRoller";
-<<<<<<< HEAD
     public static final String EXTENSION_MOTOR_MAIN = "LeftSlideMotor";
     public static final String EXTENSION_MOTOR_AUX1 = "RightSlideMotor";
-=======
-    public static final String EXTENSION_MOTOR_MAIN = "RightSlideMotor";
-    public static final String EXTENSION_MOTOR_AUX1 = "LeftSlideMotor";
->>>>>>> 027ca84eb704ca632bd920a834a7d438aa8aa8ec
     public static final String FTLF_MOTOR = "leftForward";
     public static final String FTRT_MOTOR = "rightForward";
     public static final String BKLF_MOTOR = "leftBack";
     public static final String BKRT_MOTOR = "rightBack";
-    public static final String BK_ENCODER = "leftBack"; //3
-    public static final String LF_ENCODER = "rightBack"; //port 2
-    public static final String RT_ENCODER = "rightForward"; //port 0
+    public static final String BK_ENCODER = "rightForward";
+    public static final String LF_ENCODER = "rightBack";
+    public static final String RT_ENCODER = "lefBack";
     public static final String IMU = "imu";
 
     //output stuff, fill in names later
