@@ -165,7 +165,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
         //attempt on getting more pixels(rough values)
         if(right == true) {
-            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //strafe leftward to the middle: 180 degrees? - coordinates not right/measured 
+            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //strafe leftward to the middle: 180 degrees? - coordinates not right/measured
         }else if(middle = true) {
             mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //coordinates not right/measured
         }else if(left = true) {
@@ -185,8 +185,8 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         outputCommand.tiltToBoard(); //tilt the output to the board
         timer.reset();
 
-        mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //going backward
-        mecanumCommand.moveToGlobalPosition(46, -78.5, 0); //going leftward to the board
+        mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //going backward - coordinates not right/measured
+        mecanumCommand.moveToGlobalPosition(46, -78.5, 0); //going leftward to the board - coordinates not right/measured 
 
         timer.reset();
         while (timer.milliseconds() < 500){
