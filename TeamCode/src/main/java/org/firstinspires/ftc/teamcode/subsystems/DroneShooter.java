@@ -2,16 +2,19 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.hardware.*;
 
+import org.firstinspires.ftc.teamcode.util.Specifications;
+
 public class DroneShooter {
     //Servo Variable
-    private CRServo continuousServo;
+    private CRServo droneServo;
 
     public DroneShooter (HardwareMap hardwareMap) {
-        continuousServo = hardwareMap.get(CRServo.class, "continuousServo");
-        continuousServo.setDirection(DcMotorSimple.Direction.FORWARD); // Spin direction
+        droneServo = hardwareMap.get(CRServo.class, Specifications.DRONE_SHOOTER
+        );
+        droneServo.setDirection(DcMotorSimple.Direction.FORWARD); // Spin direction
     }
 
     public void setContinuousServoPower(double power) {
-        continuousServo.setPower(power);
+        droneServo.setPower(power);
     }
 }
