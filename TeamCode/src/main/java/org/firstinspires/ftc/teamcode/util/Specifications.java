@@ -51,7 +51,7 @@ public static final String INTAKE_MOTOR = "intakeMotor";
     public static final String BKRT_MOTOR = "rightBack";
     public static final String BK_ENCODER = "rightForward";
     public static final String LF_ENCODER = "rightBack";
-    public static final String RT_ENCODER = "lefBack";
+    public static final String RT_ENCODER = "leftBack";
     public static final String DRONE_SHOOTER = "droneServo";
 
     public static final String HANGING_SERVO = "hangingServo";

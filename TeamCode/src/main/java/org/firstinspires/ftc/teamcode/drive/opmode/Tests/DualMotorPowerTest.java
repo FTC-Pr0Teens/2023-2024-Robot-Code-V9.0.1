@@ -42,27 +42,32 @@ public class DualMotorPowerTest extends LinearOpMode {
             if(gamepad1.a){
                 level = 4;
                 targetPosition = 3100;
+//                multiMotorCommand.LiftUp(true, 4);
             }
             else if(gamepad1.b){
                 level = 3;
                 targetPosition = 0;
+//                multiMotorCommand.LiftUp(true, 3);
             }
             else if(gamepad1.y){
                 level = 2;
                 targetPosition = 3100;
+                multiMotorCommand.LiftUp(true, 2);
             }
             else if(gamepad1.x){
                 level = 1;
                 targetPosition = 1300;
+                multiMotorCommand.LiftUp(true, 1);
             }
             else if(gamepad1.dpad_down){
                 level = 0;
                 targetPosition = 0;
+                multiMotorCommand.LiftUp(true, 0);
             }
-//            else {
-//                multiMotorSubsystem.moveLift(gamepad1.left_stick_y);
-//            }
-            mecanumSubsystem.fieldOrientedMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, 0);
+            else {
+                multiMotorSubsystem.moveLift(gamepad1.left_stick_y);
+            }
+//            mecanumSubsystem.fieldOrientedMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, 0);
 
             packet.put("position", multiMotorSubsystem.getPosition());
             packet.put("power", multiMotorSubsystem.getMainPower());
@@ -82,6 +87,9 @@ public class DualMotorPowerTest extends LinearOpMode {
             telemetry.addData("auxpower", multiMotorSubsystem.getAux1Power());
             telemetry.addData("auxpos", multiMotorSubsystem.getAuxPos());
             telemetry.addData("derivativeValue", multiMotorSubsystem.getDerivativeValue());
+            telemetry.addData("cascadeOutput", multiMotorSubsystem.getCascadeOutput());
+            telemetry.addData("outputPositional", multiMotorSubsystem.getCascadePositional());
+            telemetry.addData("outputVelocity", multiMotorSubsystem.getCascadeVelocity());
             telemetry.addData("level", level);
             telemetry.update();
             dash.sendTelemetryPacket(packet);
@@ -90,7 +98,7 @@ public class DualMotorPowerTest extends LinearOpMode {
 
     public void liftProcess(){
         while(opModeIsActive()){
-            multiMotorCommand.LiftUp(true, level);
+//            multiMotorCommand.LiftUp(true, level);
         }
     }
 }
