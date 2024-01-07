@@ -27,7 +27,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-@Autonomous(name="Autonomous Back Blue")
+@Autonomous(name="Autonomous Back Blue Rough")
 public class AutonomousBackBlueRough extends LinearOpMode {
 
     //Custom imports
