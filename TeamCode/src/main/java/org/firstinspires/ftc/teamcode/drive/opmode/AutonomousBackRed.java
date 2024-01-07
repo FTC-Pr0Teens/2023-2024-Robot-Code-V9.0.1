@@ -71,20 +71,19 @@ public class AutonomousBackRed extends LinearOpMode {
         }
         mecanumCommand.moveToGlobalPosition(20, 0, 0);
 //        sleep(8000);
-        /*if(propPosition > 125){
+        if(propPosition > 125){ //if middle
             //middle
             mecanumCommand.moveToGlobalPosition(20, 0, 0); //66,-9.5,0
         }
-        else if(propPosition < 125 && propPosition > 0){
+        else if(propPosition < 125 && propPosition > 0){  // if right
             //right
             mecanumCommand.moveToGlobalPosition(62, 0, -1.5);
             sleep(2000);
             mecanumCommand.moveToGlobalPosition(62, -15, -1.5);
         }
-        else{
-            //left
+        else{ //if left
             mecanumCommand.moveToGlobalPosition(55, 15, 0);
-        }*/
+        }
 //        mecanumCommand.moveToGlobalPosition(65, -3.5, 0);
         sleep(3000);
         timer.reset();

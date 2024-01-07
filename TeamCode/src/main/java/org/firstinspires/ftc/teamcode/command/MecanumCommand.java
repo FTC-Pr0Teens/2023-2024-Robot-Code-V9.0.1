@@ -618,9 +618,9 @@ public class MecanumCommand {
         globalYController.integralReset();
         globalXController.integralReset();
         globalThetaController.integralReset();
-        while (Math.abs(targetX - gyroOdometry.x) > 2.5
-                || Math.abs(targetY - gyroOdometry.y) > 2.5
-                || Math.abs(targetTheta - gyroOdometry.theta) > 0.15) {
+        while (Math.abs(targetX - gyroOdometry.x) > 2.5   //if within 2.5 ticks of target X position
+                || Math.abs(targetY - gyroOdometry.y) > 2.5 //if within 2.5 ticks of target y position
+                || Math.abs(targetTheta - gyroOdometry.theta) > 0.15) { //if within 0.15 radians of target position
 
             mecanumSubsystem.fieldOrientedMove(
                     globalYController.outputPositional(targetY, gyroOdometry.y),
@@ -630,6 +630,37 @@ public class MecanumCommand {
         }
         mecanumSubsystem.stop(true);
     }
+
+    public void moveToCheckpoint(double targetX, double targetY, double targetTheta){
+        // stop moving if within 5 ticks or 0.2 radians from the position
+        globalYController.integralReset();
+        globalXController.integralReset();
+        globalThetaController.integralReset();
+        while (Math.abs(targetX - gyroOdometry.x) > 10   //if within 2.5 ticks of target X position
+                || Math.abs(targetY - gyroOdometry.y) > 10 //if within 2.5 ticks of target y position
+                || Math.abs(targetTheta - gyroOdometry.theta) > 0.15) { //if within 0.15 radians of target position
+
+            double minSpeed = 0.8; // set a minimum speed threshold
+            double boost = 0.2 ; //very basic idea of feedforward
+            //implementing feedforward
+
+            double yControl = globalYController.outputPositional(targetY, gyroOdometry.y) + boost;
+            double xControl = globalXController.outputPositional(targetX, gyroOdometry.x) + boost;
+            double thetaControl = globalThetaController.outputPositional(targetTheta, gyroOdometry.theta);
+
+            // Ensure that the speed does not drop below the minimum threshold
+            yControl = Math.max(yControl, minSpeed); //Math.max pretty much returns whatever value is larger.
+            xControl = Math.max(xControl, minSpeed);
+            thetaControl = Math.max(thetaControl, minSpeed);
+
+            mecanumSubsystem.fieldOrientedMove(yControl, xControl, thetaControl, gyroOdometry.theta);
+        }
+        mecanumSubsystem.stop(true);
+    }
+
+
+
+
     public void moveRotation(double targetTheta) {
         // stop moving if within 5 ticks or 0.2 radians from the position
         while (Math.abs(targetTheta - odometrySubsystem.theta) > 0.1) {

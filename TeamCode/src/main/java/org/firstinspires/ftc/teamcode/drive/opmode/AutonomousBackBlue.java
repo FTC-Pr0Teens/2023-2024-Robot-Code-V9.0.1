@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
+// Android and FTC SDK imports for robot operation and telemetry
 import android.os.Build;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -28,6 +29,8 @@ import java.util.concurrent.TimeUnit;
 
 @Autonomous(name="Autonomous Back Blue")
 public class AutonomousBackBlue extends LinearOpMode {
+
+    //Custom imports
     private MecanumSubsystem mecanumSubsystem;
     private MecanumCommand mecanumCommand;
     private IMUSubsystem imu;
@@ -51,6 +54,7 @@ public class AutonomousBackBlue extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        //initializing the subsystems
         imu = new IMUSubsystem(hardwareMap);
         mecanumSubsystem = new MecanumSubsystem(hardwareMap);
         odometrySubsystem = new OdometrySubsystem(hardwareMap);
@@ -65,6 +69,7 @@ public class AutonomousBackBlue extends LinearOpMode {
         webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
         timer = new ElapsedTime();
 
+        //resets the different subsystems to for preparation
         odometrySubsystem.reset();
         imu.resetAngle();
 
@@ -80,8 +85,9 @@ public class AutonomousBackBlue extends LinearOpMode {
         CompletableFuture.runAsync(this::updateTelemetry, executor);
         CompletableFuture.runAsync(this::liftProcess, executor);
         webcamSubsystem.getXProp();
-        double propPosition = 0;
+        double propPosition = 0; //propPosition - using the prop the identify the place of he robot
         timer.reset();
+
         while(timer.milliseconds() < 1000) {
             propPosition = webcamSubsystem.getXProp();
         }
@@ -106,6 +112,10 @@ public class AutonomousBackBlue extends LinearOpMode {
                 mecanumCommand.moveToGlobalPosition(57, 0, 0);
                 sleep(1500);
                 mecanumCommand.moveToGlobalPosition(57, 17.5, 0.832);
+
+                //move to board
+                mecanumCommand.moveToGlobalPosition(-400.5, 17.5, 0.2);
+
             }
         }
         timer.reset();
@@ -141,7 +151,10 @@ public class AutonomousBackBlue extends LinearOpMode {
         outputCommand.armToIdle();
         sleep(6000);
         level = 0;
-        mecanumCommand.moveToGlobalPosition(0, -84, 1.65);
+        mecanumCommand.moveToGlobalPosition(0, -84, 1.65); //checkpoint
+
+
+
     }
 
     public void updateOdometry() {
