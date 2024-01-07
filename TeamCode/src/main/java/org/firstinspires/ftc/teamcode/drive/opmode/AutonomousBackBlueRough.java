@@ -165,11 +165,11 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
         //attempt on getting more pixels(rough values)
         if(right == true) {
-            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //strafe leftward to the middle: 180 degrees?
+            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //strafe leftward to the middle: 180 degrees? - coordinates not right/measured 
         }else if(middle = true) {
-
+            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //coordinates not right/measured
         }else if(left = true) {
-
+            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //coordinates not right/measured
         }
 
         mecanumCommand.moveToGlobalPosition(-10, 100, 0); //going forward to white pixels
@@ -201,7 +201,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
 
         mecanumCommand.moveToGlobalPosition(0, -84, 1.65); //checkpoint
-        
+
 
     }
 
