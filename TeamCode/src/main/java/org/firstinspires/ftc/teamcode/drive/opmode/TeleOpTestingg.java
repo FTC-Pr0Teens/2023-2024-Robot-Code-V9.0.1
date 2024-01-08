@@ -53,6 +53,7 @@ public class TeleOpTestingg extends LinearOpMode {
     private Servo rightArm;
     private Servo leftTilt;
     private Servo rightTilt;
+    private Servo gate;
 
     TimerList timers = new TimerList();
 
@@ -86,6 +87,8 @@ public class TeleOpTestingg extends LinearOpMode {
         rightArm = hardwareMap.get(Servo.class, Specifications.RIGHT_OUTPUT_ARM);
         leftTilt = hardwareMap.get(Servo.class, Specifications.LEFT_OUTPUT_TILT);
         rightTilt = hardwareMap.get(Servo.class, Specifications.RIGHT_OUTPUT_TILT);
+        gate = hardwareMap.get(Servo.class, Specifications.PIXEL_GATE);
+        gate.setDirection(Servo.Direction.FORWARD);
 
         leftArm.setDirection(Servo.Direction.REVERSE);
         rightArm.setDirection(Servo.Direction.FORWARD);
@@ -100,12 +103,13 @@ public class TeleOpTestingg extends LinearOpMode {
         waitForStart();
 
         CompletableFuture.runAsync(this::processLift, executor);
+        CompletableFuture.runAsync(this::runMovement, executor);
 
 
         outputTimer.reset();
 
         while(opModeIsActive()) {
-            //runMovement();
+            runMovement();
             /*
             processLift has to continuously run because PID only allows you to set the lift to
             a certain height while the lift must run forever
@@ -133,17 +137,24 @@ public class TeleOpTestingg extends LinearOpMode {
             }
 
             if (gamepad1.dpad_down){
-                leftArm.setPosition(0.77);
-                rightArm.setPosition(0.77);
+                //outputCommand.armToPos(0.81);
+                //leftTilt.setPosition(0.1);
+                //rightTilt.setPosition(0.1);
+                gate.setPosition(1);
             } else if (gamepad1.dpad_right){
-                leftArm.setPosition(0.85);
-                rightArm.setPosition(0.85);
+                outputCommand.armToPos(0.87);
+                //leftTilt.setPosition(0.15);
+                //rightTilt.setPosition(0.15);
+                gate.setPosition(0.8);
             } else if (gamepad1.dpad_up){
-                leftArm.setPosition(0.95);
-                rightArm.setPosition(0.95);
+                outputCommand.armToPos(0.865);
+                //leftTilt.setPosition(0.2);
+                //rightTilt.setPosition(0.2);
+                gate.setPosition(0.6);
             } else if (gamepad1.dpad_left){
-                leftArm.setPosition(0.7);
-                rightArm.setPosition(0.7);
+                outputCommand.armToPos(0.86);
+                //leftTilt.setPosition(0.25);
+                //rightTilt.setPosition(0.25);
             }
 
 
@@ -173,7 +184,7 @@ public class TeleOpTestingg extends LinearOpMode {
                 }
             }
 
-
+            mecanumCommand.moveGlobalPartial(true, gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
             telemetry.addData("Left Output Arm Pos:", leftArm.getPosition());
             telemetry.addData("Right Output Arm Pos:", rightArm.getPosition());
             telemetry.addData("Left Tilt Arm Pos:", leftTilt.getPosition());
@@ -190,6 +201,9 @@ public class TeleOpTestingg extends LinearOpMode {
 
         }
 
+    }
+    private void runMovement(){
+        mecanumSubsystem.fieldOrientedMove(-gamepad1.left_stick_x, -gamepad1.left_stick_y, -gamepad1.right_stick_x, imuSubsystem.getTheta());
     }
 
     private void processLift(){
@@ -220,8 +234,7 @@ public class TeleOpTestingg extends LinearOpMode {
                 if (outputTimer.milliseconds() > 1000) {
                     liftState.clear();
                 } else if (outputTimer.milliseconds() > 250) { //bring lift up BEFORE extending arm
-                    leftArm.setPosition(0.718);
-                    rightArm.setPosition(0.718);
+                    outputCommand.armToBoard();
                     outputCommand.tiltToBoard();
                 } else {
                     level = 2;
