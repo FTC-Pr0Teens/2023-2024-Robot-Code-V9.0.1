@@ -39,7 +39,8 @@ public class testingteleop extends LinearOpMode {
     private OdometrySubsystem odometrySubsystem;
     private GyroOdometry gyroOdometry;
     private DroneShooter droneShooter;
-    private Servo hangingServo;
+    private Servo hangingServoL;
+    private Servo hangingServoR;
     private DcMotor hangingMotor;
     private ElapsedTime timer;
     private TimerList timers = new TimerList();
@@ -67,14 +68,17 @@ public class testingteleop extends LinearOpMode {
         intakeCommand.lowerIntake();
 
         //INITIALIZES THE HANGING SERVO
-//        hangingServo = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO);
-//        hangingServo.setPosition(0.35);
+        hangingServoL = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_L);
+        hangingServoL.setPosition(0.35);
+
+        hangingServoR = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_R);
+        hangingServoR.setPosition(0.35);
 ////
 ////        //INITIALIZES THE HANGING MOTOR
-//        hangingMotor = hardwareMap.dcMotor.get(Specifications.HANGING_MOTOR);
-//        hangingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        hangingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        hangingMotor.setPower(0);
+        hangingMotor = hardwareMap.dcMotor.get(Specifications.HANGING_MOTOR);
+        hangingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        hangingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hangingMotor.setPower(0);
         boolean hangingArmInPlace = false;
         boolean robotIsHanging = false;
         intakeCommand.lowerIntake();
@@ -104,7 +108,7 @@ public class testingteleop extends LinearOpMode {
             }
             //Drone Launcher
             if (gamepad1.back) {
-                droneShooter.setContinuousServoPower(0.7);
+                droneShooter.setContinuousServoPower(1);
                 telemetry.addLine("Paper airplane launched");
             }else{
                 droneShooter.setContinuousServoPower(0);
@@ -116,7 +120,8 @@ public class testingteleop extends LinearOpMode {
 //                telemetry.addLine("Preparing to hang");
 //            }
 //            if (hangingArmInPlace) {
-//                hangingServo.setPosition(0.75);
+//                hangingServoL.setPosition(0.95);
+                    //hangingServoR.setPosition(0.95);
 //                telemetry.addLine("Servo in position");
 //            } else {
 //                hangingServo.setPosition(0.2);
