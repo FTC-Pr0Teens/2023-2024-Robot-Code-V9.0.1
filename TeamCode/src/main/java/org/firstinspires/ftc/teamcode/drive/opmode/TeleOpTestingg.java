@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
-import androidx.loader.content.Loader;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -11,17 +9,18 @@ import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.MecanumCommand;
 import org.firstinspires.ftc.teamcode.command.MultiMotorCommand;
 import org.firstinspires.ftc.teamcode.command.OutputCommand;
-import org.firstinspires.ftc.teamcode.subsystems.ColorSensorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IMUSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MultiMotorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
-import org.firstinspires.ftc.teamcode.util.GridAutoCentering;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
 import org.firstinspires.ftc.teamcode.util.Specifications;
 import org.firstinspires.ftc.teamcode.util.TimerList;
 
 import java.util.HashSet;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 @TeleOp (name = "TeleOpTesting")
 public class TeleOpTestingg extends LinearOpMode {
@@ -37,13 +36,14 @@ public class TeleOpTestingg extends LinearOpMode {
     private IMUSubsystem imuSubsystem;
 
 
-    ElapsedTime timerrr = new ElapsedTime();
+    ElapsedTime outputTimer = new ElapsedTime();
+    ElapsedTime gateTimer = new ElapsedTime();
 
-    //private IntakeCommand intakeCommand;
+    private IntakeCommand intakeCommand;
 
     private OutputCommand outputCommand;
 
-    private double rotation;
+    private boolean armBeingProcessed;
 
     //true if lift has already reached destined location and ready to return to original pos
     private boolean liftDone;
@@ -53,14 +53,17 @@ public class TeleOpTestingg extends LinearOpMode {
     private Servo rightArm;
     private Servo leftTilt;
     private Servo rightTilt;
+    private Servo gate;
+
+    TimerList timers = new TimerList();
 
     private HashSet <LIFT_STATE> liftState = new HashSet<>();
 
     private enum LIFT_STATE {
         LIFT_IDLE,
         LIFT_MIDDLE,
-        LIFT_END
-
+        LIFT_END,
+        DROP_PIXEL
     }
 
     @Override
@@ -75,7 +78,7 @@ public class TeleOpTestingg extends LinearOpMode {
         mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem,  gyroOdometry, this);
         odometrySubsystem = new OdometrySubsystem(hardwareMap);
 
-        //intakeCommand = new IntakeCommand(hardwareMap);
+        intakeCommand = new IntakeCommand(hardwareMap);
 
         outputCommand = new OutputCommand(hardwareMap);
         mecanumSubsystem.reset(); // delete later
@@ -84,6 +87,8 @@ public class TeleOpTestingg extends LinearOpMode {
         rightArm = hardwareMap.get(Servo.class, Specifications.RIGHT_OUTPUT_ARM);
         leftTilt = hardwareMap.get(Servo.class, Specifications.LEFT_OUTPUT_TILT);
         rightTilt = hardwareMap.get(Servo.class, Specifications.RIGHT_OUTPUT_TILT);
+        gate = hardwareMap.get(Servo.class, Specifications.PIXEL_GATE);
+        gate.setDirection(Servo.Direction.FORWARD);
 
         leftArm.setDirection(Servo.Direction.REVERSE);
         rightArm.setDirection(Servo.Direction.FORWARD);
@@ -91,19 +96,20 @@ public class TeleOpTestingg extends LinearOpMode {
         leftTilt.setDirection(Servo.Direction.FORWARD);
         rightTilt.setDirection(Servo.Direction.REVERSE);
 
+        Executor executor = Executors.newFixedThreadPool(3);
+
+        armBeingProcessed = false;
+
         waitForStart();
 
-        timerrr.reset();
+        CompletableFuture.runAsync(this::processLift, executor);
+        CompletableFuture.runAsync(this::runMovement, executor);
+
+
+        outputTimer.reset();
 
         while(opModeIsActive()) {
-            telemetry.addData("liftHeight (subsystem)", multiMotorSubsystem.getPosition());
-            telemetry.addData("Motor 1:", multiMotorSubsystem.main.getCurrentPosition());
-            telemetry.addData("Motor 2:", multiMotorSubsystem.aux1.getCurrentPosition());
-            telemetry.addData("currentLevel (command)", multiMotorCommand.getLevel());
-            telemetry.addData("READ THIS: Lift Level (1, 2, or 3", level);
-
-            telemetry.update();
-            //runMovement();
+            runMovement();
             /*
             processLift has to continuously run because PID only allows you to set the lift to
             a certain height while the lift must run forever
@@ -111,22 +117,44 @@ public class TeleOpTestingg extends LinearOpMode {
             //isLiftExtracted();
             processLift();
             checkLiftState();
+            isPixelDropping();
 
 
             //lift stuff
 
-            if (gamepad1.x) {
+            if (gamepad1.x && !liftState.contains(LIFT_STATE.LIFT_END)) {
                 //level = 0;
-                timerrr.reset();
-                liftState.add(LIFT_STATE.LIFT_END);
+                outputTimer.reset();
+                liftState.add(LIFT_STATE.LIFT_END); //go to level 2
             } else if (gamepad1.y) {
                 //level = 1;
-                timerrr.reset();
-                liftState.add(LIFT_STATE.LIFT_MIDDLE);
+                outputTimer.reset();
+                liftState.add(LIFT_STATE.LIFT_MIDDLE); //go to level 1
             } else if (gamepad1.a){
                 //level = 2;
-                timerrr.reset();
-                liftState.add(LIFT_STATE.LIFT_IDLE);
+                outputTimer.reset();
+                liftState.add(LIFT_STATE.LIFT_IDLE); //go to bottom, reset
+            }
+
+            if (gamepad1.dpad_down){
+                //outputCommand.armToPos(0.81);
+                //leftTilt.setPosition(0.1);
+                //rightTilt.setPosition(0.1);
+                gate.setPosition(1);
+            } else if (gamepad1.dpad_right){
+                outputCommand.armToPos(0.87);
+                //leftTilt.setPosition(0.15);
+                //rightTilt.setPosition(0.15);
+                gate.setPosition(0.8);
+            } else if (gamepad1.dpad_up){
+                outputCommand.armToPos(0.865);
+                //leftTilt.setPosition(0.2);
+                //rightTilt.setPosition(0.2);
+                gate.setPosition(0.6);
+            } else if (gamepad1.dpad_left){
+                outputCommand.armToPos(0.86);
+                //leftTilt.setPosition(0.25);
+                //rightTilt.setPosition(0.25);
             }
 
 
@@ -136,41 +164,27 @@ public class TeleOpTestingg extends LinearOpMode {
 
 
 
-            //dropper stuff
-
-            /*
             if (gamepad1.right_trigger > 0.5){
+                timers.resetTimer("gate");
+                liftState.add(LIFT_STATE.DROP_PIXEL);
+            }
+
+            if (gamepad1.left_trigger > 0.5){
                 outputCommand.openGate();
-            } else if (gamepad1.b){
-                outputCommand.tiltToBoard();
-                outputCommand.armToBoard();
-            } else if (gamepad1.left_trigger > 0.5){
-                outputCommand.tiltToIdle();
-                outputCommand.armToIdle();
+            }
+            if(liftState.isEmpty()) {
+                if (gamepad1.right_bumper) {
+                    intakeCommand.intakeIn(0.7);
+                    intakeCommand.intakeRollerIn();
+                } else if (gamepad1.left_bumper) {
+                    intakeCommand.intakeOut(0.7);
+                    intakeCommand.intakeRollerOut();
+                } else {
+                    intakeCommand.stopIntake();
+                }
             }
 
-             */
-            if (gamepad1.right_trigger > 0.5){
-                outputCommand.armToBoard();
-                outputCommand.tiltToBoard();
-            } else if (gamepad1.left_trigger > 0.5){
-                outputCommand.armToIdle();
-                outputCommand.tiltToIdle();
-            }
-
-            if (gamepad1.dpad_right){
-               outputCommand.openGate();
-            } else if (gamepad1.dpad_down){
-               outputCommand.closeGate();
-            } else if (gamepad1.dpad_up){
-                leftArm.setPosition(0.12);
-                rightArm.setPosition(0.12);
-            } else if (gamepad1.dpad_left){
-                leftArm.setPosition(0.13);
-                rightArm.setPosition(0.13);
-            }
-
-
+            mecanumCommand.moveGlobalPartial(true, gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
             telemetry.addData("Left Output Arm Pos:", leftArm.getPosition());
             telemetry.addData("Right Output Arm Pos:", rightArm.getPosition());
             telemetry.addData("Left Tilt Arm Pos:", leftTilt.getPosition());
@@ -180,74 +194,71 @@ public class TeleOpTestingg extends LinearOpMode {
             telemetry.addData("Motor 2:", multiMotorSubsystem.aux1.getCurrentPosition());
             telemetry.addData("currentLevel (command)", multiMotorCommand.getLevel());
             telemetry.addData("READ THIS: Lift Level (1, 2, or 3", level);
-
+            telemetry.addData("gateTimer:", gateTimer.time());
             telemetry.update();
 
-/*
-            switch (level){
-                case 0:
-                    //go back to arm idle position (lift retracts so intake can intake pixel for outtake)
-                    outputCommand.tiltToIdle();
-                    outputCommand.armToIdle();
-                    break;
-                case 1:
-                case 2:
-                    //case 1 and 2 are lift levels, procedure for arm and tilt will be the same
-                    outputCommand.tiltToBoard();
-                    outputCommand.armToBoard();
-                    break;
 
-            }
-
- */
 
         }
 
     }
-
     private void runMovement(){
-        //rotation = gamepad1.right_stick_x;
-        //mecanumCommand.moveGlobalPartial(true, gamepad1.left_stick_x, -gamepad1.left_stick_y, rotation);
-        mecanumSubsystem.fieldOrientedMove(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x, imuSubsystem.getTheta());
+        mecanumSubsystem.fieldOrientedMove(-gamepad1.left_stick_x, -gamepad1.left_stick_y, -gamepad1.right_stick_x, imuSubsystem.getTheta());
     }
 
     private void processLift(){
         multiMotorCommand.LiftUp(true, level);
-       }
-
-    private void checkLiftState(){
-
-        if (liftState.contains(LIFT_STATE.LIFT_IDLE)){
-            level = 0;
-            if (timerrr.milliseconds() > 250) {
-                outputCommand.tiltToIdle();
-                outputCommand.armToIdle();
-            }
-
-
-            liftState.clear();
-        } else if (liftState.contains(LIFT_STATE.LIFT_MIDDLE)){
-            level = 1;
-           if (!liftState.contains(LIFT_STATE.LIFT_END)){
-               if(timerrr.milliseconds() > 250){
-                   outputCommand.tiltToIdle();
-                   outputCommand.armToIdle();
-               }
-            }
-            liftState.clear();
-        } else if (liftState.contains(LIFT_STATE.LIFT_END)){
-            level = 2;
-            if(!liftState.contains(LIFT_STATE.LIFT_MIDDLE)){
-                if(timerrr.milliseconds() > 250){
-                    outputCommand.tiltToIdle();
-                    outputCommand.armToIdle();
-                }
-            }
-            liftState.clear();
-        }
-
-
     }
 
+    private void checkLiftState(){
+        if (liftState.contains(LIFT_STATE.LIFT_IDLE)){
+            outputCommand.tiltToIdle(); //bring arm down BEFORE bringing lift down
+            outputCommand.armToIdle();
+            if (outputTimer.milliseconds() > 900) {
+                level = 0;
+                if(outputTimer.milliseconds() > 1300) liftState.clear(); //moved here
+            }
+        } else if (liftState.contains(LIFT_STATE.LIFT_MIDDLE)){
+            if (!liftState.contains(LIFT_STATE.LIFT_MIDDLE)) {
+                if (outputTimer.milliseconds() > 1000) {
+                    liftState.clear();
+                } else if (outputTimer.milliseconds() > 250) { //bring lift up BEFORE extending arm
+                    outputCommand.armToBoard();
+                    outputCommand.tiltToBoard();
+                } else {
+                    level = 1;
+                }
+            }
+        } else if (liftState.contains(LIFT_STATE.LIFT_END)){
+            if (!liftState.contains(LIFT_STATE.LIFT_MIDDLE)) {
+                if (outputTimer.milliseconds() > 1000) {
+                    liftState.clear();
+                } else if (outputTimer.milliseconds() > 250) { //bring lift up BEFORE extending arm
+                    outputCommand.armToBoard();
+                    outputCommand.tiltToBoard();
+                } else {
+                    level = 2;
+                }
+            }
+        }
+    }
+
+    private void isPixelDropping(){
+        if (liftState.contains(LIFT_STATE.DROP_PIXEL)){
+            if (timers.checkTimePassed("gate", 350)) {
+                outputCommand.closeGate();
+                if(timers.checkTimePassed("gate",500)) {
+                    intakeCommand.intakeRollerIn();
+                }
+                if (timers.checkTimePassed("gate", 750)){
+                    intakeCommand.intakeRollerStop();
+                    liftState.clear();
+                }
+            } else {
+                outputCommand.openGate();
+
+            }
+        }
+    }
 
 }

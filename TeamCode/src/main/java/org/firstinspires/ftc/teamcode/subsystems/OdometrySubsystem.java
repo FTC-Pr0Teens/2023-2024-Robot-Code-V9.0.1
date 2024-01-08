@@ -133,6 +133,6 @@ public class OdometrySubsystem extends Specifications {
     }
 
     public int rightEncoder(){
-        return -rightEncoder.getCurrentPosition();
+        return rightEncoder.getCurrentPosition();
     }
 }

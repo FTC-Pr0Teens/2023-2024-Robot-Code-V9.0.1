@@ -102,13 +102,13 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         while(timer.milliseconds() < 3500) {
 
             //TODO: tune
-            if (propPosition > 100) {
-                //pos RIGHT
-                position = "right";
-                mecanumCommand.moveToGlobalPosition(54, -24, 0);
-            } else if (propPosition <= 100 && propPosition > 0) {
+            if (propPosition > 150) {
                 //pos middle
                 position = "middle";
+                mecanumCommand.moveToGlobalPosition(54, -24, 0);
+            } else if (propPosition <= 150 && propPosition > 0) {
+                //pos middle
+                position = "right";
                 mecanumCommand.moveToGlobalPosition(67, 3, 0);
                 sleep(1000);
             } else {
