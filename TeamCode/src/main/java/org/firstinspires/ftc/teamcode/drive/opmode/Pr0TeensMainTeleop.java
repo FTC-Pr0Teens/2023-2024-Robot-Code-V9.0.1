@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -9,6 +11,7 @@ import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.MecanumCommand;
 import org.firstinspires.ftc.teamcode.command.MultiMotorCommand;
 import org.firstinspires.ftc.teamcode.command.OutputCommand;
+import org.firstinspires.ftc.teamcode.subsystems.DroneShooter;
 import org.firstinspires.ftc.teamcode.subsystems.IMUSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MultiMotorSubsystem;
@@ -22,8 +25,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-@TeleOp (name = "TeleOpTesting")
-public class TeleOpTestingg extends LinearOpMode {
+@TeleOp (name = "Pr0Teens Main Teleop")
+public class Pr0TeensMainTeleop extends LinearOpMode {
 
     private MultiMotorSubsystem multiMotorSubsystem;
     private MultiMotorCommand multiMotorCommand;
@@ -55,7 +58,14 @@ public class TeleOpTestingg extends LinearOpMode {
     private Servo rightTilt;
     private Servo gate;
 
+    private DroneShooter droneShooter;
+
+    private Servo hangingServoL;
+    private Servo hangingServoR;
+    private DcMotor hangingMotor;
+
     TimerList timers = new TimerList();
+    private ElapsedTime timer;
 
     private HashSet <LIFT_STATE> liftState = new HashSet<>();
 
@@ -96,6 +106,23 @@ public class TeleOpTestingg extends LinearOpMode {
         leftTilt.setDirection(Servo.Direction.FORWARD);
         rightTilt.setDirection(Servo.Direction.REVERSE);
 
+        droneShooter = new DroneShooter(hardwareMap);
+
+        //INITIALIZES THE HANGING SERVO
+        hangingServoL = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_L);
+        hangingServoL.setPosition(0.35);
+
+        hangingServoR = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_R);
+        hangingServoR.setPosition(0.35);
+////
+////        //INITIALIZES THE HANGING MOTOR
+        hangingMotor = hardwareMap.dcMotor.get(Specifications.HANGING_MOTOR);
+        hangingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        hangingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hangingMotor.setPower(0);
+        boolean hangingArmInPlace = false;
+        boolean robotIsHanging = false;
+
         Executor executor = Executors.newFixedThreadPool(3);
 
         armBeingProcessed = false;
@@ -105,10 +132,14 @@ public class TeleOpTestingg extends LinearOpMode {
         CompletableFuture.runAsync(this::processLift, executor);
         CompletableFuture.runAsync(this::runMovement, executor);
 
+        Gamepad currentGamepad1 = new Gamepad();
+        Gamepad previousGamepad1 = new Gamepad();
 
         outputTimer.reset();
 
         while(opModeIsActive()) {
+            boolean hangingTrue = false;
+            boolean lastHangingState = false;
             runMovement();
             /*
             processLift has to continuously run because PID only allows you to set the lift to
@@ -118,7 +149,6 @@ public class TeleOpTestingg extends LinearOpMode {
             processLift();
             checkLiftState();
             isPixelDropping();
-
 
             //lift stuff
 
@@ -136,39 +166,13 @@ public class TeleOpTestingg extends LinearOpMode {
                 liftState.add(LIFT_STATE.LIFT_IDLE); //go to bottom, reset
             }
 
-            if (gamepad1.dpad_down){
-                //outputCommand.armToPos(0.81);
-                leftTilt.setPosition(0.1);
-                rightTilt.setPosition(0.1);
-                //gate.setPosition(1);
-            } else if (gamepad1.dpad_right){
-                //outputCommand.armToPos(0.87);
-                leftTilt.setPosition(0.8);
-                rightTilt.setPosition(0.8);
-                gate.setPosition(0.8);
-            } else if (gamepad1.dpad_up){
-                //outputCommand.armToPos(0.865);
-                leftTilt.setPosition(0.9);
-                rightTilt.setPosition(0.9);
-                gate.setPosition(0.6);
-            } else if (gamepad1.dpad_left){
-                //outputCommand.armToPos(0.86);
-                leftTilt.setPosition(0.2);
-                rightTilt.setPosition(0.2);
-            }
-
-
-
             //another set of code here (for testing)
             //multiMotorSubsystem.moveLift(-gamepad1.right_stick_y);
-
-
 
             if (gamepad1.right_trigger > 0.5){
                 timers.resetTimer("gate");
                 liftState.add(LIFT_STATE.DROP_PIXEL);
             }
-
             if (gamepad1.left_trigger > 0.5){
                 outputCommand.openGate();
             }
@@ -182,6 +186,49 @@ public class TeleOpTestingg extends LinearOpMode {
                 } else {
                     intakeCommand.stopIntake();
                 }
+            }
+
+            //hangingServo toggle
+            if (gamepad1.left_trigger > 0.5) {
+                //left_bumper is used to toggle between hanging and not hanging
+                hangingArmInPlace = !hangingArmInPlace;
+                telemetry.addLine("Preparing to hang");
+            }
+            if (hangingArmInPlace) {
+                hangingServoL.setPosition(0.95);
+            hangingServoR.setPosition(0.95);
+                telemetry.addLine("Servo in position");
+            } else {
+                hangingServoR.setPosition(0.2);
+                telemetry.addLine("servo restarted");
+            }
+            //start button is for turning on the hanging motor
+            if (currentGamepad1.start && !previousGamepad1.start) {
+                timer.reset();
+                telemetry.addLine("Press dpad_up to cancel/reverse hanging");
+                while (timer.milliseconds() < 5000) {
+                    hangingMotor.setPower(0.7);
+                }
+                robotIsHanging = true;
+                hangingMotor.setPower(0);
+                //Dpad up for unhanging
+            }
+            if (gamepad1.dpad_up && robotIsHanging) {
+                timer.reset();
+                //motor will spin in the opposite direction until it reaches the end ground
+                while (timer.milliseconds() < 5000) {
+                    hangingMotor.setPower(-0.7);
+                }
+                hangingMotor.setPower(0);
+                telemetry.addLine("hanging reversed");
+            }
+
+            //Drone Launcher
+            if (gamepad1.back) {
+                droneShooter.setContinuousServoPower(1);
+                telemetry.addLine("Paper airplane launched");
+            }else{
+                droneShooter.setContinuousServoPower(0);
             }
 
             mecanumCommand.moveGlobalPartial(true, gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);

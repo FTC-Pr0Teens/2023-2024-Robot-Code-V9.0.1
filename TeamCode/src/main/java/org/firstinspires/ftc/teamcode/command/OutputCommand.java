@@ -80,8 +80,8 @@ public class OutputCommand {
     }
 
     public void tiltToIdle(){
-        leftTilt.setPosition(1);
-        rightTilt.setPosition(1);
+        leftTilt.setPosition(0.9);
+        rightTilt.setPosition(0.9);
     }
     public void tiltToBoard(){
         leftTilt.setPosition(0);
