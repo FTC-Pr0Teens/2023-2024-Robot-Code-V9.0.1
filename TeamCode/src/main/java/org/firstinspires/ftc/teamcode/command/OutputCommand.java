@@ -49,10 +49,10 @@ public class OutputCommand {
     }
 
     public void openGate(){
-        gate.setPosition(0.8);
+        gate.setPosition(0.49);
     }
     public void closeGate(){
-        gate.setPosition(1);
+        gate.setPosition(0.58);
     }
     public void outputWheelOut(){
         intakeCommand.intakeRollerOut();
@@ -76,12 +76,12 @@ public class OutputCommand {
     public void armToBoard(){
         //TODO: Find value
         leftArm.setPosition(0.718);
-        rightArm.setPosition(0.285);
+        rightArm.setPosition(0.718);
     }
 
     public void tiltToIdle(){
-        leftTilt.setPosition(1);
-        rightTilt.setPosition(1);
+        leftTilt.setPosition(0.9);
+        rightTilt.setPosition(0.9);
     }
     public void tiltToBoard(){
         leftTilt.setPosition(0);
