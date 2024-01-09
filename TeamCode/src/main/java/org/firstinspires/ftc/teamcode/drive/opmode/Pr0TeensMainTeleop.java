@@ -93,27 +93,26 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         multiMotorSubsystem = new MultiMotorSubsystem(hardwareMap, true, MultiMotorSubsystem.MultiMotorType.dualMotor);
         multiMotorCommand = new MultiMotorCommand(multiMotorSubsystem);
 
-        mecanumSubsystem = new MecanumSubsystem(hardwareMap);
         imuSubsystem = new IMUSubsystem(hardwareMap);
-        gyroOdometry = new GyroOdometry(odometrySubsystem, imuSubsystem);
-        mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem,  gyroOdometry, this);
         odometrySubsystem = new OdometrySubsystem(hardwareMap);
+        gyroOdometry = new GyroOdometry(odometrySubsystem, imuSubsystem);
 
-        intakeCommand = new IntakeCommand(hardwareMap);
+        mecanumSubsystem = new MecanumSubsystem(hardwareMap);
 
-        outputCommand = new OutputCommand(hardwareMap);
+        mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem,  gyroOdometry, this);
         mecanumSubsystem.reset(); // delete later
 
-
+        intakeCommand = new IntakeCommand(hardwareMap);
+        outputCommand = new OutputCommand(hardwareMap);
 
         droneShooter = new DroneShooter(hardwareMap);
-
-        //INITIALIZES THE HANGING SERVO
-        hangingServoL = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_L);
-        hangingServoL.setPosition(0.35);
-
-        hangingServoR = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_R);
-        hangingServoR.setPosition(0.35);
+//
+//        //INITIALIZES THE HANGING SERVO
+//        hangingServoL = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_L);
+//        hangingServoL.setPosition(0.35);
+//
+//        hangingServoR = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_R);
+//        hangingServoR.setPosition(0.35);
 ////
 ////        //INITIALIZES THE HANGING MOTOR
         hangingMotor = hardwareMap.dcMotor.get(Specifications.HANGING_MOTOR);
@@ -194,15 +193,15 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             //hangingServo toggle
             if (gamepad1.left_trigger > 0.5) {
                 //left_bumper is used to toggle between hanging and not hanging
-                hangingArmInPlace = !hangingArmInPlace;
+//                hangingArmInPlace = !hangingArmInPlace;
                 telemetry.addLine("Preparing to hang");
             }
             if (hangingArmInPlace) {
-                hangingServoL.setPosition(0.95);
-            hangingServoR.setPosition(0.95);
+//                hangingServoL.setPosition(0.95);
+//            hangingServoR.setPosition(0.95);
                 telemetry.addLine("Servo in position");
             } else {
-                hangingServoR.setPosition(0.2);
+//                hangingServoR.setPosition(0.2);
                 telemetry.addLine("servo restarted");
             }
             //start button is for turning on the hanging motor
@@ -228,29 +227,26 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
             //Drone Launcher
             if (gamepad1.back) {
-                droneShooter.setContinuousServoPower(1);
+//                droneShooter.setContinuousServoPower(1);
                 telemetry.addLine("Paper airplane launched");
             }else{
-                droneShooter.setContinuousServoPower(0);
+//                droneShooter.setContinuousServoPower(0);
             }
 
             mecanumCommand.moveGlobalPartial(true, gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
-            telemetry.addData("Left Output Arm Pos:", leftArm.getPosition());
-            telemetry.addData("Right Output Arm Pos:", rightArm.getPosition());
-            telemetry.addData("Left Tilt Arm Pos:", leftTilt.getPosition());
-            telemetry.addData("Right Tilt Arm Pos:", rightTilt.getPosition());
-            telemetry.addData("liftHeight (subsystem)", multiMotorSubsystem.getPosition());
-            telemetry.addData("Motor 1:", multiMotorSubsystem.main.getCurrentPosition());
-            telemetry.addData("Motor 2:", multiMotorSubsystem.aux1.getCurrentPosition());
-            telemetry.addData("currentLevel (command)", multiMotorCommand.getLevel());
-            telemetry.addData("READ THIS: Lift Level (1, 2, or 3", level);
+//            telemetry.addData("Left Output Arm Pos:", leftArm.getPosition());
+//            telemetry.addData("Right Output Arm Pos:", rightArm.getPosition());
+//            telemetry.addData("Left Tilt Arm Pos:", leftTilt.getPosition());
+//            telemetry.addData("Right Tilt Arm Pos:", rightTilt.getPosition());
+//            telemetry.addData("liftHeight (subsystem)", multiMotorSubsystem.getPosition());
+//            telemetry.addData("Motor 1:", multiMotorSubsystem.main.getCurrentPosition());
+//            telemetry.addData("Motor 2:", multiMotorSubsystem.aux1.getCurrentPosition());
+//            telemetry.addData("currentLevel (command)", multiMotorCommand.getLevel());
+//            telemetry.addData("READ THIS: Lift Level (1, 2, or 3", level);
             telemetry.addData("gateTimer:", gateTimer.time());
             telemetry.update();
 
-
-
         }
-
     }
 
 
@@ -314,7 +310,6 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             doCentering = false;
             imuSubsystem.resetAngle(); //for gyro odometry
             gridAutoCentering.reset(); //reset grid heading
-            boardLeftRight = 2; //LEFT
             autoCenterAngle = Math.PI/2; //set autocenter to left 90 degrees
         }
 
@@ -323,7 +318,6 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             doCentering = false;
             imuSubsystem.resetAngle(); //for gyro odometry
             gridAutoCentering.reset(); //reset grid heading
-            boardLeftRight = 1; //RIGHT
             autoCenterAngle = Math.PI/2; //set autocenter to right 90 degrees
         }
 
@@ -353,5 +347,4 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
     private void processLift(){
         while(opModeIsActive()) multiMotorCommand.LiftUp(true, level);
     }
-
 }

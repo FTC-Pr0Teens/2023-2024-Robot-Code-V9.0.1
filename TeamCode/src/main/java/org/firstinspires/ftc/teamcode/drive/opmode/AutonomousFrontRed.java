@@ -109,7 +109,7 @@ public class AutonomousFrontRed extends LinearOpMode {
         else if (propPosition <= 100 && propPosition > 0) position = "middle";
         else position = "left";
 
-        mecanumCommand.moveToCheckpoint(0, 53, 0);
+        mecanumCommand.moveToCheckpoint(0, 53, 0, 0.2);
 
         //TODO: tune these movement values
         switch (position){

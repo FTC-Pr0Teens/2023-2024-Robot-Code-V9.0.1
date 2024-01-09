@@ -35,18 +35,20 @@ public class GridAutoCentering {
     }
 
     public void process(boolean run){
-        timer.reset();
-        error = targetAngle - gyroOdometry.getAngle();
-        if (error >= Math.PI){
-            error -= Math.PI*2;
-        } else if (error <= -Math.PI){
-            error += Math.PI*2;
-        }
-        integralSum += error * timer.time();
-        derivative = (error - lastError) / timer.time();
-        lastError = error;
-        if (Math.abs(error) > 0.005 && run){
-            mecanumSubsystem.partialMoveAdjustment1(true, 0, 0, (error * Kp) + (derivative * Kd)/* + (integralSum * Ki)*/);
+        if(run) {
+            timer.reset();
+            error = targetAngle - gyroOdometry.getAngle();
+            if (error >= Math.PI) {
+                error -= Math.PI * 2;
+            } else if (error <= -Math.PI) {
+                error += Math.PI * 2;
+            }
+            integralSum += error * timer.time();
+            derivative = (error - lastError) / timer.time();
+            lastError = error;
+            if (Math.abs(error) > 0.005) {
+                mecanumSubsystem.partialMoveAdjustment1(true, 0, 0, (error * Kp) + (derivative * Kd)/* + (integralSum * Ki)*/);
+            }
         } else {
             mecanumSubsystem.partialMoveAdjustment1(true, 0, 0, 0);
         }
