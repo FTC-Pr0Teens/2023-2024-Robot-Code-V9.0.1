@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.subsystems.IMUSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MultiMotorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
+import org.firstinspires.ftc.teamcode.util.GridAutoCentering;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
 import org.firstinspires.ftc.teamcode.util.Specifications;
 import org.firstinspires.ftc.teamcode.util.TimerList;
@@ -69,12 +70,24 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
     private HashSet <LIFT_STATE> liftState = new HashSet<>();
 
+    private GridAutoCentering gridAutoCentering;
+
     private enum LIFT_STATE {
         LIFT_IDLE,
         LIFT_MIDDLE,
         LIFT_END,
         DROP_PIXEL
     }
+
+    private boolean right_stick_pressed = false;
+    private boolean left_stick_pressed = false;
+
+    private boolean doCentering = false;
+    private double autoCenterAngle = 0;
+    private TimerList timers = new TimerList();
+
+    private byte boardLeftRight = 0; //LEFT = 2, RIGHT = 1, UNSET = 0
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -93,18 +106,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         outputCommand = new OutputCommand(hardwareMap);
         mecanumSubsystem.reset(); // delete later
 
-        leftArm = hardwareMap.get(Servo.class, Specifications.LEFT_OUTPUT_ARM);
-        rightArm = hardwareMap.get(Servo.class, Specifications.RIGHT_OUTPUT_ARM);
-        leftTilt = hardwareMap.get(Servo.class, Specifications.LEFT_OUTPUT_TILT);
-        rightTilt = hardwareMap.get(Servo.class, Specifications.RIGHT_OUTPUT_TILT);
-        gate = hardwareMap.get(Servo.class, Specifications.PIXEL_GATE);
-        gate.setDirection(Servo.Direction.FORWARD);
 
-        leftArm.setDirection(Servo.Direction.REVERSE);
-        rightArm.setDirection(Servo.Direction.FORWARD);
-
-        leftTilt.setDirection(Servo.Direction.FORWARD);
-        rightTilt.setDirection(Servo.Direction.REVERSE);
 
         droneShooter = new DroneShooter(hardwareMap);
 
@@ -123,14 +125,15 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         boolean hangingArmInPlace = false;
         boolean robotIsHanging = false;
 
-        Executor executor = Executors.newFixedThreadPool(3);
+        Executor executor = Executors.newFixedThreadPool(4);
 
         armBeingProcessed = false;
 
         waitForStart();
 
         CompletableFuture.runAsync(this::processLift, executor);
-        CompletableFuture.runAsync(this::runMovement, executor);
+        CompletableFuture.runAsync(this::processDriveMotor, executor);
+        CompletableFuture.runAsync(this::processIMU, executor);
 
         Gamepad currentGamepad1 = new Gamepad();
         Gamepad previousGamepad1 = new Gamepad();
@@ -140,17 +143,19 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         while(opModeIsActive()) {
             boolean hangingTrue = false;
             boolean lastHangingState = false;
-            runMovement();
+
             /*
             processLift has to continuously run because PID only allows you to set the lift to
             a certain height while the lift must run forever
              */
             //isLiftExtracted();
-            processLift();
             checkLiftState();
             isPixelDropping();
+            runMovement();
 
             //lift stuff
+
+            //TODO: lift_middle and lift_end is the exact same
 
             if (gamepad1.x && !liftState.contains(LIFT_STATE.LIFT_END)) {
                 //level = 0;
@@ -249,13 +254,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         }
 
     }
-    private void runMovement(){
-        mecanumSubsystem.fieldOrientedMove(gamepad1.left_stick_x, -gamepad1.left_stick_y, -gamepad1.right_stick_x, imuSubsystem.getTheta());
-    }
 
-    private void processLift(){
-        multiMotorCommand.LiftUp(true, level);
-    }
 
     private void checkLiftState(){
         if (liftState.contains(LIFT_STATE.LIFT_IDLE)){
@@ -303,9 +302,58 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
                 }
             } else {
                 outputCommand.openGate();
-
             }
         }
+    }
+
+    private void runMovement(){
+        /**
+         * These two will reset angle headings of the IMU, both field oriented and autocenter
+         */
+        //dont enable resetting if in "field is fucked up" state
+        //This means that backdrop is to to the LEFT (meaning you are on BLUE side)
+        if (gamepad1.dpad_left) {
+            doCentering = false;
+            imuSubsystem.resetAngle(); //for gyro odometry
+            gridAutoCentering.reset(); //reset grid heading
+            boardLeftRight = 2; //LEFT
+            autoCenterAngle = Math.PI/2; //set autocenter to left 90 degrees
+        }
+
+        //This means that backdrop is to to the RIGHT (meaning you are on RED side)
+        if (gamepad1.dpad_right) {
+            doCentering = false;
+            imuSubsystem.resetAngle(); //for gyro odometry
+            gridAutoCentering.reset(); //reset grid heading
+            boardLeftRight = 1; //RIGHT
+            autoCenterAngle = Math.PI/2; //set autocenter to right 90 degrees
+        }
+
+        if(gamepad1.left_stick_button) { //TODO: rebind to game1 left trigger
+            gridAutoCentering.offsetTargetAngle(autoCenterAngle);
+            doCentering = true;
+        } else doCentering = false;
+
+        //movement
+        mecanumSubsystem.partialMove(true, gamepad1.left_stick_x, -gamepad1.left_stick_y, -gamepad1.right_stick_x);
+    }
+
+    private void processDriveMotor(){
+        while(opModeIsActive()) {
+            gridAutoCentering.process(doCentering);
+            mecanumSubsystem.motorProcessTeleOp();
+        }
+    }
+
+    private void processIMU() {
+        while(opModeIsActive()) {
+            imuSubsystem.gyroProcess();
+            gyroOdometry.angleProcess();
+        }
+    }
+
+    private void processLift(){
+        while(opModeIsActive()) multiMotorCommand.LiftUp(true, level);
     }
 
 }
