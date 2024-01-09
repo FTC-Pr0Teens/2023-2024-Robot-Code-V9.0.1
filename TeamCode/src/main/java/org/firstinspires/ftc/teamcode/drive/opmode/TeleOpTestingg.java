@@ -126,7 +126,7 @@ public class TeleOpTestingg extends LinearOpMode {
                 //level = 0;
                 outputTimer.reset();
                 liftState.add(LIFT_STATE.LIFT_END); //go to level 2
-            } else if (gamepad1.y) {
+            } else if (gamepad1.y && !liftState.contains(LIFT_STATE.LIFT_MIDDLE)) {
                 //level = 1;
                 outputTimer.reset();
                 liftState.add(LIFT_STATE.LIFT_MIDDLE); //go to level 1
@@ -138,23 +138,23 @@ public class TeleOpTestingg extends LinearOpMode {
 
             if (gamepad1.dpad_down){
                 //outputCommand.armToPos(0.81);
-                //leftTilt.setPosition(0.1);
-                //rightTilt.setPosition(0.1);
-                gate.setPosition(1);
+                leftTilt.setPosition(0.1);
+                rightTilt.setPosition(0.1);
+                //gate.setPosition(1);
             } else if (gamepad1.dpad_right){
-                outputCommand.armToPos(0.87);
-                //leftTilt.setPosition(0.15);
-                //rightTilt.setPosition(0.15);
+                //outputCommand.armToPos(0.87);
+                leftTilt.setPosition(0.8);
+                rightTilt.setPosition(0.8);
                 gate.setPosition(0.8);
             } else if (gamepad1.dpad_up){
-                outputCommand.armToPos(0.865);
-                //leftTilt.setPosition(0.2);
-                //rightTilt.setPosition(0.2);
+                //outputCommand.armToPos(0.865);
+                leftTilt.setPosition(0.9);
+                rightTilt.setPosition(0.9);
                 gate.setPosition(0.6);
             } else if (gamepad1.dpad_left){
-                outputCommand.armToPos(0.86);
-                //leftTilt.setPosition(0.25);
-                //rightTilt.setPosition(0.25);
+                //outputCommand.armToPos(0.86);
+                leftTilt.setPosition(0.2);
+                rightTilt.setPosition(0.2);
             }
 
 
@@ -203,7 +203,7 @@ public class TeleOpTestingg extends LinearOpMode {
 
     }
     private void runMovement(){
-        mecanumSubsystem.fieldOrientedMove(-gamepad1.left_stick_x, -gamepad1.left_stick_y, -gamepad1.right_stick_x, imuSubsystem.getTheta());
+        mecanumSubsystem.fieldOrientedMove(gamepad1.left_stick_x, -gamepad1.left_stick_y, -gamepad1.right_stick_x, imuSubsystem.getTheta());
     }
 
     private void processLift(){
