@@ -65,7 +65,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
     private Servo hangingServoR;
     private DcMotor hangingMotor;
 
-    TimerList timers = new TimerList();
+    private TimerList timers = new TimerList();
     private ElapsedTime timer;
 
     private HashSet <LIFT_STATE> liftState = new HashSet<>();
@@ -84,8 +84,6 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
     private boolean doCentering = false;
     private double autoCenterAngle = 0;
-    private TimerList timers = new TimerList();
-
     private byte boardLeftRight = 0; //LEFT = 2, RIGHT = 1, UNSET = 0
 
 

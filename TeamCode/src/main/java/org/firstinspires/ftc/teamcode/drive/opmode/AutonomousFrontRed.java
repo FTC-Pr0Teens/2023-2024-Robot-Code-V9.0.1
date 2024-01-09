@@ -111,15 +111,18 @@ public class AutonomousFrontRed extends LinearOpMode {
 
         mecanumCommand.moveToCheckpoint(0, 53, 0);
 
+        //TODO: tune these movement values
         switch (position){
             case "right":
                 mecanumCommand.moveToGlobalPosition(54, -24, 0);
                 break;
             case "middle":
-                mecanumCommand.moveToGlobalPosition(54, -24, 0);
+                mecanumCommand.moveToGlobalPosition(67, 3, 0);
                 break;
             case "left":
-                mecanumCommand.moveToGlobalPosition(54, -24, 0);
+                mecanumCommand.moveToGlobalPosition(57, 0, 0);
+                sleep(1500);
+                mecanumCommand.moveToGlobalPosition(57, 17.5, 0.832);
                 break;
         }
 
