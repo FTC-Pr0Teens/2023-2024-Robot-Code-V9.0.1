@@ -205,12 +205,13 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
                 telemetry.addLine("servo restarted");
             }
             //start button is for turning on the hanging motor
-            if (currentGamepad1.start && !previousGamepad1.start) {
+            if (currentGamepad1.start) {
                 timer.reset();
                 telemetry.addLine("Press dpad_up to cancel/reverse hanging");
-                while (timer.milliseconds() < 5000) {
+                hangingMotor.setPower(0.7);
+                /*while (timer.milliseconds() < 5000) {
                     hangingMotor.setPower(0.7);
-                }
+                }*/
                 robotIsHanging = true;
                 hangingMotor.setPower(0);
                 //Dpad up for unhanging
@@ -218,9 +219,10 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             if (gamepad1.dpad_up && robotIsHanging) {
                 timer.reset();
                 //motor will spin in the opposite direction until it reaches the end ground
-                while (timer.milliseconds() < 5000) {
+                hangingMotor.setPower(-0.7);
+                /*while (timer.milliseconds() < 5000) {
                     hangingMotor.setPower(-0.7);
-                }
+                }*/
                 hangingMotor.setPower(0);
                 telemetry.addLine("hanging reversed");
             }
