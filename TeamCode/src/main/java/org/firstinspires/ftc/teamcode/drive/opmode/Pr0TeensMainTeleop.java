@@ -137,6 +137,8 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
         outputTimer.reset();
 
+        timers.resetTimer("testTimer");
+
         while(opModeIsActive()) {
             boolean hangingTrue = false;
             boolean lastHangingState = false;
@@ -246,6 +248,8 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 //            telemetry.addData("currentLevel (command)", multiMotorCommand.getLevel());
 //            telemetry.addData("READ THIS: Lift Level (1, 2, or 3", level);
             telemetry.addData("gateTimer:", gateTimer.time());
+            telemetry.addLine();
+            telemetry.addLine(Pr0TeensMainTeleop.message);
             telemetry.update();
 
         }
@@ -327,13 +331,20 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             gridAutoCentering.offsetTargetAngle(autoCenterAngle);
             doCentering = true;
         } else doCentering = false;
-
-        //movement
+        
         mecanumSubsystem.partialMove(true, gamepad1.left_stick_x, -gamepad1.left_stick_y, -gamepad1.right_stick_x);
+    }
+
+    private static String message = "";
+    //delete after
+    public static void singleMessage(String message){
+        Pr0TeensMainTeleop.message = message;
     }
 
     private void processDriveMotor(){
         while(opModeIsActive()) {
+            //movement
+            Pr0TeensMainTeleop.singleMessage(String.valueOf(timers.getTimerMillis("testTimer")));
             gridAutoCentering.process(doCentering);
             mecanumSubsystem.motorProcessTeleOp();
         }
