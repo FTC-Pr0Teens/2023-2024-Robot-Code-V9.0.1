@@ -186,7 +186,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         timer.reset();
 
         mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //going backward - coordinates not right/measured
-        mecanumCommand.moveToGlobalPosition(46, -78.5, 0); //going leftward to the board - coordinates not right/measured 
+        mecanumCommand.moveToGlobalPosition(46, -78.5, 0); //going leftward to the board - coordinates not right/measured
 
         timer.reset();
         while (timer.milliseconds() < 500){
