@@ -62,7 +62,7 @@ public class MecanumCommand {
 
     public MecanumCommand(MecanumSubsystem mecanumSubsystem, OdometrySubsystem odometrySubsystem, GyroOdometry gyroOdometry, OpMode opmode) {
         this.mecanumSubsystem = mecanumSubsystem;
-        this.odometrySubsystem = odometrySubsystem;;
+        this.odometrySubsystem = odometrySubsystem;
         this.gyroOdometry = gyroOdometry;
         this.opMode = opmode;
         globalXController = new PIDCore(kpx, kdx, kix);
@@ -613,53 +613,64 @@ public class MecanumCommand {
 //        moveGlobalPartial(true, 0, 0, 0);
 //    }
 
-    public void moveToGlobalPosition(double targetX, double targetY, double targetTheta) {
-        // stop moving if within 5 ticks or 0.2 radians from the position
+    public void moveToGlobalPosition(double targetX, double targetY, double targetTheta) throws InterruptedException { //When calling stop function, does interrupted exception happen?
         globalYController.integralReset();
         globalXController.integralReset();
         globalThetaController.integralReset();
+
+        // stop moving if within 5 ticks or 0.2 radians from the position
         while (Math.abs(targetX - gyroOdometry.x) > 2.5   //if within 2.5 ticks of target X position
                 || Math.abs(targetY - gyroOdometry.y) > 2.5 //if within 2.5 ticks of target y position
                 || Math.abs(targetTheta - gyroOdometry.theta) > 0.15) { //if within 0.15 radians of target position
 
-            mecanumSubsystem.fieldOrientedMove(
-                    globalYController.outputPositional(targetY, gyroOdometry.y),
-                    globalXController.outputPositional(targetX, gyroOdometry.x),
-                    globalThetaController.outputPositional(targetTheta, gyroOdometry.theta),
-                    gyroOdometry.theta);
+            double moveX = globalXController.outputPositional(targetX, gyroOdometry.x);
+            double moveY = globalYController.outputPositional(targetY, gyroOdometry.y);
+            double moveTheta = globalThetaController.outputPositional(targetTheta, gyroOdometry.theta);
+            mecanumSubsystem.fieldOrientedMove(moveX, moveY, moveTheta, gyroOdometry.theta);
         }
+
         mecanumSubsystem.stop(true);
     }
 
-    public void moveToCheckpoint(double targetX, double targetY, double targetTheta){
+    /**
+     * moveToGlobalPosition except only a passby. Longer the movement the less accurate it will be.
+     *
+     * @param targetX target x pos in cm
+     * @param targetY target y pos in cm
+     * @param targetTheta target angle in rad
+     * @param moveTolerance percent tolerance of movement length (e.g. if movement = 10cm with percentTolerance 0.2, tolerance is 2cm)
+     */
+    public void moveToCheckpoint(double targetX, double targetY, double targetTheta, double moveTolerance) throws InterruptedException{
         // stop moving if within 5 ticks or 0.2 radians from the position
         globalYController.integralReset();
         globalXController.integralReset();
         globalThetaController.integralReset();
-        while (Math.abs(targetX - gyroOdometry.x) > 10   //if within 2.5 ticks of target X position
-                || Math.abs(targetY - gyroOdometry.y) > 10 //if within 2.5 ticks of target y position
-                || Math.abs(targetTheta - gyroOdometry.theta) > 0.15) { //if within 0.15 radians of target position
 
-            double minSpeed = 0.8; // set a minimum speed threshold
-            double boost = 0.2 ; //very basic idea of feedforward
-            //implementing feedforward
+        //calculate tolerances
+        double minTickTolerance = 5; // basically the absolute lowest tolerance
+        double maxTickTolerance = 15;
+        double tolX = Math.max(Math.min(moveTolerance*gyroOdometry.x, maxTickTolerance), minTickTolerance); //clamp tolerance to within 15 - 5
+        double tolY = Math.max(Math.min(moveTolerance*gyroOdometry.y, maxTickTolerance), minTickTolerance); //clamp tolerance to within 15 - 5
 
-            double yControl = globalYController.outputPositional(targetY, gyroOdometry.y) + boost;
-            double xControl = globalXController.outputPositional(targetX, gyroOdometry.x) + boost;
-            double thetaControl = globalThetaController.outputPositional(targetTheta, gyroOdometry.theta);
 
-            // Ensure that the speed does not drop below the minimum threshold
-            yControl = Math.max(yControl, minSpeed); //Math.max pretty much returns whatever value is larger.
-            xControl = Math.max(xControl, minSpeed);
-            thetaControl = Math.max(thetaControl, minSpeed);
+        // stop moving if within 5 ticks or 0.2 radians from the position
+        while (Math.abs(targetX - gyroOdometry.x) > tolX   //if within 2.5 ticks of target X position
+                || Math.abs(targetY - gyroOdometry.y) > tolY//if within 2.5 ticks of target y position
+                || Math.abs(targetTheta - gyroOdometry.theta) > 0.2) { //if within 0.15 radians of target position
 
-            mecanumSubsystem.fieldOrientedMove(yControl, xControl, thetaControl, gyroOdometry.theta);
+            double moveX = globalXController.outputPositional(targetX, gyroOdometry.x);
+            double moveY = globalYController.outputPositional(targetY, gyroOdometry.y);
+            double moveTheta = globalThetaController.outputPositional(targetTheta, gyroOdometry.theta);
+            mecanumSubsystem.fieldOrientedMove(moveX, moveY, moveTheta, gyroOdometry.theta);
         }
         mecanumSubsystem.stop(true);
     }
 
+    //TODO: Extremely experimental! Do not use right now
+    public boolean crashPrevention(){
 
-
+        return false;
+    }
 
     public void moveRotation(double targetTheta) {
         // stop moving if within 5 ticks or 0.2 radians from the position

@@ -335,6 +335,7 @@ public class MecanumSubsystem extends Specifications{
         rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftForward.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         rightForward.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftForward.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

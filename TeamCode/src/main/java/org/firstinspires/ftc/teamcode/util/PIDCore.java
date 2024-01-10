@@ -170,7 +170,7 @@ public class PIDCore {
     public double cascadeOutput(double setPoint, double feedback, double setVelocity, double feedbackVelocity){
         outputPositionalValue = outputPositional(setPoint, feedback);
         outputVelocityValue = outputVelocity(setVelocity, feedbackVelocity);
-        return outputPositionalValue - outputVelocityValue;
+        return outputPositionalValue + outputVelocityValue;
     }
     public double getDerivative(){
         return derivative;

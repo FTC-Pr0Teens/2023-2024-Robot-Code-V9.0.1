@@ -140,8 +140,8 @@ public class MultiMotorSubsystem extends Specifications {
             main = hardwareMap.get(DcMotorEx.class, EXTENSION_MOTOR_MAIN);
             aux1 = hardwareMap.get(DcMotor.class, EXTENSION_MOTOR_AUX1);
 
-            main.setDirection(DcMotorSimple.Direction.REVERSE); //originally reverse
-            aux1.setDirection(DcMotorSimple.Direction.FORWARD);
+            main.setDirection(DcMotorSimple.Direction.FORWARD); //originally reverse
+            aux1.setDirection(DcMotorSimple.Direction.REVERSE);
 
             if (reset) {
                 main.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -350,7 +350,7 @@ public class MultiMotorSubsystem extends Specifications {
 
         //only for up
         intervalValue = velocityInterval.getOutput(getPosition());
-        cascadeOutput = cascadePID.cascadeOutput(targetPos, getPosition(), intervalValue, getDerivativeValue());
+        cascadeOutput = -cascadePID.cascadeOutput(targetPos, getPosition(), intervalValue, getDerivativeValue());
         moveLift(cascadeOutput);
     }
 
@@ -416,7 +416,7 @@ public class MultiMotorSubsystem extends Specifications {
         return Math.abs(finalPosition - getPosition()) < uncertainty;
     }
     public double getDerivativeValue(){
-        return testLiftPID.getDerivative();
+        return -testLiftPID.getDerivative();
     }
     public double getLastErrorValue(){
         return testLiftPID.getLastError();
