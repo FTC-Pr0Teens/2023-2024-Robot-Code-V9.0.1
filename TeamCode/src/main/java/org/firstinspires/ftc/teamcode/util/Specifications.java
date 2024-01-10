@@ -6,10 +6,10 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Specifications {
-    public final double length = 43.18;
+    public final double length = 43.18;  //41.8/2 => 20.9-6.1 = 14.8
     public final int FINALPOS = 1230;
     //b
-    public final double SideOdometryToCentre = 13.8;
+    public final double SideOdometryToCentre = 14.8;
     public final double lengthFromOdometrySideToFront = 5.7;
     public final double odometryCir = 3.5*Math.PI;
     public final double odometryTick = 8192;
