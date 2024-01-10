@@ -9,8 +9,7 @@ public class DroneShooter {
     private CRServo droneServo;
 
     public DroneShooter (HardwareMap hardwareMap) {
-        droneServo = hardwareMap.get(CRServo.class, Specifications.DRONE_SHOOTER
-        );
+        droneServo = hardwareMap.get(CRServo.class, Specifications.DRONE_SHOOTER);
         droneServo.setDirection(DcMotorSimple.Direction.FORWARD); // Spin direction
     }
 

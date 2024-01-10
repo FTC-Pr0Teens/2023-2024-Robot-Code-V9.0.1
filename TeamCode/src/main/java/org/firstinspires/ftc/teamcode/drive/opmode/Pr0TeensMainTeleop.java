@@ -84,8 +84,6 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
     private boolean doCentering = false;
     private double autoCenterAngle = 0;
-    private byte boardLeftRight = 0; //LEFT = 2, RIGHT = 1, UNSET = 0
-
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -100,7 +98,6 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         mecanumSubsystem = new MecanumSubsystem(hardwareMap);
 
         mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem,  gyroOdometry, this);
-        mecanumSubsystem.reset(); // delete later
 
         intakeCommand = new IntakeCommand(hardwareMap);
         outputCommand = new OutputCommand(hardwareMap);
@@ -119,6 +116,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         hangingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         hangingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         hangingMotor.setPower(0);
+
         boolean hangingArmInPlace = false;
         boolean robotIsHanging = false;
 
@@ -177,9 +175,6 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
                 timers.resetTimer("gate");
                 liftState.add(LIFT_STATE.DROP_PIXEL);
             }
-            if (gamepad1.left_trigger > 0.5){
-                outputCommand.openGate();
-            }
             if(liftState.isEmpty()) {
                 if (gamepad1.right_bumper) {
                     intakeCommand.intakeIn(0.7);
@@ -237,7 +232,6 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 //                droneShooter.setContinuousServoPower(0);
             }
 
-            mecanumCommand.moveGlobalPartial(true, gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
 //            telemetry.addData("Left Output Arm Pos:", leftArm.getPosition());
 //            telemetry.addData("Right Output Arm Pos:", rightArm.getPosition());
 //            telemetry.addData("Left Tilt Arm Pos:", leftTilt.getPosition());
@@ -291,12 +285,12 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
     private void isPixelDropping(){
         if (liftState.contains(LIFT_STATE.DROP_PIXEL)){
-            if (timers.checkTimePassed("gate", 350)) {
+            if (timers.checkTimePassed("gate", 200)) {
                 outputCommand.closeGate();
-                if(timers.checkTimePassed("gate",500)) {
+                if(timers.checkTimePassed("gate",350)) {
                     intakeCommand.intakeRollerIn();
                 }
-                if (timers.checkTimePassed("gate", 750)){
+                if (timers.checkTimePassed("gate", 550)){
                     intakeCommand.intakeRollerStop();
                     liftState.clear();
                 }
