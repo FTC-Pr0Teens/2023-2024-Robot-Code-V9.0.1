@@ -68,7 +68,7 @@ public class duplicateMainTeleOp extends LinearOpMode{
 
 
             //DroneShooter
-            droneShooter.setContinuousServoPower(gamepad2.left_trigger);
+           // droneShooter.setContinuousServoPower(gamepad2.left_trigger);
 
 
 

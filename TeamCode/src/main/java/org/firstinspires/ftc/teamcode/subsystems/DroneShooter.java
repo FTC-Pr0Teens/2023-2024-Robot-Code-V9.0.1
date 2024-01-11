@@ -6,14 +6,14 @@ import org.firstinspires.ftc.teamcode.util.Specifications;
 
 public class DroneShooter {
     //Servo Variable
-    private CRServo droneServo;
+    private Servo droneServo;
 
     public DroneShooter (HardwareMap hardwareMap) {
-        droneServo = hardwareMap.get(CRServo.class, Specifications.DRONE_SHOOTER);
-        droneServo.setDirection(DcMotorSimple.Direction.FORWARD); // Spin direction
+        droneServo = hardwareMap.get(Servo.class, Specifications.DRONE_SHOOTER);
+        // Spin direction
     }
 
-    public void setContinuousServoPower(double power) {
-        droneServo.setPower(power);
+    public void launch (){
+        droneServo.setPosition(1);
     }
 }

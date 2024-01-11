@@ -71,7 +71,10 @@ public class MecanumSubsystem extends Specifications{
     }
 
     public void motorProcessTeleOp(){
-        if (Math.abs(lfvelMain + lfvelAdjustment1 + lfvelAdjustment2) > MAX_ANGULAR_VEL || Math.abs(lbvelMain + lbvelAdjustment1 + lbvelAdjustment2) > MAX_ANGULAR_VEL || Math.abs(rfvelMain + rfvelAdjustment1 + rfvelAdjustment2) > MAX_ANGULAR_VEL || Math.abs(rbvelMain + rbvelAdjustment1 + rbvelAdjustment2) > MAX_ANGULAR_VEL){
+        if (Math.abs(lfvelMain + lfvelAdjustment1 + lfvelAdjustment2) > MAX_ANGULAR_VEL
+                || Math.abs(lbvelMain + lbvelAdjustment1 + lbvelAdjustment2) > MAX_ANGULAR_VEL
+                || Math.abs(rfvelMain + rfvelAdjustment1 + rfvelAdjustment2) > MAX_ANGULAR_VEL
+                || Math.abs(rbvelMain + rbvelAdjustment1 + rbvelAdjustment2) > MAX_ANGULAR_VEL){
             lfvel = (lfvelMain + lfvelAdjustment1 + lfvelAdjustment2);
             lbvel = (lbvelMain + lbvelAdjustment1 + lbvelAdjustment2);
             rfvel = (rfvelMain + rfvelAdjustment1 + rfvelAdjustment2);
@@ -102,8 +105,8 @@ public class MecanumSubsystem extends Specifications{
 
         rightForward.setDirection(DcMotorSimple.Direction.REVERSE);
         leftForward.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
-        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
 
         leftBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftForward.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

@@ -104,12 +104,12 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
         droneShooter = new DroneShooter(hardwareMap);
 //
-//        //INITIALIZES THE HANGING SERVO
-//        hangingServoL = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_L);
-//        hangingServoL.setPosition(0.35);
-//
-//        hangingServoR = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_R);
-//        hangingServoR.setPosition(0.35);
+        //INITIALIZES THE HANGING SERVO
+        hangingServoL = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_L);
+        hangingServoL.setPosition(0.35);
+
+        hangingServoR = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_R);
+        hangingServoR.setPosition(0.35);
 ////
 ////        //INITIALIZES THE HANGING MOTOR
         hangingMotor = hardwareMap.dcMotor.get(Specifications.HANGING_MOTOR);
@@ -136,8 +136,11 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         outputTimer.reset();
 
         timers.resetTimer("testTimer");
+        hangingServoL.setPosition(0.2);
+        hangingServoR.setPosition(0.2);
 
         while(opModeIsActive()) {
+            mecanumSubsystem.fieldOrientedMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, imuSubsystem.getTheta());
             boolean hangingTrue = false;
             boolean lastHangingState = false;
 
@@ -148,7 +151,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             //isLiftExtracted();
             checkLiftState();
             isPixelDropping();
-            runMovement();
+           // runMovement();
 
             //lift stuff
 
@@ -190,46 +193,42 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             //hangingServo toggle
             if (gamepad1.left_trigger > 0.5) {
                 //left_bumper is used to toggle between hanging and not hanging
-//                hangingArmInPlace = !hangingArmInPlace;
+                hangingArmInPlace = true;
                 telemetry.addLine("Preparing to hang");
             }
             if (hangingArmInPlace) {
-//                hangingServoL.setPosition(0.95);
-//            hangingServoR.setPosition(0.95);
+                hangingServoL.setPosition(0.95);
+                hangingServoR.setPosition(0.95);
                 telemetry.addLine("Servo in position");
             } else {
-//                hangingServoR.setPosition(0.2);
+                hangingServoR.setPosition(0.35);
+                hangingServoR.setPosition(0.35);
                 telemetry.addLine("servo restarted");
             }
             //start button is for turning on the hanging motor
             if (currentGamepad1.start) {
-                timer.reset();
                 telemetry.addLine("Press dpad_up to cancel/reverse hanging");
                 hangingMotor.setPower(0.7);
                 /*while (timer.milliseconds() < 5000) {
                     hangingMotor.setPower(0.7);
                 }*/
-                robotIsHanging = true;
+
                 hangingMotor.setPower(0);
                 //Dpad up for unhanging
             }
-            if (gamepad1.dpad_up && robotIsHanging) {
-                timer.reset();
+            if (gamepad1.dpad_up) {
                 //motor will spin in the opposite direction until it reaches the end ground
                 hangingMotor.setPower(-0.7);
                 /*while (timer.milliseconds() < 5000) {
                     hangingMotor.setPower(-0.7);
                 }*/
-                hangingMotor.setPower(0);
                 telemetry.addLine("hanging reversed");
             }
 
             //Drone Launcher
             if (gamepad1.back) {
-//                droneShooter.setContinuousServoPower(1);
+                droneShooter.launch();
                 telemetry.addLine("Paper airplane launched");
-            }else{
-//                droneShooter.setContinuousServoPower(0);
             }
 
 //            telemetry.addData("Left Output Arm Pos:", leftArm.getPosition());
@@ -348,6 +347,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         while(opModeIsActive()) {
             imuSubsystem.gyroProcess();
             gyroOdometry.angleProcess();
+            gyroOdometry.process();
         }
     }
 
