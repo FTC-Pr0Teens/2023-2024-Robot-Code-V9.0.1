@@ -100,28 +100,28 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 //        sleep(8000);
         timer.reset();
         while(timer.milliseconds() < 3500) {
-
+            mecanumCommand.moveToGlobalPosition(-132, 9.7, 0);
             //TODO: tune
-            if (propPosition > 150) {
-                //pos middle
-                position = "middle";
-                mecanumCommand.moveToGlobalPosition(54, -24, 0);
-            } else if (propPosition <= 150 && propPosition > 0) {
-                //pos middle
-                position = "right";
-                mecanumCommand.moveToGlobalPosition(67, 3, 0);
-                sleep(1000);
-            } else {
-                //pos left
-                position = "left";
-                mecanumCommand.moveToGlobalPosition(57, 0, 0);
-                sleep(1500);
-                mecanumCommand.moveToGlobalPosition(57, 17.5, 0.832);
-
-                //move to board
-                mecanumCommand.moveToGlobalPosition(-400.5, 17.5, 0.2);
-
-            }
+//            if (propPosition > 175) {
+//                //pos middle
+//                position = "middle";
+//                mecanumCommand.moveToGlobalPosition(-132, 9.7, 0);
+//            } else if (propPosition <= 175 && propPosition > 0) {
+//                //pos middle
+//                position = "right";
+//                mecanumCommand.moveToGlobalPosition(67, 3, 0);
+//                sleep(1000);
+//            } else {
+//                //pos left
+//                position = "left";
+//                mecanumCommand.moveToGlobalPosition(57, 0, 0);
+//                sleep(1500);
+//                mecanumCommand.moveToGlobalPosition(57, 17.5, 0.832);
+//
+//                //move to board
+//                mecanumCommand.moveToGlobalPosition(-400.5, 17.5, 0.2);
+//
+//            }
         }
         timer.reset();
 
@@ -129,12 +129,41 @@ public class AutonomousBackBlueRough extends LinearOpMode {
             intakeCommand.intakeOut(0.3);
         }
         intakeCommand.stopIntake();
-        //prep for putting a pixel on to the backboard
-        level = 1; //rise the lift to level 1
-        outputCommand.armToBoard(); // arm towards the board
-        outputCommand.tiltToBoard(); //tilt the output to the board
-        timer.reset();
+//        //prep for putting a pixel on to the backboard
+//        level = 1; //rise the lift to level 1
+//        outputCommand.armToBoard(); // arm towards the board
+//        outputCommand.tiltToBoard(); //tilt the output to the board
+//        timer.reset();
+//
+//        //move to board functions
+//        while(timer.milliseconds() < 3500) {
+//            //TODO: tune
+//            if (propPosition > 100) {
+//                //pos right
+//                mecanumCommand.moveToGlobalPosition(46, -78.5, 1.65); //1.65 radians = 94.53804 degrees
+//                right = true;
+//            } else if (propPosition <= 100 && propPosition > 0) {
+//                //pos middle
+//                mecanumCommand.moveToGlobalPosition(61, -80, 1.65);
+//                middle = true;
+//            } else {
+//                //pos left
+//                mecanumCommand.moveToGlobalPosition(68, -81.5, 1.65);
+//                left = true;
+//            }
+//        }
+//        timer.reset();
+//        while (timer.milliseconds() < 500){
+//            outputCommand.openGate();
+//        }
+//        //sets every output related components to its idle position in preparation of the driver period
+//        outputCommand.closeGate();
+//        outputCommand.tiltToIdle();
+//        outputCommand.armToIdle();
+//        sleep(6000);
+//        level = 0;
 
+<<<<<<< Updated upstream
         //move to board functions
         while(timer.milliseconds() < 3500) {
             //TODO: tune
@@ -201,6 +230,46 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
 
         mecanumCommand.moveToGlobalPosition(0, -84, 1.65); //checkpoint
+=======
+//        //attempt on getting more pixels(rough values)
+//        if(right == true) {
+//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //strafe leftward to the middle: 180 degrees? - coordinates not right/measured
+//        }else if(middle = true) {
+//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //coordinates not right/measured
+//        }else if(left = true) {
+//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //coordinates not right/measured
+//        }
+//
+//        mecanumCommand.moveToGlobalPosition(-10, 100, 0); //going forward to white pixels
+//
+//        timer.reset();
+//        while (timer.milliseconds() < 1000){
+//            intakeCommand.intakeIn(0.3);
+//        }
+//        intakeCommand.stopIntake();
+//        //prep for putting a pixel on to the backboard
+//        level = 1; //rise the lift to level 1
+//        outputCommand.armToBoard(); // arm towards the board
+//        outputCommand.tiltToBoard(); //tilt the output to the board
+//        timer.reset();
+//
+//        mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //going backward - coordinates not right/measured
+//        mecanumCommand.moveToGlobalPosition(46, -78.5, 0); //going leftward to the board - coordinates not right/measured
+//
+//        timer.reset();
+//        while (timer.milliseconds() < 500){
+//            outputCommand.openGate();
+//        }
+//        //sets every output related components to its idle position in preparation of the driver period
+//        outputCommand.closeGate();
+//        outputCommand.tiltToIdle();
+//        outputCommand.armToIdle();
+//        sleep(6000);
+//        level = 0;
+//
+//
+//        mecanumCommand.moveToGlobalPosition(0, -84, 1.65); //checkpoint
+>>>>>>> Stashed changes
 
 
     }
