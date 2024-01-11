@@ -668,8 +668,12 @@ public class MecanumCommand {
 
     //TODO: Extremely experimental! Do not use right now
     public boolean crashPrevention(){
+<<<<<<< Updated upstream
 
         return false;
+=======
+        
+>>>>>>> Stashed changes
     }
 
     public void moveRotation(double targetTheta) {
