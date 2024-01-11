@@ -623,8 +623,8 @@ public class MecanumCommand {
                 || Math.abs(targetY - gyroOdometry.y) > 2.5 //if within 2.5 ticks of target y position
                 || Math.abs(targetTheta - gyroOdometry.theta) > 0.15) { //if within 0.15 radians of target position
 
-            double moveX = globalXController.outputPositional(targetX, gyroOdometry.x);
-            double moveY = globalYController.outputPositional(targetY, gyroOdometry.y);
+            double moveY = globalXController.outputPositional(targetX, gyroOdometry.x);
+            double moveX = globalYController.outputPositional(targetY, gyroOdometry.y);
             double moveTheta = globalThetaController.outputPositional(targetTheta, gyroOdometry.theta);
             mecanumSubsystem.fieldOrientedMove(moveX, moveY, moveTheta, gyroOdometry.theta);
         }
@@ -668,12 +668,9 @@ public class MecanumCommand {
 
     //TODO: Extremely experimental! Do not use right now
     public boolean crashPrevention(){
-<<<<<<< Updated upstream
 
         return false;
-=======
-        
->>>>>>> Stashed changes
+
     }
 
     public void moveRotation(double targetTheta) {
