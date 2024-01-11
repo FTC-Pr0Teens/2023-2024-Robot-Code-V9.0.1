@@ -100,9 +100,8 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 //        sleep(8000);
         timer.reset();
         //while(timer.milliseconds() < 3500) {
-        sleep (2000);
         do {
-            mecanumCommand.moveToGlobalPosition(20, 0, 0);
+            mecanumCommand.moveToGlobalPosition(-127, 0, 0);
         } while (!isStopRequested());
             //TODO: tune
 //            if (propPosition > 175) {

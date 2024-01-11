@@ -129,10 +129,10 @@ public class OdometrySubsystem extends Specifications {
     public int backEncoder(){ return -backEncoder.getCurrentPosition(); }
 
     public int leftEncoder(){
-        return leftEncoder.getCurrentPosition();
+        return -leftEncoder.getCurrentPosition();
     }
 
     public int rightEncoder(){
-        return rightEncoder.getCurrentPosition();
+        return -rightEncoder.getCurrentPosition();
     }
 }

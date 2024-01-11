@@ -106,7 +106,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 //
         //INITIALIZES THE HANGING SERVO
         hangingServoL = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_L);
-        hangingServoL.setPosition(0.35);
+        hangingServoL.setDirection(Servo.Direction.REVERSE);
 
         hangingServoR = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_R);
         hangingServoR.setPosition(0.35);
@@ -136,8 +136,8 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         outputTimer.reset();
 
         timers.resetTimer("testTimer");
-        hangingServoL.setPosition(0.2);
-        hangingServoR.setPosition(0.2);
+        hangingServoL.setPosition(0);
+        hangingServoR.setPosition(0);
 
         while(opModeIsActive()) {
             mecanumSubsystem.fieldOrientedMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, imuSubsystem.getTheta());
@@ -191,55 +191,41 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             }
 
             //hangingServo toggle
-            if (gamepad1.left_trigger > 0.5) {
+            if (gamepad1.dpad_up) {
                 //left_bumper is used to toggle between hanging and not hanging
-                hangingArmInPlace = true;
+                hangingServoL.setPosition(0.36);
+                hangingServoR.setPosition(0.36);
                 telemetry.addLine("Preparing to hang");
             }
-            if (hangingArmInPlace) {
-                hangingServoL.setPosition(0.95);
-                hangingServoR.setPosition(0.95);
-                telemetry.addLine("Servo in position");
-            } else {
-                hangingServoR.setPosition(0.35);
-                hangingServoR.setPosition(0.35);
-                telemetry.addLine("servo restarted");
-            }
-            //start button is for turning on the hanging motor
-            if (currentGamepad1.start) {
-                telemetry.addLine("Press dpad_up to cancel/reverse hanging");
-                hangingMotor.setPower(0.7);
-                /*while (timer.milliseconds() < 5000) {
-                    hangingMotor.setPower(0.7);
-                }*/
 
-                hangingMotor.setPower(0);
-                //Dpad up for unhanging
-            }
-            if (gamepad1.dpad_up) {
-                //motor will spin in the opposite direction until it reaches the end ground
-                hangingMotor.setPower(-0.7);
-                /*while (timer.milliseconds() < 5000) {
-                    hangingMotor.setPower(-0.7);
-                }*/
-                telemetry.addLine("hanging reversed");
-            }
+//            //start button is for turning on the hanging motor
+//            if (currentGamepad1.start) {
+//                telemetry.addLine("Press dpad_up to cancel/reverse hanging");
+//                hangingMotor.setPower(0.7);
+//                /*while (timer.milliseconds() < 5000) {
+//                    hangingMotor.setPower(0.7);
+//                }*/
+//
+//                hangingMotor.setPower(0);
+//                //Dpad up for unhanging
+//            }
+//            if (gamepad1.dpad_up) {
+//                //motor will spin in the opposite direction until it reaches the end ground
+//                hangingMotor.setPower(-0.7);
+//                /*while (timer.milliseconds() < 5000) {
+//                    hangingMotor.setPower(-0.7);
+//                }*/
+//                telemetry.addLine("hanging reversed");
+//            }
             //hanging motor code
             if(gamepad1.dpad_up) {
                 hangingMotor.setPower(1);
-            }if(gamepad1.dpad_down){
+            }
+            if(gamepad1.dpad_down){
                 hangingMotor.setPower(-1);
             }
             //hanging servo code, hold dpad_right for up position
-            if (gamepad1.dpad_right) {
-                hangingServoL.setPosition(0);
-                hangingServoR.setPosition(0);
-                telemetry.addLine("Servo in position");
-            } else {
-                hangingServoL.setPosition(0.2);
-                hangingServoR.setPosition(0.2);
-                telemetry.addLine("servo restarted");
-            }
+
 
             //Drone Launcher
             if (gamepad1.back) {
@@ -260,7 +246,6 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             telemetry.addLine();
             telemetry.addLine(Pr0TeensMainTeleop.message);
             telemetry.update();
-
         }
     }
 
