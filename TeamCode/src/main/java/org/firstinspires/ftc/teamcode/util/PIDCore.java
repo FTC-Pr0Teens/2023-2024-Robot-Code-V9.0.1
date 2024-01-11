@@ -90,6 +90,7 @@ public class PIDCore {
         lastError = error;
         timer.reset();
 
+        outputPositionalValue = (error * Kp) + (derivative * Kd);
         return (error * Kp) + (derivative * Kd);
     }
 
