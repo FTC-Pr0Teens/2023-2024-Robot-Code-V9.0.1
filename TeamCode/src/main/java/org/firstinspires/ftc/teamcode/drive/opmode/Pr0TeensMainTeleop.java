@@ -138,9 +138,6 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         timers.resetTimer("testTimer");
 
         while(opModeIsActive()) {
-            boolean hangingTrue = false;
-            boolean lastHangingState = false;
-
             /*
             processLift has to continuously run because PID only allows you to set the lift to
             a certain height while the lift must run forever
@@ -187,41 +184,21 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
                 }
             }
 
-            //hangingServo toggle
-            if (gamepad1.left_trigger > 0.5) {
-                //left_bumper is used to toggle between hanging and not hanging
-//                hangingArmInPlace = !hangingArmInPlace;
-                telemetry.addLine("Preparing to hang");
+            //hanging motor code
+            if(gamepad1.dpad_up) {
+                hangingMotor.setPower(1);
+            }if(gamepad1.dpad_down){
+                hangingMotor.setPower(-1);
             }
-            if (hangingArmInPlace) {
-//                hangingServoL.setPosition(0.95);
-//            hangingServoR.setPosition(0.95);
+            //hanging servo code, hold dpad_right for up position
+            if (gamepad1.dpad_right) {
+                hangingServoL.setPosition(0);
+                hangingServoR.setPosition(0);
                 telemetry.addLine("Servo in position");
             } else {
-//                hangingServoR.setPosition(0.2);
+                hangingServoL.setPosition(0.2);
+                hangingServoR.setPosition(0.2);
                 telemetry.addLine("servo restarted");
-            }
-            //start button is for turning on the hanging motor
-            if (currentGamepad1.start) {
-                timer.reset();
-                telemetry.addLine("Press dpad_up to cancel/reverse hanging");
-                hangingMotor.setPower(0.7);
-                /*while (timer.milliseconds() < 5000) {
-                    hangingMotor.setPower(0.7);
-                }*/
-                robotIsHanging = true;
-                hangingMotor.setPower(0);
-                //Dpad up for unhanging
-            }
-            if (gamepad1.dpad_up && robotIsHanging) {
-                timer.reset();
-                //motor will spin in the opposite direction until it reaches the end ground
-                hangingMotor.setPower(-0.7);
-                /*while (timer.milliseconds() < 5000) {
-                    hangingMotor.setPower(-0.7);
-                }*/
-                hangingMotor.setPower(0);
-                telemetry.addLine("hanging reversed");
             }
 
             //Drone Launcher
