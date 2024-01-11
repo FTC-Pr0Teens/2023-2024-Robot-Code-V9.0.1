@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Specifications {
-    public final double length = 43.18;
+    public final double length = 43.18;  //41.8/2 => 20.9-6.1 = 14.8 - 1 ; due to the change of placement of servo
     public final int FINALPOS = 1230;
     //b
     public final double SideOdometryToCentre = 13.8;

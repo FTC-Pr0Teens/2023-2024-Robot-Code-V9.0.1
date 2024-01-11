@@ -144,7 +144,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             boolean hangingTrue = false;
             boolean lastHangingState = false;
 
-            /*
+/*
             processLift has to continuously run because PID only allows you to set the lift to
             a certain height while the lift must run forever
              */
@@ -223,6 +223,22 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
                     hangingMotor.setPower(-0.7);
                 }*/
                 telemetry.addLine("hanging reversed");
+            }
+            //hanging motor code
+            if(gamepad1.dpad_up) {
+                hangingMotor.setPower(1);
+            }if(gamepad1.dpad_down){
+                hangingMotor.setPower(-1);
+            }
+            //hanging servo code, hold dpad_right for up position
+            if (gamepad1.dpad_right) {
+                hangingServoL.setPosition(0);
+                hangingServoR.setPosition(0);
+                telemetry.addLine("Servo in position");
+            } else {
+                hangingServoL.setPosition(0.2);
+                hangingServoR.setPosition(0.2);
+                telemetry.addLine("servo restarted");
             }
 
             //Drone Launcher

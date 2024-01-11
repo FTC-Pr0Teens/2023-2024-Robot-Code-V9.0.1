@@ -112,21 +112,21 @@ public class testingteleop extends LinearOpMode {
                 telemetry.addLine("Paper airplane launched");
             }else{
             //    droneShooter.setContinuousServoPower(0);
+                //droneShooter.setContinuousServoPower(1);
+                telemetry.addLine("Paper airplane launched");
+            }else{
+                //droneShooter.setContinuousServoPower(0);
             }
 //          //hangingServo toggle
-//            if (gamepad1.right_trigger > 0.5) {
-//                //left_bumper is used to toggle between hanging and not hanging
-//                hangingArmInPlace = !hangingArmInPlace;
-//                telemetry.addLine("Preparing to hang");
-//            }
-//            if (hangingArmInPlace) {
-//                hangingServoL.setPosition(0.95);
-                    //hangingServoR.setPosition(0.95);
-//                telemetry.addLine("Servo in position");
-//            } else {
-//                hangingServo.setPosition(0.2);
-//                telemetry.addLine("servo restarted");
-//            }
+            if (gamepad1.dpad_right) {
+                hangingServoL.setPosition(0);
+                    hangingServoR.setPosition(0);
+                telemetry.addLine("Servo in position");
+            } else {
+                hangingServoL.setPosition(0.2);
+                hangingServoR.setPosition(0.2);
+                telemetry.addLine("servo restarted");
+            }
             //start button is for turning on the hanging motor
 //            if (currentGamepad1.start && !previousGamepad1.start) {
 //                timer.reset();
