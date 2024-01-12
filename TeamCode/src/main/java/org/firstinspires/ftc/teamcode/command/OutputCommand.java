@@ -69,8 +69,8 @@ public class OutputCommand {
     }
     public void armToIdle(){
         //TODO: Find value
-        leftArm.setPosition(0.867);
-        rightArm.setPosition(0.865);
+        leftArm.setPosition(0.87);
+        rightArm.setPosition(0.87);
     }
 
     public void armToBoard(){

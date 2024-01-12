@@ -126,7 +126,7 @@ public class OdometrySubsystem extends Specifications {
         return Math.toDegrees(theta);
     }
 
-    public int backEncoder(){ return -backEncoder.getCurrentPosition(); }
+    public int backEncoder(){ return backEncoder.getCurrentPosition(); }
 
     public int leftEncoder(){
         return -leftEncoder.getCurrentPosition();

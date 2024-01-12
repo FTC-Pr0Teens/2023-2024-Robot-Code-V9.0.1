@@ -66,7 +66,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         outputCommand = new OutputCommand(hardwareMap);
         multiMotorSubsystem = new MultiMotorSubsystem(hardwareMap, true, MultiMotorSubsystem.MultiMotorType.dualMotor);
         multiMotorCommand = new MultiMotorCommand(multiMotorSubsystem);
-        webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
+        webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_BLUE);
         timer = new ElapsedTime();
 
         //initializing some variables
@@ -100,32 +100,30 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 //        sleep(8000);
         timer.reset();
         while(timer.milliseconds() < 3500) {
-            mecanumCommand.moveToGlobalPosition(-132, 0, 0);
-            sleep(2000);
             //TODO: tune
-//            if (propPosition > 175) {
-//                position = "middle";
-//                mecanumCommand.moveToGlobalPosition(-132, 0, 0);
-//                sleep(1000);
-//            } else if (propPosition <= 175 && propPosition > 0) {
-//                position = "left";
-//                mecanumCommand.moveToGlobalPosition(-56.43, -29.71, -1.352);
-//                sleep(1000);
-//            } else {
-//                position = "right";
-//                mecanumCommand.moveToGlobalPosition(57, 0, 0);
-//                sleep(1500);
-//                mecanumCommand.moveToGlobalPosition(57, 17.5, 0.832);
-//
-//                //move to board
-//                //mecanumCommand.moveToGlobalPosition(-400.5, 17.5, 0.2);
-//
-//            }
+            if (propPosition > 175) {
+                position = "middle";
+                mecanumCommand.moveToGlobalPosition(-128, 0, 0);
+                sleep(1000);
+            } else if (propPosition <= 175 && propPosition > 0) {
+                position = "left";
+                mecanumCommand.moveToGlobalPosition(-95, 0, 0);
+                sleep(500);
+                mecanumCommand.moveToGlobalPosition(-95, 0, 1.1);
+                sleep(1000);
+            } else {
+                position = "right";
+                mecanumCommand.moveToGlobalPosition(-107, 0, 0);
+                sleep(500);
+                mecanumCommand.moveToGlobalPosition(-107, 0, -0.8);
+                sleep(1000);
+                //move to board
+                //mecanumCommand.moveToGlobalPosition(-400.5, 17.5, 0.2);
+            }
         }
         timer.reset();
-        intakeCommand.lowerIntake();
-        while(timer.milliseconds() < 3000) {
-            intakeCommand.intakeOut(0.4);
+        while(timer.milliseconds() < 2500) {
+            intakeCommand.intakeOut(0.5);
         }
         intakeCommand.stopIntake();
 //        //prep for putting a pixel on to the backboard
