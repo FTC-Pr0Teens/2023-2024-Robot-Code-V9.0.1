@@ -673,6 +673,31 @@ public class MecanumCommand {
 
     }
 
+    public boolean NothingToDoCrashPrevention(){
+        //TODO: Extremely experimental! Do not use right now
+            // Example sensor readings - replace with actual sensor code
+            double frontSensorDistance = getFrontSensorDistance();
+            double safeDistance = 10; // 10 cm as a safe distance - adjust as needed
+
+            // Check if there's an obstacle too close in front
+            if (frontSensorDistance < safeDistance) {
+                // Stop or slow down the robot
+                mecanumSubsystem.stop(true);
+                return true; // Indicate that crash prevention was triggered
+            }
+
+            // No obstacles detected within the safe distance
+            return false;
+        }
+
+        private double getFrontSensorDistance() {
+            // Placeholder for actual sensor reading code
+            // Replace this with code to read distance code
+            return Integer.MAX_VALUE; // Example value, replace with actual sensor reading
+        }
+
+
+
     public void moveRotation(double targetTheta) {
         // stop moving if within 5 ticks or 0.2 radians from the position
         while (Math.abs(targetTheta - odometrySubsystem.theta) > 0.1) {
