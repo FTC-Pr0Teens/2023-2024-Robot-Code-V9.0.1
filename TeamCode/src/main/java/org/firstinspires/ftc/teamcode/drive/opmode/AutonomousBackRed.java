@@ -66,33 +66,49 @@ public class AutonomousBackRed extends LinearOpMode {
 
         double propPosition = 0;
         timer.reset();
-        while(timer.milliseconds() < 2000) {
+        while(opModeInInit()) {
             propPosition = webcamSubsystem.getXProp();
         }
-        mecanumCommand.moveToGlobalPosition(20, 0, 0);
-//        sleep(8000);
-        if(propPosition > 125){ //if middle
-            //middle
-            mecanumCommand.moveToGlobalPosition(20, 0, 0); //66,-9.5,0
+        timer.reset();
+        while (timer.time() > 3500) {
+            mecanumCommand.moveToGlobalPosition(-95, 0, 0);
+            sleep(500);
+            mecanumCommand.moveToGlobalPosition(-95, 0, -1.1);
+            sleep(1000);
         }
-        else if(propPosition < 125 && propPosition > 0){  // if right
+        //        sleep(8000);
+        /*
+        if(propPosition > 175){ //if middle
+            //middle
+            mecanumCommand.moveToGlobalPosition(-125, 0, 0);
+            sleep(1000);
+        }
+        else if(propPosition <= 175 && propPosition > 0){  // if right
             //right
-            mecanumCommand.moveToGlobalPosition(62, 0, -1.5);
-            sleep(2000);
-            mecanumCommand.moveToGlobalPosition(62, -15, -1.5);
+            mecanumCommand.moveToGlobalPosition(-95, 0, 0);
+            sleep(500);
+            mecanumCommand.moveToGlobalPosition(-95, 0, -1.1);
+            sleep(1000);
         }
         else{ //if left
-            mecanumCommand.moveToGlobalPosition(55, 15, 0);
+            position = "left";
+            mecanumCommand.moveToGlobalPosition(-107, 0, 0);
+            sleep(500);
+            mecanumCommand.moveToGlobalPosition(-107, 0, 0.8);
+            sleep(500);
         }
 //        mecanumCommand.moveToGlobalPosition(65, -3.5, 0);
         sleep(3000);
-        timer.reset();
+         */
 
-        while(timer.milliseconds() < 1000) {
-            intakeCommand.intakeOut(0.3);
+
+
+
+        timer.reset();
+        while(timer.milliseconds() < 2500) {
+            intakeCommand.intakeOut(0.5);
         }
         intakeCommand.stopIntake();
-        mecanumCommand.moveToGlobalPosition(0, 0, 0);
 
 
     }
