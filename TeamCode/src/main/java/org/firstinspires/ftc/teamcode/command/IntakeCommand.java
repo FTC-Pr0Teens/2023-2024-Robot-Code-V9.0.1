@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.teamcode.subsystems.SingleMotorSubsystem;
 import org.firstinspires.ftc.teamcode.util.Specifications;
@@ -26,7 +27,7 @@ public class IntakeCommand {
     }
 
     public void lowerIntake() {
-        intakeServo.setPosition(0.45);
+        intakeServo.setPosition(0.60);
     }
     public void intakeRollerIn(){
         intakeRoller.setPower(-1);

@@ -96,8 +96,8 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         gyroOdometry = new GyroOdometry(odometrySubsystem, imuSubsystem);
 
         mecanumSubsystem = new MecanumSubsystem(hardwareMap);
-
         mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem,  gyroOdometry, this);
+        gridAutoCentering = new GridAutoCentering(mecanumSubsystem, gyroOdometry);
 
         intakeCommand = new IntakeCommand(hardwareMap);
         outputCommand = new OutputCommand(hardwareMap);
@@ -136,11 +136,9 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         outputTimer.reset();
 
         timers.resetTimer("testTimer");
-        hangingServoL.setPosition(0);
-        hangingServoR.setPosition(0);
 
         while(opModeIsActive()) {
-            mecanumSubsystem.fieldOrientedMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, imuSubsystem.getTheta());
+//            mecanumSubsystem.fieldOrientedMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, imuSubsystem.getTheta());
             boolean hangingTrue = false;
             boolean lastHangingState = false;
 
@@ -151,7 +149,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             //isLiftExtracted();
             checkLiftState();
             isPixelDropping();
-           // runMovement();
+            runMovement();
 
             //lift stuff
 
@@ -189,9 +187,8 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
                     intakeCommand.stopIntake();
                 }
             }
-
             //hangingServo toggle
-            if (gamepad1.dpad_up) {
+            if (gamepad1.dpad_right) {
                 //left_bumper is used to toggle between hanging and not hanging
                 hangingServoL.setPosition(0.36);
                 hangingServoR.setPosition(0.36);
@@ -243,8 +240,16 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 //            telemetry.addData("currentLevel (command)", multiMotorCommand.getLevel());
 //            telemetry.addData("READ THIS: Lift Level (1, 2, or 3", level);
             telemetry.addData("gateTimer:", gateTimer.time());
+
+            telemetry.addData("angle:", gyroOdometry.getAngle());
             telemetry.addLine();
-            telemetry.addLine(Pr0TeensMainTeleop.message);
+            telemetry.addData("RIGHTX", gamepad1.right_stick_x);
+            telemetry.addData("RIGHTY", gamepad1.right_stick_y);
+            telemetry.addData("LEFTX", gamepad1.left_stick_x);
+            telemetry.addData("LEFTY", gamepad1.left_stick_y);
+
+
+            telemetry.addLine("MAINTIMER" + timers.getTimerMillis("testTimer"));
             telemetry.update();
         }
     }
@@ -314,6 +319,13 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         }
 
         //This means that backdrop is to to the RIGHT (meaning you are on RED side)
+        if(gamepad1.b){
+            intakeCommand.lowerIntake();
+        }
+        if(gamepad1.left_stick_button){
+            intakeCommand.raiseIntake();
+        }
+
         if (gamepad1.dpad_right) {
             doCentering = false;
             imuSubsystem.resetAngle(); //for gyro odometry
@@ -326,19 +338,11 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             doCentering = true;
         } else doCentering = false;
         
-        mecanumSubsystem.partialMove(true, gamepad1.left_stick_x, -gamepad1.left_stick_y, -gamepad1.right_stick_x);
-    }
-
-    private static String message = "";
-    //delete after
-    public static void singleMessage(String message){
-        Pr0TeensMainTeleop.message = message;
+        mecanumSubsystem.partialMove(true, -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
     }
 
     private void processDriveMotor(){
         while(opModeIsActive()) {
-            //movement
-            Pr0TeensMainTeleop.singleMessage(String.valueOf(timers.getTimerMillis("testTimer")));
             gridAutoCentering.process(doCentering);
             mecanumSubsystem.motorProcessTeleOp();
         }
@@ -348,7 +352,6 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         while(opModeIsActive()) {
             imuSubsystem.gyroProcess();
             gyroOdometry.angleProcess();
-            gyroOdometry.process();
         }
     }
 
