@@ -101,7 +101,7 @@ public class TestingAutonomous extends LinearOpMode {
         timer.reset();
         //while(timer.milliseconds() < 3500) {
         do {
-            mecanumCommand.setFinalPosition(true,30, -127, 0, 0);
+            mecanumCommand.moveToCheckpoint(-127,30, 0, 10);
         } while (!isStopRequested());
 
 
