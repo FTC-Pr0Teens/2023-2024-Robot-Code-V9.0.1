@@ -99,38 +99,35 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         intakeCommand.raiseIntake();
 //        sleep(8000);
         timer.reset();
-        //while(timer.milliseconds() < 3500) {
-        do {
-            mecanumCommand.moveToGlobalPosition(-127, 0, 0);
-        } while (!isStopRequested());
+        while(timer.milliseconds() < 3500) {
+            mecanumCommand.moveToGlobalPosition(-132, 0, 0);
+            sleep(2000);
             //TODO: tune
 //            if (propPosition > 175) {
-//                //pos middle
 //                position = "middle";
-//                mecanumCommand.moveToGlobalPosition(-132, 9.7, 0);
+//                mecanumCommand.moveToGlobalPosition(-132, 0, 0);
+//                sleep(1000);
 //            } else if (propPosition <= 175 && propPosition > 0) {
-//                //pos middle
-//                position = "right";
-//                mecanumCommand.moveToGlobalPosition(67, 3, 0);
+//                position = "left";
+//                mecanumCommand.moveToGlobalPosition(-56.43, -29.71, -1.352);
 //                sleep(1000);
 //            } else {
-//                //pos left
-//                position = "left";
+//                position = "right";
 //                mecanumCommand.moveToGlobalPosition(57, 0, 0);
 //                sleep(1500);
 //                mecanumCommand.moveToGlobalPosition(57, 17.5, 0.832);
 //
 //                //move to board
-//                mecanumCommand.moveToGlobalPosition(-400.5, 17.5, 0.2);
+//                //mecanumCommand.moveToGlobalPosition(-400.5, 17.5, 0.2);
 //
 //            }
         }
-        //timer.reset();
-//
-//        while(timer.milliseconds() < 1000) {
-//            intakeCommand.intakeOut(0.3);
-//        }
-//        intakeCommand.stopIntake();
+        timer.reset();
+        intakeCommand.lowerIntake();
+        while(timer.milliseconds() < 3000) {
+            intakeCommand.intakeOut(0.4);
+        }
+        intakeCommand.stopIntake();
 //        //prep for putting a pixel on to the backboard
 //        level = 1; //rise the lift to level 1
 //        outputCommand.armToBoard(); // arm towards the board
@@ -271,7 +268,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 //
 //        mecanumCommand.moveToGlobalPosition(0, -84, 1.65); //checkpoint
 
- //   }
+    }
 
     public void updateOdometry() {
         while (opModeIsActive()) {
