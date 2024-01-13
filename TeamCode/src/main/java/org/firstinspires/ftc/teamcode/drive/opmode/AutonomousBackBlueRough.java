@@ -103,7 +103,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
             //TODO: tune
             if (propPosition > 175) {
                 position = "middle";
-                mecanumCommand.moveToGlobalPosition(-128, 0, 0);
+                mecanumCommand.moveToGlobalPosition(-126, 0, 0);
                 sleep(1000);
             } else if (propPosition <= 175 && propPosition > 0) {
                 position = "left";
@@ -284,6 +284,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
             telemetry.addData("position", position);
             telemetry.addData("global x", mecanumCommand.globalXController.getOutputPositionalValue());
             telemetry.addData("global y", mecanumCommand.globalYController.getOutputPositionalValue());
+            telemetry.addData("xprop", webcamSubsystem.getXProp());
 //            packet.put("x", gyroOdometry.x);
 //            packet.put("y", gyroOdometry.y);
 //            dashboard.sendTelemetryPacket(packet);

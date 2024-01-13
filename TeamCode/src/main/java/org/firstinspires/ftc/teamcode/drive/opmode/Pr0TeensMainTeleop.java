@@ -155,15 +155,15 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
             //TODO: lift_middle and lift_end is the exact same
 
-            if (gamepad1.x && !liftState.contains(LIFT_STATE.LIFT_END)) {
+            if (gamepad2.x && !liftState.contains(LIFT_STATE.LIFT_END)) {
                 //level = 0;
                 outputTimer.reset();
                 liftState.add(LIFT_STATE.LIFT_END); //go to level 2
-            } else if (gamepad1.y && !liftState.contains(LIFT_STATE.LIFT_MIDDLE)) {
+            } else if (gamepad2.y && !liftState.contains(LIFT_STATE.LIFT_MIDDLE)) {
                 //level = 1;
                 outputTimer.reset();
                 liftState.add(LIFT_STATE.LIFT_MIDDLE); //go to level 1
-            } else if (gamepad1.a){
+            } else if (gamepad2.a){
                 //level = 2;
                 outputTimer.reset();
                 liftState.add(LIFT_STATE.LIFT_IDLE); //go to bottom, reset
@@ -187,12 +187,15 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
                     intakeCommand.stopIntake();
                 }
             }
-            //hangingServo toggle
-            if (gamepad1.dpad_right) {
+            //TODO: Set positions for hanging
+            if (gamepad2.dpad_right) {
                 //left_bumper is used to toggle between hanging and not hanging
                 hangingServoL.setPosition(0.36);
                 hangingServoR.setPosition(0.36);
                 telemetry.addLine("Preparing to hang");
+            } else if (gamepad2.dpad_left){
+                hangingServoL.setPosition(0.5);
+                hangingServoR.setPosition(0.5);
             }
 
 //            //start button is for turning on the hanging motor
@@ -215,17 +218,17 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 //                telemetry.addLine("hanging reversed");
 //            }
             //hanging motor code
-            if(gamepad1.dpad_up) {
+            if(gamepad2.dpad_up) {
                 hangingMotor.setPower(1);
             }
-            if(gamepad1.dpad_down){
+            if(gamepad2.dpad_down){
                 hangingMotor.setPower(-1);
             }
             //hanging servo code, hold dpad_right for up position
 
 
             //Drone Launcher
-            if (gamepad1.back) {
+            if (gamepad2.back) {
                 droneShooter.launch();
                 telemetry.addLine("Paper airplane launched");
             }
