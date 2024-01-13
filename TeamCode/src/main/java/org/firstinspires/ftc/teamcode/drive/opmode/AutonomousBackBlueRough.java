@@ -8,6 +8,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.command.IntakeCommand;
@@ -93,24 +94,24 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         double propPosition = 0; //propPosition - using the prop the identify the place of he robot
         timer.reset();
 
-        while(timer.milliseconds() < 1000) {
+        while (opModeInInit()) {
             propPosition = webcamSubsystem.getXProp();
         }
         intakeCommand.raiseIntake();
-//        sleep(8000);
         timer.reset();
         while(timer.milliseconds() < 3500) {
             //TODO: tune
             if (propPosition > 175) {
                 position = "middle";
-                mecanumCommand.moveToGlobalPosition(-126, 0, 0);
+                mecanumCommand.moveToGlobalPosition(-125, 0, 0);
+
                 sleep(1000);
             } else if (propPosition <= 175 && propPosition > 0) {
                 position = "left";
                 mecanumCommand.moveToGlobalPosition(-95, 0, 0);
                 sleep(500);
                 mecanumCommand.moveToGlobalPosition(-95, 0, 1.1);
-                sleep(1000);
+                sleep(500);
             } else {
                 position = "right";
                 mecanumCommand.moveToGlobalPosition(-107, 0, 0);
@@ -285,6 +286,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
             telemetry.addData("global x", mecanumCommand.globalXController.getOutputPositionalValue());
             telemetry.addData("global y", mecanumCommand.globalYController.getOutputPositionalValue());
             telemetry.addData("xprop", webcamSubsystem.getXProp());
+            telemetry.addData("prop", webcamSubsystem.getXProp());
 //            packet.put("x", gyroOdometry.x);
 //            packet.put("y", gyroOdometry.y);
 //            dashboard.sendTelemetryPacket(packet);

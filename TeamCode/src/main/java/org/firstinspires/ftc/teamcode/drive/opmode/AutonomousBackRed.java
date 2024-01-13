@@ -229,6 +229,80 @@ public class AutonomousBackRed extends LinearOpMode {
 //
 //
 //        mecanumCommand.moveToGlobalPosition(0, -84, 1.65); //checkpoint
+        timer.reset();
+        while(opModeInInit()) {
+            propPosition = webcamSubsystem.getXProp();
+        }
+        timer.reset();
+        while (timer.time() > 3500) {
+            mecanumCommand.moveToGlobalPosition(-95, 0, 0);
+            sleep(500);
+            mecanumCommand.moveToGlobalPosition(-95, 0, -1.1);
+            sleep(1000);
+        }
+        //        sleep(8000);
+        /*
+        if(propPosition > 175){ //if middle
+            //middle
+            mecanumCommand.moveToGlobalPosition(-125, 0, 0);
+            sleep(1000);
+        }
+        else if(propPosition <= 175 && propPosition > 0){  // if right
+            //right
+            mecanumCommand.moveToGlobalPosition(-95, 0, 0);
+            sleep(500);
+            mecanumCommand.moveToGlobalPosition(-95, 0, -1.1);
+            sleep(1000);
+        }
+        else{ //if left
+            position = "left";
+        double propPosition = 0;
+        timer.reset();
+        while(opModeInInit()) {
+            propPosition = webcamSubsystem.getXProp();
+        }
+        timer.reset();
+        while (timer.time() > 3500) {
+            mecanumCommand.moveToGlobalPosition(-95, 0, 0);
+            sleep(500);
+            mecanumCommand.moveToGlobalPosition(-95, 0, -1.1);
+            sleep(1000);
+        }
+        //        sleep(8000);
+        /*
+        if(propPosition > 175){ //if middle
+            //middle
+            mecanumCommand.moveToGlobalPosition(-125, 0, 0);
+            sleep(1000);
+        }
+        else if(propPosition <= 175 && propPosition > 0){  // if right
+            //right
+            mecanumCommand.moveToGlobalPosition(-95, 0, 0);
+            sleep(500);
+            mecanumCommand.moveToGlobalPosition(-95, 0, -1.1);
+            sleep(1000);
+        }
+        else{ //if left
+            position = "left";
+            mecanumCommand.moveToGlobalPosition(-107, 0, 0);
+            sleep(500);
+            mecanumCommand.moveToGlobalPosition(-107, 0, 0.8);
+            sleep(500);
+        }
+//        mecanumCommand.moveToGlobalPosition(65, -3.5, 0);
+        sleep(3000);
+         */
+
+
+        mecanumCommand.moveToGlobalPosition(-107, 0, 0);
+            sleep(500);
+            mecanumCommand.moveToGlobalPosition(-107, 0, 0.8);
+            sleep(500);
+        }
+//        mecanumCommand.moveToGlobalPosition(65, -3.5, 0);
+        sleep(3000);
+         */
+
 
 //        //attempt on getting more pixels(rough values)
 //        if(right == true) {
