@@ -94,11 +94,17 @@ public class WhyNotGoldenTeleOp extends LinearOpMode {
         Executor executor = Executors.newFixedThreadPool(4);
 
         waitForStart();
-
+        //execute the 4 threads
         CompletableFuture.runAsync(this::processLift, executor);
         CompletableFuture.runAsync(this::processDriveMotor, executor);
         CompletableFuture.runAsync(this::processIMU, executor);
-
+        /*
+        Why use executors?
+        THis will improve the perfomance, because in this multi-thread code, wbere most thread are independent and can be executed concurrently
+        The executor enables asynchronous processing by allowing tasks to be executed in a non-blocking manner.
+        This is evident in your use of CompletableFuture.runAsync, which executes tasks asynchronously, improving the responsiveness of your application.
+        another thing, it looks more advanced lol
+         */
         while (opModeIsActive()) {
             processGamepadInput();
             updateTelemetry();
