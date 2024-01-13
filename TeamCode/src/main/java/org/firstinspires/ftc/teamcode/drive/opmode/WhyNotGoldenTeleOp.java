@@ -358,7 +358,7 @@ public class WhyNotGoldenTeleOp extends LinearOpMode {
 
         private void processIMU () {
         while (opModeIsActive()) {
-            try {
+            try { // to make it bug free, and even if it doesn't work it won't affect anything.
                 synchronized (this) {
                     imuSubsystem.gyroProcess();
                     gyroOdometry.angleProcess();
