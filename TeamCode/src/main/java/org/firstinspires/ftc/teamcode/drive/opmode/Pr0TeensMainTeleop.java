@@ -50,7 +50,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
     private boolean armBeingProcessed;
 
     //true if lift has already reached destined location and ready to return to original pos
-    private boolean liftDone;
+
     private int level;
 
     private Servo leftArm;
@@ -110,15 +110,11 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
         hangingServoR = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_R);
         hangingServoR.setPosition(0.35);
-////
-////        //INITIALIZES THE HANGING MOTOR
+
         hangingMotor = hardwareMap.dcMotor.get(Specifications.HANGING_MOTOR);
         hangingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         hangingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         hangingMotor.setPower(0);
-
-        boolean hangingArmInPlace = false;
-        boolean robotIsHanging = false;
 
         Executor executor = Executors.newFixedThreadPool(4);
 
@@ -138,10 +134,6 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         timers.resetTimer("testTimer");
 
         while(opModeIsActive()) {
-//            mecanumSubsystem.fieldOrientedMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, imuSubsystem.getTheta());
-            boolean hangingTrue = false;
-            boolean lastHangingState = false;
-
 /*
             processLift has to continuously run because PID only allows you to set the lift to
             a certain height while the lift must run forever
@@ -151,7 +143,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             isPixelDropping();
             runMovement();
 
-            //lift stuff
+
 
             //TODO: lift_middle and lift_end is the exact same
 
@@ -169,13 +161,8 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
                 liftState.add(LIFT_STATE.LIFT_IDLE); //go to bottom, reset
             }
 
-            //another set of code here (for testing)
-            //multiMotorSubsystem.moveLift(-gamepad1.right_stick_y);
 
-            if (gamepad1.right_trigger > 0.5){
-                timers.resetTimer("gate");
-                liftState.add(LIFT_STATE.DROP_PIXEL);
-            }
+            //intake
             if(liftState.isEmpty()) {
                 if (gamepad1.right_bumper) {
                     intakeCommand.intakeIn(0.7);
@@ -187,72 +174,55 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
                     intakeCommand.stopIntake();
                 }
             }
-            //TODO: Set positions for hanging
+
+
+            //output gate
+
+
+            if (gamepad1.right_trigger > 0.5){
+                timers.resetTimer("gate");
+                liftState.add(LIFT_STATE.DROP_PIXEL);
+            }
+
+
+
+            //TODO: Set positions for hangingServo
             if (gamepad2.dpad_right) {
-                //left_bumper is used to toggle between hanging and not hanging
+                //idle
                 hangingServoL.setPosition(0.36);
                 hangingServoR.setPosition(0.36);
                 telemetry.addLine("Preparing to hang");
             } else if (gamepad2.dpad_left){
+                //hang
                 hangingServoL.setPosition(0.5);
                 hangingServoR.setPosition(0.5);
-            }
-
-//            //start button is for turning on the hanging motor
-//            if (currentGamepad1.start) {
-//                telemetry.addLine("Press dpad_up to cancel/reverse hanging");
-//                hangingMotor.setPower(0.7);
-//                /*while (timer.milliseconds() < 5000) {
-//                    hangingMotor.setPower(0.7);
-//                }*/
-//
-//                hangingMotor.setPower(0);
-//                //Dpad up for unhanging
-//            }
-//            if (gamepad1.dpad_up) {
-//                //motor will spin in the opposite direction until it reaches the end ground
-//                hangingMotor.setPower(-0.7);
-//                /*while (timer.milliseconds() < 5000) {
-//                    hangingMotor.setPower(-0.7);
-//                }*/
-//                telemetry.addLine("hanging reversed");
-//            }
-            //hanging motor code
-            if(gamepad2.dpad_up) {
+            } else  if(gamepad2.dpad_up) {
+                //hang
                 hangingMotor.setPower(1);
-            }
-            if(gamepad2.dpad_down){
+            } else if(gamepad2.dpad_down){
+                //hang down
                 hangingMotor.setPower(-1);
             }
-            //hanging servo code, hold dpad_right for up position
 
 
-            //Drone Launcher
+            //drone Launcher
             if (gamepad2.back) {
                 droneShooter.launch();
                 telemetry.addLine("Paper airplane launched");
             }
 
-//            telemetry.addData("Left Output Arm Pos:", leftArm.getPosition());
-//            telemetry.addData("Right Output Arm Pos:", rightArm.getPosition());
-//            telemetry.addData("Left Tilt Arm Pos:", leftTilt.getPosition());
-//            telemetry.addData("Right Tilt Arm Pos:", rightTilt.getPosition());
-//            telemetry.addData("liftHeight (subsystem)", multiMotorSubsystem.getPosition());
-//            telemetry.addData("Motor 1:", multiMotorSubsystem.main.getCurrentPosition());
-//            telemetry.addData("Motor 2:", multiMotorSubsystem.aux1.getCurrentPosition());
-//            telemetry.addData("currentLevel (command)", multiMotorCommand.getLevel());
-//            telemetry.addData("READ THIS: Lift Level (1, 2, or 3", level);
+
             telemetry.addData("gateTimer:", gateTimer.time());
 
             telemetry.addData("angle:", gyroOdometry.getAngle());
             telemetry.addLine();
-            telemetry.addData("RIGHTX", gamepad1.right_stick_x);
-            telemetry.addData("RIGHTY", gamepad1.right_stick_y);
-            telemetry.addData("LEFTX", gamepad1.left_stick_x);
+            telemetry.addData("RIGHT_X", gamepad1.right_stick_x);
+            telemetry.addData("RIGHT_Y", gamepad1.right_stick_y);
+            telemetry.addData("LEFT_X", gamepad1.left_stick_x);
             telemetry.addData("LEFTY", gamepad1.left_stick_y);
 
 
-            telemetry.addLine("MAINTIMER" + timers.getTimerMillis("testTimer"));
+            telemetry.addLine("MAIN TIMER" + timers.getTimerMillis("testTimer"));
             telemetry.update();
         }
     }
@@ -336,7 +306,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             autoCenterAngle = Math.PI/2; //set autocenter to right 90 degrees
         }
 
-        if(gamepad1.left_stick_button) { //TODO: rebind to game1 left trigger
+        if(gamepad1.left_trigger > 0.5) {
             gridAutoCentering.offsetTargetAngle(autoCenterAngle);
             doCentering = true;
         } else doCentering = false;
