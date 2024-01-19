@@ -105,12 +105,16 @@ public class AutonomousBackBlueRough extends LinearOpMode {
             }
         } else if (propPosition <= 175 && propPosition > 0) {
             position = "left";
-            mecanumCommand.moveToGlobalPosition(-95, 0, 0);
-            while (!isStopRequested() && !mecanumCommand.isPositionReached() && opModeIsActive()) {
-            }
-            mecanumCommand.moveToGlobalPosition(-95, 0, 1.1);
-            while (!isStopRequested() && !mecanumCommand.isPositionReached() && opModeIsActive()) {
-            }
+
+            //TODO: I CHANGED THIS AS AN EXAMPLE. THE METHOD IS MOVED TO THE BOTTOM OF THIS AUTONOMOUS (CTRL + CLICK THE METHOD JUST BELOW)
+            moveToPos(-95,0,0);
+//
+//            mecanumCommand.moveToGlobalPosition(-95, 0, 0);
+//            while (!isStopRequested() && !mecanumCommand.isPositionReached() && opModeIsActive()) {
+//            }
+//            mecanumCommand.moveToGlobalPosition(-95, 0, 1.1);
+//            while (!isStopRequested() && !mecanumCommand.isPositionReached() && opModeIsActive()) {
+//            }
         } else {
             position = "right";
             mecanumCommand.moveToGlobalPosition(-107, 0, 0);
@@ -122,6 +126,11 @@ public class AutonomousBackBlueRough extends LinearOpMode {
             //move to board if smth needs to be done while moving, add inside while loop
             //mecanumCommand.moveToGlobalPosition(-400.5, 17.5, 0.2);
         }
+
+        // please use this, see what i mean
+
+
+
         timer.reset();
         while(timer.milliseconds() < 2500) {
             intakeCommand.intakeOut(0.5);
@@ -306,5 +315,17 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         while (opModeIsActive()){
             isStopRequested();
         }
+    }
+
+    public void moveToPos(double x, double y, double theta){
+        mecanumCommand.moveIntegralReset();
+        // stop moving if within 5 ticks or 0.2 radians from the position
+        while ((Math.abs(x - gyroOdometry.x) > 2.5   //if within 2.5 ticks of target X position
+                || Math.abs(y - gyroOdometry.y) > 2.5 //if within 2.5 ticks of target y position
+                || Math.abs(theta - gyroOdometry.theta) > 0.15)
+                && this.opModeIsActive() && !this.isStopRequested()) {
+            mecanumCommand.isPosReached(x, y, theta);
+        }
+        mecanumSubsystem.stop(true);
     }
 }

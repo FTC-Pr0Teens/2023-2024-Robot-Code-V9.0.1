@@ -1,16 +1,13 @@
 package org.firstinspires.ftc.teamcode.command;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
 import org.firstinspires.ftc.teamcode.util.PIDCore;
-import org.firstinspires.ftc.teamcode.util.PurePursuit;
-import org.firstinspires.ftc.teamcode.util.VectorCartesian;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Config
 public class MecanumCommand {
@@ -615,6 +612,13 @@ public class MecanumCommand {
 //        moveGlobalPartial(true, 0, 0, 0);
 //    }
 
+    public void moveIntegralReset(){
+        globalYController.integralReset();
+        globalXController.integralReset();
+        globalThetaController.integralReset();
+    }
+
+
     public void moveToGlobalPosition(double targetX, double targetY, double targetTheta) throws InterruptedException { //When calling stop function, does interrupted exception happen?
         globalYController.integralReset();
         globalXController.integralReset();
@@ -625,16 +629,11 @@ public class MecanumCommand {
     }
 
     public void isPosReached(double targetX, double targetY, double targetTheta){
-        while ((Math.abs(targetX - gyroOdometry.x) > 2.5   //if within 2.5 ticks of target X position
-                || Math.abs(targetY - gyroOdometry.y) > 2.5 //if within 2.5 ticks of target y position
-                || Math.abs(targetTheta - gyroOdometry.theta) > 0.15)
-                && opMode.opModeIsActive()) { //if within 0.15 radians of target position
-
+         //if within 0.15 radians of target position
             double moveX = globalXController.outputPositional(targetX, gyroOdometry.x);
             double moveY = globalYController.outputPositional(targetY, gyroOdometry.y);
             double moveTheta = -globalThetaController.outputPositional(targetTheta, gyroOdometry.theta);
             mecanumSubsystem.fieldOrientedMove(moveY, moveX, moveTheta, gyroOdometry.theta);
-        }
     }
 
     /**
