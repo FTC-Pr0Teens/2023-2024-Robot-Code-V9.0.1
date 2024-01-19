@@ -100,9 +100,9 @@ public class AutonomousBackBlueRough extends LinearOpMode {
             //TODO: tune
         if (propPosition > 175) {
             position = "middle";
-            mecanumCommand.moveToGlobalPosition(-125, 0, 0);
-            while (!isStopRequested() && !mecanumCommand.isPositionReached() && opModeIsActive()) {
-            }
+//            mecanumCommand.moveToGlobalPosition(-125, 0, 0);
+            moveToPos(-125,0,0);
+
         } else if (propPosition <= 175 && propPosition > 0) {
             position = "left";
 
@@ -117,12 +117,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 //            }
         } else {
             position = "right";
-            mecanumCommand.moveToGlobalPosition(-107, 0, 0);
-            while (!isStopRequested() && !mecanumCommand.isPositionReached() && opModeIsActive()) {
-            }
-            mecanumCommand.moveToGlobalPosition(-107, 0, -0.8);
-            while (!isStopRequested() && !mecanumCommand.isPositionReached() && opModeIsActive()) {
-            }
+            moveToPos(-107,0,0);
             //move to board if smth needs to be done while moving, add inside while loop
             //mecanumCommand.moveToGlobalPosition(-400.5, 17.5, 0.2);
         }
