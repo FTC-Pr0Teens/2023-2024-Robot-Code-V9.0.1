@@ -621,6 +621,10 @@ public class MecanumCommand {
         globalThetaController.integralReset();
 
         // stop moving if within 5 ticks or 0.2 radians from the position
+        mecanumSubsystem.stop(true);
+    }
+
+    public void isPosReached(double targetX, double targetY, double targetTheta){
         while ((Math.abs(targetX - gyroOdometry.x) > 2.5   //if within 2.5 ticks of target X position
                 || Math.abs(targetY - gyroOdometry.y) > 2.5 //if within 2.5 ticks of target y position
                 || Math.abs(targetTheta - gyroOdometry.theta) > 0.15)
@@ -631,9 +635,6 @@ public class MecanumCommand {
             double moveTheta = -globalThetaController.outputPositional(targetTheta, gyroOdometry.theta);
             mecanumSubsystem.fieldOrientedMove(moveY, moveX, moveTheta, gyroOdometry.theta);
         }
-
-
-        mecanumSubsystem.stop(true);
     }
 
     /**

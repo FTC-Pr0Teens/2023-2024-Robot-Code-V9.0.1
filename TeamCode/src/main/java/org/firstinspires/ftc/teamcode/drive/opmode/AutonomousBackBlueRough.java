@@ -101,18 +101,25 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         if (propPosition > 175) {
             position = "middle";
             mecanumCommand.moveToGlobalPosition(-125, 0, 0);
-            stop();
+            while (!isStopRequested() && !mecanumCommand.isPositionReached() && opModeIsActive()) {
+            }
         } else if (propPosition <= 175 && propPosition > 0) {
             position = "left";
             mecanumCommand.moveToGlobalPosition(-95, 0, 0);
+            while (!isStopRequested() && !mecanumCommand.isPositionReached() && opModeIsActive()) {
+            }
             mecanumCommand.moveToGlobalPosition(-95, 0, 1.1);
-            stop();
+            while (!isStopRequested() && !mecanumCommand.isPositionReached() && opModeIsActive()) {
+            }
         } else {
             position = "right";
             mecanumCommand.moveToGlobalPosition(-107, 0, 0);
+            while (!isStopRequested() && !mecanumCommand.isPositionReached() && opModeIsActive()) {
+            }
             mecanumCommand.moveToGlobalPosition(-107, 0, -0.8);
-            stop();
-            //move to board
+            while (!isStopRequested() && !mecanumCommand.isPositionReached() && opModeIsActive()) {
+            }
+            //move to board if smth needs to be done while moving, add inside while loop
             //mecanumCommand.moveToGlobalPosition(-400.5, 17.5, 0.2);
         }
         timer.reset();
@@ -268,6 +275,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
             gyroOdometry.odometryProcess();
         }
     }
+
 
     public void updateTelemetry() {
         while (opModeIsActive()) {
