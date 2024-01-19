@@ -79,7 +79,7 @@ public class AutonomousBackRed extends LinearOpMode {
         odometrySubsystem.reset();
         imu.resetAngle();
 
-        intakeCommand.lowerIntake();
+        intakeCommand.raiseIntake();
         outputCommand.closeGate();
 
         outputCommand.armToIdle();
@@ -94,41 +94,42 @@ public class AutonomousBackRed extends LinearOpMode {
         double propPosition = 0; //propPosition - using the prop the identify the place of he robot
         timer.reset();
 
-        while(timer.milliseconds() < 1000) {
+        while(opModeInInit()) {
             propPosition = webcamSubsystem.getXProp();
         }
         intakeCommand.raiseIntake();
 //        sleep(8000);
+//        sleep(8000);
+//        sleep(8000);
         timer.reset();
-        while(timer.milliseconds() < 3500) {
             //TODO: tune
-            if (propPosition > 175) {
-                position = "middle";
-                mecanumCommand.moveToGlobalPosition(-116, 0, 0);
-                sleep(1000);
-                intakePower = 0.4;
-            } else if (propPosition <= 175 && propPosition > 0) {
-                position = "left";
-                mecanumCommand.moveToGlobalPosition(-95, 0, 0);
-                sleep(1100);
-                mecanumCommand.moveToGlobalPosition(-95, 0, 0.75);
-                sleep(1000);
-                intakePower = 0.5;
-            } else {
-                mecanumCommand.moveToGlobalPosition(-80, 0, 0);
-                sleep(1880);
-                mecanumCommand.moveToGlobalPosition(-80, 0, -0.96);
-                intakePower = 0.62;
-                //move to board
-                //mecanumCommand.moveToGlobalPosition(-400.5, 17.5, 0.2);
-                // changing theta to either more negative or more positive causes the robot to strafe / act weird
-            }
+        if (propPosition > 175) {
+            position = "middle";
+            mecanumCommand.moveToGlobalPosition(-116, 0, 0);
+            sleep(1000);
+            intakePower = 0.4;
+        } else if (propPosition <= 175 && propPosition > 0) {
+            position = "left";
+            mecanumCommand.moveToGlobalPosition(-95, 0, 0);
+            sleep(1100);
+            mecanumCommand.moveToGlobalPosition(-95, 0, 0.75);
+            intakePower = 0.5;
+        } else {
+            mecanumCommand.moveToGlobalPosition(-80, 0, 0);
+            sleep(1880);
+            mecanumCommand.moveToGlobalPosition(-80, 0, -0.96);
+            intakePower = 0.62;
+            //move to board
+            //mecanumCommand.moveToGlobalPosition(-400.5, 17.5, 0.2);
+            // changing theta to either more negative or more positive causes the robot to strafe / act weird
+
         }
         timer.reset();
         while(timer.milliseconds() < 2500) {
             intakeCommand.intakeOut(intakePower);
         }
         intakeCommand.stopIntake();
+        stop();
 //        //prep for putting a pixel on to the backboard
 //        level = 1; //rise the lift to level 1
 //        outputCommand.armToBoard(); // arm towards the board
@@ -229,18 +230,16 @@ public class AutonomousBackRed extends LinearOpMode {
 //
 //
 //        mecanumCommand.moveToGlobalPosition(0, -84, 1.65); //checkpoint
-        timer.reset();
-        while(opModeInInit()) {
-            propPosition = webcamSubsystem.getXProp();
-        }
-        timer.reset();
-        while (timer.time() > 3500) {
-            mecanumCommand.moveToGlobalPosition(-95, 0, 0);
-            sleep(500);
-            mecanumCommand.moveToGlobalPosition(-95, 0, -1.1);
-            sleep(1000);
-        }
-        //        sleep(8000);
+//        timer.reset();
+//        while(opModeInInit()) {
+//            propPosition = webcamSubsystem.getXProp();
+//        }
+//        timer.reset();
+//        mecanumCommand.moveToGlobalPosition(-95, 0, 0);
+//        sleep(500);
+//        mecanumCommand.moveToGlobalPosition(-95, 0, -1.1);
+//        sleep(1000);
+//        //        sleep(8000);
         /*
         if(propPosition > 175){ //if middle
             //middle
@@ -293,15 +292,14 @@ public class AutonomousBackRed extends LinearOpMode {
         sleep(3000);
          */
 
-
-        mecanumCommand.moveToGlobalPosition(-107, 0, 0);
-            sleep(500);
-            mecanumCommand.moveToGlobalPosition(-107, 0, 0.8);
-            sleep(500);
+//
+//            mecanumCommand.moveToGlobalPosition(-107, 0, 0);
+//            sleep(500);
+//            mecanumCommand.moveToGlobalPosition(-107, 0, 0.8);
+//            sleep(500);
         }
 //        mecanumCommand.moveToGlobalPosition(65, -3.5, 0);
-        sleep(3000);
-         */
+
 
 
 //        //attempt on getting more pixels(rough values)
@@ -343,7 +341,6 @@ public class AutonomousBackRed extends LinearOpMode {
 //
 //        mecanumCommand.moveToGlobalPosition(0, -84, 1.65); //checkpoint
 
-    }
 
     public void updateOdometry() {
         while (opModeIsActive()) {

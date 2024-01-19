@@ -69,8 +69,8 @@ public class OutputCommand {
     }
     public void armToIdle(){
         //TODO: Find value
-        leftArm.setPosition(0.87);
-        rightArm.setPosition(0.87);
+        leftArm.setPosition(0.865);
+        rightArm.setPosition(0.865);
     }
 
     public void armToBoard(){
@@ -80,12 +80,17 @@ public class OutputCommand {
     }
 
     public void tiltToIdle(){
-        leftTilt.setPosition(0.9);
-        rightTilt.setPosition(0.9);
+        leftTilt.setPosition(0.585);
+        rightTilt.setPosition(0.585);
     }
     public void tiltToBoard(){
-        leftTilt.setPosition(0);
-        rightTilt.setPosition(0);
+        leftTilt.setPosition(0.975);
+        rightTilt.setPosition(0.975);
+    }
+
+    public void tiltToPos(double pos){
+        leftTilt.setPosition(pos);
+        rightTilt.setPosition(pos);
     }
 
 

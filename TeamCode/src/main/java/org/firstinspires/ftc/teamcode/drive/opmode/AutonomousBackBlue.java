@@ -84,6 +84,20 @@ public class AutonomousBackBlue extends LinearOpMode {
         CompletableFuture.runAsync(this::updateOdometry, executor);
         CompletableFuture.runAsync(this::updateTelemetry, executor);
         CompletableFuture.runAsync(this::liftProcess, executor);
+
+
+        mecanumCommand.moveToGlobalPosition(0, 0, -1.6);
+
+
+
+
+
+
+
+
+
+
+        /*
         webcamSubsystem.getXProp();
         double propPosition = 0; //propPosition - using the prop the identify the place of he robot
         timer.reset();
@@ -154,6 +168,8 @@ public class AutonomousBackBlue extends LinearOpMode {
         mecanumCommand.moveToGlobalPosition(0, -84, 1.65); //checkpoint
 
 
+
+         */
 
     }
 

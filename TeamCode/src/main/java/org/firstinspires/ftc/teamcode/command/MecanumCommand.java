@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.util.GyroOdometry;
 import org.firstinspires.ftc.teamcode.util.PIDCore;
 import org.firstinspires.ftc.teamcode.util.PurePursuit;
 import org.firstinspires.ftc.teamcode.util.VectorCartesian;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Config
 public class MecanumCommand {
@@ -17,7 +18,6 @@ public class MecanumCommand {
     private OdometrySubsystem odometrySubsystem;
     private GyroOdometry gyroOdometry;
     private boolean run;
-    private OpMode opMode;
     private ElapsedTime elapsedTime;
     public PIDCore globalXController;
     public PIDCore globalYController;
@@ -38,6 +38,8 @@ public class MecanumCommand {
     private double yFinal;
     private double thetaFinal;
     private double velocity;
+
+    private LinearOpMode opMode;
 
     public void setthetaConstants(double kptheta, double kdtheta, double kitheta){
         MecanumCommand.kptheta = kptheta;
@@ -60,11 +62,11 @@ public class MecanumCommand {
         globalThetaController.setConstant(kptheta, kdtheta, kitheta);
     }
 
-    public MecanumCommand(MecanumSubsystem mecanumSubsystem, OdometrySubsystem odometrySubsystem, GyroOdometry gyroOdometry, OpMode opmode) {
+    public MecanumCommand(MecanumSubsystem mecanumSubsystem, OdometrySubsystem odometrySubsystem, GyroOdometry gyroOdometry, LinearOpMode opMode) {
         this.mecanumSubsystem = mecanumSubsystem;
         this.odometrySubsystem = odometrySubsystem;
         this.gyroOdometry = gyroOdometry;
-        this.opMode = opmode;
+        this.opMode = opMode;
         globalXController = new PIDCore(kpx, kdx, kix);
         globalYController = new PIDCore(kpy, kdy, kiy);
         globalThetaController = new PIDCore(kptheta, kdtheta, kitheta);
@@ -619,15 +621,17 @@ public class MecanumCommand {
         globalThetaController.integralReset();
 
         // stop moving if within 5 ticks or 0.2 radians from the position
-        while (Math.abs(targetX - gyroOdometry.x) > 2.5   //if within 2.5 ticks of target X position
+        while ((Math.abs(targetX - gyroOdometry.x) > 2.5   //if within 2.5 ticks of target X position
                 || Math.abs(targetY - gyroOdometry.y) > 2.5 //if within 2.5 ticks of target y position
-                || Math.abs(targetTheta - gyroOdometry.theta) > 0.15) { //if within 0.15 radians of target position
+                || Math.abs(targetTheta - gyroOdometry.theta) > 0.15)
+                && opMode.opModeIsActive()) { //if within 0.15 radians of target position
 
             double moveX = globalXController.outputPositional(targetX, gyroOdometry.x);
             double moveY = globalYController.outputPositional(targetY, gyroOdometry.y);
             double moveTheta = -globalThetaController.outputPositional(targetTheta, gyroOdometry.theta);
             mecanumSubsystem.fieldOrientedMove(moveY, moveX, moveTheta, gyroOdometry.theta);
         }
+
 
         mecanumSubsystem.stop(true);
     }
@@ -671,6 +675,18 @@ public class MecanumCommand {
 
         return false;
 
+    }
+
+    public boolean isPositionReached(boolean xtol, boolean ytol){
+        boolean withinXRange = (getXDifference() < 1.5);
+        if (xtol){
+            withinXRange = (getXDifference() < 3);
+        }
+        boolean withinYRange = (getYDifference() < 1.5);
+        if (ytol){
+            withinXRange = (getXDifference() < 3);
+        }
+        return withinXRange && withinYRange && getThetaDifference() < 0.02;
     }
 
     public boolean NothingToDoCrashPrevention(){

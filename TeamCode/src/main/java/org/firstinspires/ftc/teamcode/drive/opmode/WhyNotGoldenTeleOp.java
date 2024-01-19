@@ -149,6 +149,9 @@ public class WhyNotGoldenTeleOp extends LinearOpMode {
 
         Executor executor = Executors.newFixedThreadPool(4);
 
+
+        CompletableFuture.runAsync(this:: processLift, executor);
+        CompletableFuture.runAsync(this:: runMovement, executor);
         armBeingProcessed = false;
 
         Gamepad currentGamepad1 = new Gamepad();

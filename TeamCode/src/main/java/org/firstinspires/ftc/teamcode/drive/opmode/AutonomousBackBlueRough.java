@@ -1,14 +1,11 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
 // Android and FTC SDK imports for robot operation and telemetry
-import android.os.Build;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.command.IntakeCommand;
@@ -26,7 +23,6 @@ import org.firstinspires.ftc.teamcode.util.GyroOdometry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 @Autonomous(name="Autonomous Back Blue Rough")
 public class AutonomousBackBlueRough extends LinearOpMode {
@@ -51,6 +47,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
     //38, 80, -1.58
     private int level = -1;
     private String position = "initalized";
+
 
 
     @Override
@@ -90,6 +87,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         CompletableFuture.runAsync(this::updateOdometry, executor);
         CompletableFuture.runAsync(this::updateTelemetry, executor);
         CompletableFuture.runAsync(this::liftProcess, executor);
+       // CompletableFuture.runAsync(this::ThreadStop);
         webcamSubsystem.getXProp();
         double propPosition = 0; //propPosition - using the prop the identify the place of he robot
         timer.reset();
@@ -99,34 +97,30 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         }
         intakeCommand.raiseIntake();
         timer.reset();
-        while(timer.milliseconds() < 3500) {
             //TODO: tune
-            if (propPosition > 175) {
-                position = "middle";
-                mecanumCommand.moveToGlobalPosition(-125, 0, 0);
-
-                sleep(1000);
-            } else if (propPosition <= 175 && propPosition > 0) {
-                position = "left";
-                mecanumCommand.moveToGlobalPosition(-95, 0, 0);
-                sleep(500);
-                mecanumCommand.moveToGlobalPosition(-95, 0, 1.1);
-                sleep(500);
-            } else {
-                position = "right";
-                mecanumCommand.moveToGlobalPosition(-107, 0, 0);
-                sleep(500);
-                mecanumCommand.moveToGlobalPosition(-107, 0, -0.8);
-                sleep(1000);
-                //move to board
-                //mecanumCommand.moveToGlobalPosition(-400.5, 17.5, 0.2);
-            }
+        if (propPosition > 175) {
+            position = "middle";
+            mecanumCommand.moveToGlobalPosition(-125, 0, 0);
+            stop();
+        } else if (propPosition <= 175 && propPosition > 0) {
+            position = "left";
+            mecanumCommand.moveToGlobalPosition(-95, 0, 0);
+            mecanumCommand.moveToGlobalPosition(-95, 0, 1.1);
+            stop();
+        } else {
+            position = "right";
+            mecanumCommand.moveToGlobalPosition(-107, 0, 0);
+            mecanumCommand.moveToGlobalPosition(-107, 0, -0.8);
+            stop();
+            //move to board
+            //mecanumCommand.moveToGlobalPosition(-400.5, 17.5, 0.2);
         }
         timer.reset();
         while(timer.milliseconds() < 2500) {
             intakeCommand.intakeOut(0.5);
         }
         intakeCommand.stopIntake();
+        stop();
 //        //prep for putting a pixel on to the backboard
 //        level = 1; //rise the lift to level 1
 //        outputCommand.armToBoard(); // arm towards the board
@@ -296,6 +290,13 @@ public class AutonomousBackBlueRough extends LinearOpMode {
     public void liftProcess() {
         while(opModeIsActive()) {
             multiMotorCommand.LiftUp(true, level);
+        }
+    }
+
+
+    public void ThreadStop(){
+        while (opModeIsActive()){
+            isStopRequested();
         }
     }
 }

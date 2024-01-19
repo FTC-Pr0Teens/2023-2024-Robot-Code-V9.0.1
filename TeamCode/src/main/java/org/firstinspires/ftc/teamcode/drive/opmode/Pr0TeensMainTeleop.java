@@ -76,7 +76,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         LIFT_IDLE,
         LIFT_MIDDLE,
         LIFT_END,
-        DROP_PIXEL
+        HANGSERVO, DROP_PIXEL
     }
 
     private boolean right_stick_pressed = false;
@@ -107,24 +107,31 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         //INITIALIZES THE HANGING SERVO
         hangingServoL = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_L);
         hangingServoL.setDirection(Servo.Direction.REVERSE);
+        hangingServoL.setPosition(0.5);
 
         hangingServoR = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_R);
-        hangingServoR.setPosition(0.35);
+        hangingServoR.setPosition(0.5);
 
         hangingMotor = hardwareMap.dcMotor.get(Specifications.HANGING_MOTOR);
         hangingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         hangingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         hangingMotor.setPower(0);
 
-        Executor executor = Executors.newFixedThreadPool(4);
+        Executor executor = Executors.newFixedThreadPool(5);
 
         armBeingProcessed = false;
 
+        CompletableFuture.runAsync(this::processLift, executor);
+        level = 0;
+        droneShooter.lock();
+        outputCommand.tiltToIdle(); //bring arm down BEFORE bringing lift down
+        outputCommand.armToIdle();
+
         waitForStart();
 
-        CompletableFuture.runAsync(this::processLift, executor);
         CompletableFuture.runAsync(this::processDriveMotor, executor);
         CompletableFuture.runAsync(this::processIMU, executor);
+        CompletableFuture.runAsync(this::processDriveController);
 
         Gamepad currentGamepad1 = new Gamepad();
         Gamepad previousGamepad1 = new Gamepad();
@@ -141,7 +148,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             //isLiftExtracted();
             checkLiftState();
             isPixelDropping();
-            runMovement();
+//            runMovement(); moved to own thread
 
 
 
@@ -163,45 +170,43 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
 
             //intake
-            if(liftState.isEmpty()) {
-                if (gamepad1.right_bumper) {
-                    intakeCommand.intakeIn(0.7);
-                    intakeCommand.intakeRollerIn();
-                } else if (gamepad1.left_bumper) {
-                    intakeCommand.intakeOut(0.7);
-                    intakeCommand.intakeRollerOut();
-                } else {
-                    intakeCommand.stopIntake();
-                }
+
+            if (gamepad1.left_bumper) {
+                intakeCommand.intakeIn(0.6);
+                intakeCommand.intakeRollerIn();
+            } else if (gamepad1.right_bumper) {
+                intakeCommand.intakeOut(0.9);
+                intakeCommand.intakeRollerOut();
+            } else {
+                intakeCommand.stopIntake();
             }
 
 
             //output gate
-
-
             if (gamepad1.right_trigger > 0.5){
                 timers.resetTimer("gate");
                 liftState.add(LIFT_STATE.DROP_PIXEL);
             }
 
-
-
             //TODO: Set positions for hangingServo
             if (gamepad2.dpad_right) {
                 //idle
-                hangingServoL.setPosition(0.36);
-                hangingServoR.setPosition(0.36);
-                telemetry.addLine("Preparing to hang");
+                hangingServoL.setPosition(0.35);
+                hangingServoR.setPosition(0.35); //NOT PREPARED TO HANG
+
             } else if (gamepad2.dpad_left){
                 //hang
-                hangingServoL.setPosition(0.5);
-                hangingServoR.setPosition(0.5);
+                hangingServoL.setPosition(0.77);
+                hangingServoR.setPosition(0.77);
+                telemetry.addLine("Preparing to hang");
             } else  if(gamepad2.dpad_up) {
                 //hang
                 hangingMotor.setPower(1);
             } else if(gamepad2.dpad_down){
                 //hang down
                 hangingMotor.setPower(-1);
+            } else {
+                hangingMotor.setPower(0);
             }
 
 
@@ -221,23 +226,22 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             telemetry.addData("LEFT_X", gamepad1.left_stick_x);
             telemetry.addData("LEFTY", gamepad1.left_stick_y);
 
-
             telemetry.addLine("MAIN TIMER" + timers.getTimerMillis("testTimer"));
             telemetry.update();
         }
     }
 
 
-    private void checkLiftState(){
-        if (liftState.contains(LIFT_STATE.LIFT_IDLE)){
+    private void checkLiftState() {
+        if (liftState.contains(LIFT_STATE.LIFT_IDLE)) {
             outputCommand.tiltToIdle(); //bring arm down BEFORE bringing lift down
             outputCommand.armToIdle();
             if (outputTimer.milliseconds() > 900) {
                 level = 0;
-                if(outputTimer.milliseconds() > 1300) liftState.clear(); //moved here
+                if (outputTimer.milliseconds() > 1300) liftState.clear(); //moved here
             }
-        } else if (liftState.contains(LIFT_STATE.LIFT_MIDDLE)){
-            if (!liftState.contains(LIFT_STATE.LIFT_MIDDLE)) {
+        } else if (liftState.contains(LIFT_STATE.LIFT_MIDDLE)) {
+            if (!liftState.contains(LIFT_STATE.LIFT_END)) {
                 if (outputTimer.milliseconds() > 1000) {
                     liftState.clear();
                 } else if (outputTimer.milliseconds() > 250) { //bring lift up BEFORE extending arm
@@ -247,7 +251,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
                     level = 1;
                 }
             }
-        } else if (liftState.contains(LIFT_STATE.LIFT_END)){
+        } else if (liftState.contains(LIFT_STATE.LIFT_END)) {
             if (!liftState.contains(LIFT_STATE.LIFT_MIDDLE)) {
                 if (outputTimer.milliseconds() > 1000) {
                     liftState.clear();
@@ -263,17 +267,15 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
     private void isPixelDropping(){
         if (liftState.contains(LIFT_STATE.DROP_PIXEL)){
-            if (timers.checkTimePassed("gate", 200)) {
+            if (timers.checkTimePassed("gate", 500)) {
                 outputCommand.closeGate();
-                if(timers.checkTimePassed("gate",350)) {
-                    intakeCommand.intakeRollerIn();
-                }
                 if (timers.checkTimePassed("gate", 550)){
                     intakeCommand.intakeRollerStop();
                     liftState.clear();
                 }
             } else {
                 outputCommand.openGate();
+                intakeCommand.intakeRollerIn();
             }
         }
     }
@@ -289,14 +291,8 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             imuSubsystem.resetAngle(); //for gyro odometry
             gridAutoCentering.reset(); //reset grid heading
             autoCenterAngle = Math.PI/2; //set autocenter to left 90 degrees
-        }
+            gridAutoCentering.offsetTargetAngle(autoCenterAngle);
 
-        //This means that backdrop is to to the RIGHT (meaning you are on RED side)
-        if(gamepad1.b){
-            intakeCommand.lowerIntake();
-        }
-        if(gamepad1.left_stick_button){
-            intakeCommand.raiseIntake();
         }
 
         if (gamepad1.dpad_right) {
@@ -304,14 +300,15 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             imuSubsystem.resetAngle(); //for gyro odometry
             gridAutoCentering.reset(); //reset grid heading
             autoCenterAngle = Math.PI/2; //set autocenter to right 90 degrees
+            gridAutoCentering.offsetTargetAngle(autoCenterAngle);
+
         }
 
         if(gamepad1.left_trigger > 0.5) {
-            gridAutoCentering.offsetTargetAngle(autoCenterAngle);
             doCentering = true;
         } else doCentering = false;
         
-        mecanumSubsystem.partialMove(true, -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        mecanumSubsystem.partialMove(true, gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
     }
 
     private void processDriveMotor(){
@@ -325,6 +322,12 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         while(opModeIsActive()) {
             imuSubsystem.gyroProcess();
             gyroOdometry.angleProcess();
+        }
+    }
+
+    private void processDriveController(){
+        while(opModeIsActive()){
+            runMovement();
         }
     }
 

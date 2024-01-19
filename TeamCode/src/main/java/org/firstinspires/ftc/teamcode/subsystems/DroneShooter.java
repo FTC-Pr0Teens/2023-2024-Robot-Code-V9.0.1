@@ -13,7 +13,16 @@ public class DroneShooter {
         // Spin direction
     }
 
+    //0.03 close
+    //0.115 open
+
+    public void setPos(double pos){ droneServo.setPosition(pos); }
+
+    public void lock(){
+        droneServo.setPosition(0.03);
+    }
+
     public void launch (){
-        droneServo.setPosition(1);
+        droneServo.setPosition(0.115);
     }
 }
