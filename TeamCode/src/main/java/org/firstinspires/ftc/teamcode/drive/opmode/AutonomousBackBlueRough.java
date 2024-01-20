@@ -89,13 +89,15 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         webcamSubsystem.getXProp();
         double propPosition = 0; //propPosition - using the prop the identify the place of he robot
         timer.reset();
-        moveToPos(-100, 24, 0);
-        sleep(3000);
-        moveToPos(0,0, 0.7);
+//        moveToPos(-100, 24, 0);
+//        sleep(3000);
+//        moveToPos(0,0, 0.7);
 
-        moveToPos(0,0,-0.7);
+        moveToPos(0,20,0);
         sleep(3000);
-        moveToPos(0, 0, -1.6);
+        moveToPos(20, 20, 0);
+        sleep(3000);
+        stop();
 
 
 
@@ -317,6 +319,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
             telemetry.addData("position", position);
             telemetry.addData("global x", mecanumCommand.globalXController.getOutputPositionalValue());
             telemetry.addData("global y", mecanumCommand.globalYController.getOutputPositionalValue());
+            telemetry.addData("global theta", mecanumCommand.globalThetaController.getOutputPositionalValue());
             telemetry.addData("xprop", webcamSubsystem.getXProp());
             telemetry.addData("prop", webcamSubsystem.getXProp());
 //            packet.put("x", gyroOdometry.x);
