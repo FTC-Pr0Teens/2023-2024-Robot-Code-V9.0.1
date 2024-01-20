@@ -93,9 +93,9 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 //        sleep(3000);
 //        moveToPos(0,0, 0.7);
 
-        moveToPos(0,20,0);
+        moveToPos(0,8,0);
         sleep(3000);
-        moveToPos(20, 20, 0);
+        moveToPos(8, 8, 0);
         sleep(3000);
         stop();
 
