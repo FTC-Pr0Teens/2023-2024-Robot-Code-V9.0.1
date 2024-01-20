@@ -93,11 +93,6 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         sleep(3000);
         moveToPos(0,0, 0.7);
 
-
-
-
-
-
         moveToPos(0,0,-0.7);
         sleep(3000);
         moveToPos(0, 0, -1.6);
@@ -355,7 +350,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
                 || Math.abs(y - gyroOdometry.y) > 2.5 //if within 2.5 ticks of target y position
                 || Math.abs(theta - gyroOdometry.theta) > 0.15)
                 && this.opModeIsActive() && !this.isStopRequested()) {
-            mecanumCommand.isPosReached(x, y, theta);
+            mecanumCommand.moveToGlobalPos(x, y, theta);
         }
         mecanumSubsystem.stop(true);
     }

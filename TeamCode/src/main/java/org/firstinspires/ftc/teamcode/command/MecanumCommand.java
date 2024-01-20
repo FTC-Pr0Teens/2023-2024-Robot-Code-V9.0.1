@@ -625,15 +625,14 @@ public class MecanumCommand {
         globalThetaController.integralReset();
 
         // stop moving if within 5 ticks or 0.2 radians from the position
-        mecanumSubsystem.stop(true);
     }
 
-    public void isPosReached(double targetX, double targetY, double targetTheta){
+    public void moveToGlobalPos(double targetX, double targetY, double targetTheta){
          //if within 0.15 radians of target position
             double moveX = globalXController.outputPositional(targetX, gyroOdometry.x);
             double moveY = globalYController.outputPositional(targetY, gyroOdometry.y);
             double moveTheta = -globalThetaController.outputPositional(targetTheta, gyroOdometry.theta);
-            mecanumSubsystem.fieldOrientedMove(moveY, moveX, moveTheta, gyroOdometry.theta);
+            mecanumSubsystem.fieldOrientedMove(moveX, moveY, moveTheta, gyroOdometry.theta);
     }
 
     /**
