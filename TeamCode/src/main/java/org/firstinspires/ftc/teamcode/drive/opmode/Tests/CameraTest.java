@@ -9,6 +9,10 @@ import org.firstinspires.ftc.teamcode.subsystems.WebcamSubsystem;
 import org.openftc.apriltag.AprilTagDetection;
 
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 
 @TeleOp(name="camera test")
 public class CameraTest extends LinearOpMode {
@@ -16,9 +20,11 @@ public class CameraTest extends LinearOpMode {
     private WebcamSubsystem camera;
     private FtcDashboard dashboard;
     private TelemetryPacket packet;
+
+
     @Override
     public void runOpMode(){
-        camera = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
+        camera = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_BLUE);
         dashboard = FtcDashboard.getInstance();
         dashboard.startCameraStream(camera.webcam, 24);
         packet = new TelemetryPacket();

@@ -10,15 +10,8 @@ public class ServoTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         waitForStart();
         while(opModeIsActive()){
-            position = gamepad1.left_stick_x;
-            if(position > 1){
-                position = 1;
+            if (gamepad1.left_bumper){
             }
-            if(position < -1){
-                position = -1;
-            }
-            servo.setPosition(position);
-            sleep(1000);
         }
     }
 }

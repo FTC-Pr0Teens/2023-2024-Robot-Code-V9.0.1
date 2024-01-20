@@ -64,13 +64,11 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         outputCommand = new OutputCommand(hardwareMap);
         multiMotorSubsystem = new MultiMotorSubsystem(hardwareMap, true, MultiMotorSubsystem.MultiMotorType.dualMotor);
         multiMotorCommand = new MultiMotorCommand(multiMotorSubsystem);
-        webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_BLUE);
+        webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
         timer = new ElapsedTime();
 
+
         //initializing some variables
-        boolean middle = false;
-        boolean left = false;
-        boolean right = false;
 
         //resets the different subsystems to for preparation
         odometrySubsystem.reset();
@@ -91,6 +89,24 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         webcamSubsystem.getXProp();
         double propPosition = 0; //propPosition - using the prop the identify the place of he robot
         timer.reset();
+        moveToPos(-100, 24, 0);
+        sleep(3000);
+        moveToPos(0,0, 0.7);
+
+
+
+
+
+
+        moveToPos(0,0,-0.7);
+        sleep(3000);
+        moveToPos(0, 0, -1.6);
+
+
+
+
+
+        /*
 
         while (opModeInInit()) {
             propPosition = webcamSubsystem.getXProp();
@@ -102,6 +118,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
             position = "middle";
 //            mecanumCommand.moveToGlobalPosition(-125, 0, 0);
             moveToPos(-125,0,0);
+
 
         } else if (propPosition <= 175 && propPosition > 0) {
             position = "left";
@@ -117,7 +134,9 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 //            }
         } else {
             position = "right";
-            moveToPos(-107,0,0);
+            moveToPos(0,0,-0.7);
+            sleep(3000);
+            moveToPos(0, 0, -1.6);
             //move to board if smth needs to be done while moving, add inside while loop
             //mecanumCommand.moveToGlobalPosition(-400.5, 17.5, 0.2);
         }
@@ -127,11 +146,23 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
 
         timer.reset();
-        while(timer.milliseconds() < 2500) {
-            intakeCommand.intakeOut(0.5);
+        intakeCommand.raiseIntake();
+        while(timer.milliseconds() < 1000) {
+            intakeCommand.intakeOut(0.6);
         }
         intakeCommand.stopIntake();
+        intakeCommand.lowerIntake();
+        sleep(1000);
         stop();
+         */
+
+
+
+
+
+
+
+
 //        //prep for putting a pixel on to the backboard
 //        level = 1; //rise the lift to level 1
 //        outputCommand.armToBoard(); // arm towards the board
@@ -298,6 +329,11 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 //            dashboard.sendTelemetryPacket(packet);
             telemetry.update();
         }
+
+        while (opModeInInit()){
+            telemetry.addData("prop", webcamSubsystem.getXProp());
+            telemetry.addData("position", position);
+        }
     }
     public void liftProcess() {
         while(opModeIsActive()) {
@@ -323,4 +359,15 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         }
         mecanumSubsystem.stop(true);
     }
+
+    /*
+    public void stopIfPosReached(double targetX, double targetY, double targetTheta){
+        while ((Math.abs(x - gyroOdometry.x) > 2.5   //if within 2.5 ticks of target X position
+                || Math.abs(y - gyroOdometry.y) > 2.5 //if within 2.5 ticks of target y position
+                || Math.abs(theta - gyroOdometry.theta) > 0.15)){
+
+        }
+    }
+
+     */
 }
