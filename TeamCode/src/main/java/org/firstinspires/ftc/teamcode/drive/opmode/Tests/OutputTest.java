@@ -86,8 +86,8 @@ public class OutputTest extends LinearOpMode {
 
 
             if (gamepad1.dpad_right){
-                leftTilt.setPosition(0.2);
-                rightTilt.setPosition(0.2);
+                leftTilt.setPosition(0);
+                rightTilt.setPosition(0);
             } else if (gamepad1.dpad_left){
                 leftTilt.setPosition(0.4);
                 rightTilt.setPosition(0.4);
@@ -95,8 +95,8 @@ public class OutputTest extends LinearOpMode {
                 leftTilt.setPosition(0.6);
                 rightTilt.setPosition(0.6);
             } else if (gamepad1.dpad_up){
-                leftTilt.setPosition(0.8);
-                rightTilt.setPosition(0.8);
+                leftTilt.setPosition(1);
+                rightTilt.setPosition(1);
             }
 
 

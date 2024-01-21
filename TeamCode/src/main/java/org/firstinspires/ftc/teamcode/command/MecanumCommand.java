@@ -631,7 +631,7 @@ public class MecanumCommand {
          //if within 0.15 radians of target position
             double moveX = globalXController.outputPositional(targetX, gyroOdometry.x);
             double moveY = globalYController.outputPositional(targetY, gyroOdometry.y);
-            double moveTheta = globalThetaController.outputPositional(targetTheta, gyroOdometry.theta);
+            double moveTheta = globalThetaController.outputPositional(targetTheta, gyroOdometry.theta); // fieldOriented theta values set to opposite1
             mecanumSubsystem.fieldOrientedMove(moveX, moveY, moveTheta, gyroOdometry.theta);
     }
 

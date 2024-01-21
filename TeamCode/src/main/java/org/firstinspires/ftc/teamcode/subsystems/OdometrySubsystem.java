@@ -57,7 +57,7 @@ public class OdometrySubsystem extends Specifications {
         rEncoderf = rightEncoder();
         bEncoderf = backEncoder();
         dx = dxc*((lEncoderf-lEncoderi)+(rEncoderf-rEncoderi));
-        dTheta = -dThetac*((rEncoderf-rEncoderi)-(lEncoderf-lEncoderi)); //unit circle direction
+        dTheta = dThetac*((rEncoderf-rEncoderi)-(lEncoderf-lEncoderi)); //unit circle direction
         dy = (dyc*(bEncoderf-bEncoderi))+(lengthFromOdometrySideToFront*dTheta);
         //ThetaTemp = 0.96388888888*Theta+(dTheta/2);
 //        x = x+(dx*Math.cos(Theta))-(dy*Math.sin(Theta));
@@ -68,8 +68,8 @@ public class OdometrySubsystem extends Specifications {
 //            x = x - (dx*Math.cos(Theta)) + (dy*Math.sin(Theta));
 //            y = y - (dy*Math.cos(Theta)) - (dx*Math.sin(Theta));
 //        }
-        x += dx * Math.cos(theta) - dy * Math.sin(theta);
-        y += dx * Math.sin(theta) + dy * Math.cos(theta);
+        x += dx * Math.cos(theta) + dy * Math.sin(theta);
+        y += -dx * Math.sin(theta) + dy * Math.cos(theta);
         x = x+tempX;
         y = y+tempY;
         theta += dTheta/*1.03746397695*/;
@@ -126,7 +126,7 @@ public class OdometrySubsystem extends Specifications {
         return Math.toDegrees(theta);
     }
 
-    public int backEncoder(){ return backEncoder.getCurrentPosition(); }
+    public int backEncoder(){ return -backEncoder.getCurrentPosition(); }
 
     public int leftEncoder(){
         return -leftEncoder.getCurrentPosition();

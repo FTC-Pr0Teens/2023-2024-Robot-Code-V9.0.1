@@ -64,7 +64,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         outputCommand = new OutputCommand(hardwareMap);
         multiMotorSubsystem = new MultiMotorSubsystem(hardwareMap, true, MultiMotorSubsystem.MultiMotorType.dualMotor);
         multiMotorCommand = new MultiMotorCommand(multiMotorSubsystem);
-        webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
+        webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_BLUE);
         timer = new ElapsedTime();
 
 
@@ -93,17 +93,6 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 //        sleep(3000);
 //        moveToPos(0,0, 0.7);
 
-        moveToPos(0,8,0);
-        sleep(3000);
-        moveToPos(8, 8, 0);
-        sleep(3000);
-        stop();
-
-
-
-
-
-        /*
 
         while (opModeInInit()) {
             propPosition = webcamSubsystem.getXProp();
@@ -111,32 +100,33 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         intakeCommand.raiseIntake();
         timer.reset();
             //TODO: tune
-        if (propPosition > 175) {
-            position = "middle";
-//            mecanumCommand.moveToGlobalPosition(-125, 0, 0);
-            moveToPos(-125,0,0);
-
-
-        } else if (propPosition <= 175 && propPosition > 0) {
-            position = "left";
-
-            //TODO: I CHANGED THIS AS AN EXAMPLE. THE METHOD IS MOVED TO THE BOTTOM OF THIS AUTONOMOUS (CTRL + CLICK THE METHOD JUST BELOW)
-            moveToPos(-95,0,0);
+//        if (propPosition > 175) {
+//            position = "middle";
+////            mecanumCommand.moveToGlobalPosition(-125, 0, 0);
+//            moveToPos(-125,0,0);
 //
-//            mecanumCommand.moveToGlobalPosition(-95, 0, 0);
-//            while (!isStopRequested() && !mecanumCommand.isPositionReached() && opModeIsActive()) {
-//            }
-//            mecanumCommand.moveToGlobalPosition(-95, 0, 1.1);
-//            while (!isStopRequested() && !mecanumCommand.isPositionReached() && opModeIsActive()) {
-//            }
-        } else {
-            position = "right";
-            moveToPos(0,0,-0.7);
-            sleep(3000);
-            moveToPos(0, 0, -1.6);
+//
+//        } else if (propPosition <= 175 && propPosition > 0) {
+//            position = "left";
+//
+//            //TODO: I CHANGED THIS AS AN EXAMPLE. THE METHOD IS MOVED TO THE BOTTOM OF THIS AUTONOMOUS (CTRL + CLICK THE METHOD JUST BELOW)
+//            moveToPos(-90,-10,-1.6);
+//            moveToPos(-100,-10,-1.6);
+////
+////            mecanumCommand.moveToGlobalPosition(-95, 0, 0);
+////            while (!isStopRequested() && !mecanumCommand.isPositionReached() && opModeIsActive()) {
+////            }
+////            mecanumCommand.moveToGlobalPosition(-95, 0, 1.1);
+////            while (!isStopRequested() && !mecanumCommand.isPositionReached() && opModeIsActive()) {
+////            }
+//        } else {
+            //position = "right";
+            moveToPos(-100, -23,0);
+            sleep(1000);
+            //moveToPos(-90,-5,0);
             //move to board if smth needs to be done while moving, add inside while loop
             //mecanumCommand.moveToGlobalPosition(-400.5, 17.5, 0.2);
-        }
+        //}
 
         // please use this, see what i mean
 
@@ -151,7 +141,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         intakeCommand.lowerIntake();
         sleep(1000);
         stop();
-         */
+
 
 
 
@@ -321,7 +311,6 @@ public class AutonomousBackBlueRough extends LinearOpMode {
             telemetry.addData("global y", mecanumCommand.globalYController.getOutputPositionalValue());
             telemetry.addData("global theta", mecanumCommand.globalThetaController.getOutputPositionalValue());
             telemetry.addData("xprop", webcamSubsystem.getXProp());
-            telemetry.addData("prop", webcamSubsystem.getXProp());
 //            packet.put("x", gyroOdometry.x);
 //            packet.put("y", gyroOdometry.y);
 //            dashboard.sendTelemetryPacket(packet);

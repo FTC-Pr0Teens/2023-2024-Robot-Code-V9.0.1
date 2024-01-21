@@ -107,10 +107,10 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         //INITIALIZES THE HANGING SERVO
         hangingServoL = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_L);
         hangingServoL.setDirection(Servo.Direction.REVERSE);
-        hangingServoL.setPosition(0.5);
+        hangingServoL.setPosition(0.8);
 
         hangingServoR = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_R);
-        hangingServoR.setPosition(0.5);
+        hangingServoR.setPosition(0.8);
 
         hangingMotor = hardwareMap.dcMotor.get(Specifications.HANGING_MOTOR);
         hangingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -191,14 +191,13 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             //TODO: Set positions for hangingServo
             if (gamepad2.dpad_right) {
                 //idle
-                hangingServoL.setPosition(0.35);
-                hangingServoR.setPosition(0.35); //NOT PREPARED TO HANG
+                hangingServoL.setPosition(0.75);
+                hangingServoR.setPosition(0.75); //NOT PREPARED TO HANG
 
             } else if (gamepad2.dpad_left){
                 //hang
-                hangingServoL.setPosition(0.77);
-                hangingServoR.setPosition(0.77);
-                telemetry.addLine("Preparing to hang");
+                hangingServoL.setPosition(0.1);
+                hangingServoR.setPosition(0.1);
             } else  if(gamepad2.dpad_up) {
                 //hang
                 hangingMotor.setPower(1);

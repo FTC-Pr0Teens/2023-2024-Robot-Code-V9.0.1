@@ -279,13 +279,13 @@ public class MecanumSubsystem extends Specifications{
     public void fieldOrientedMove(double x, double y, double z, double theta) {
 
         // translate the field relative movement (joystick) into the robot relative movement
-        double newX = x * Math.cos(theta) + y * Math.sin(theta);
-        double newY = - x * Math.sin(theta) + y * Math.cos(theta);
+        double newY = y * Math.cos(theta) + x * Math.sin(theta);
+        double newX = - y * Math.sin(theta) + x * Math.cos(theta);
 
-        double frontRightPow = - newX + newY - z;
-        double frontLeftPow = newX + newY + z;
-        double backRightPow = newX + newY - z;
-        double backLeftPow = - newX + newY + z;
+        double frontRightPow = - newY + newX - z;
+        double frontLeftPow = newY + newX + z;
+        double backRightPow = newY + newX -  z;
+        double backLeftPow = - newY + newX + z;
 
         double largest = Math.max(
                 Math.max(Math.abs(frontRightPow), Math.abs(frontLeftPow)),
