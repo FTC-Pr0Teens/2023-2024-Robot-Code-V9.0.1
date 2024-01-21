@@ -68,8 +68,15 @@ public class OdometrySubsystem extends Specifications {
 //            x = x - (dx*Math.cos(Theta)) + (dy*Math.sin(Theta));
 //            y = y - (dy*Math.cos(Theta)) - (dx*Math.sin(Theta));
 //        }
-        x += dx * Math.cos(theta) + dy * Math.sin(theta);
-        y += -dx * Math.sin(theta) + dy * Math.cos(theta);
+        //Drive Gears
+        /*
+        x += dx * Math.cos(theta) - dy * Math.sin(theta);
+        y += dx * Math.sin(theta) + dy * Math.cos(theta);
+        */
+        x += dx * Math.cos(theta) + dy * Math.cos(Math.PI/2 + theta);
+        y += dx * Math.sin(theta) + dy * Math.sin(Math.PI/2 + theta);
+
+
         x = x+tempX;
         y = y+tempY;
         theta += dTheta/*1.03746397695*/;

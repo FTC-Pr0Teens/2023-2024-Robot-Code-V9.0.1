@@ -279,8 +279,17 @@ public class MecanumSubsystem extends Specifications{
     public void fieldOrientedMove(double x, double y, double z, double theta) {
 
         // translate the field relative movement (joystick) into the robot relative movement
-        double newY = y * Math.cos(theta) + x * Math.sin(theta);
-        double newX = - y * Math.sin(theta) + x * Math.cos(theta);
+
+        //changed all 3 lines below
+        double angle = Math.PI/2 - theta;
+        //Drive Gears
+        /*
+        double newX =  y * Math.sin(theta) + x * Math.sin(angle);
+        double newY = y * Math.cos(theta) - x * Math.cos(angle);
+        */
+        double newX = x * Math.cos(theta) + y * Math.cos(Math.PI/2 + theta);
+        double newY = x * Math.sin(theta) + y * Math.sin(Math.PI/2 + theta);
+
 
         double frontRightPow = - newY + newX - z;
         double frontLeftPow = newY + newX + z;

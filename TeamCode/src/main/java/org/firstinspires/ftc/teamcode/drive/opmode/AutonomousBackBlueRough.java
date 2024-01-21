@@ -99,6 +99,15 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         }
         intakeCommand.raiseIntake();
         timer.reset();
+
+
+        propLeft();
+
+
+
+
+
+
             //TODO: tune
 //        if (propPosition > 175) {
 //            position = "middle";
@@ -121,8 +130,8 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 ////            }
 //        } else {
             //position = "right";
-            moveToPos(-100, -23,0);
-            sleep(1000);
+//            moveToPos(0,-30,0,2.5,7,1.5);
+//            sleep(500);
             //moveToPos(-90,-5,0);
             //move to board if smth needs to be done while moving, add inside while loop
             //mecanumCommand.moveToGlobalPosition(-400.5, 17.5, 0.2);
@@ -135,10 +144,10 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         timer.reset();
         intakeCommand.raiseIntake();
         while(timer.milliseconds() < 1000) {
-            intakeCommand.intakeOut(0.6);
+            intakeCommand.intakeOut(0.5);
         }
         intakeCommand.stopIntake();
-        intakeCommand.lowerIntake();
+        //intakeCommand.lowerIntake();
         sleep(1000);
         stop();
 
@@ -299,6 +308,26 @@ public class AutonomousBackBlueRough extends LinearOpMode {
     }
 
 
+    private void propRight(){
+        //pos is good
+        moveToPos(-98,-37,0,2.5,7,1.5);
+        sleep(1000);
+    }
+
+    private void propMiddle(){
+        //pos is good
+        moveToPos(-124,0,0,2.5,2.5,1.5);
+    }
+
+    private void propLeft(){
+        timer.reset();
+        moveToPos(-58,0,0,2.5,10,1.5);
+        sleep(500);
+        moveToPos(-58,0,-3.2,2.5,2.5,0.05);
+        sleep(1000);
+        moveToPos(-80,0,-3.2,2.5,2.5,0.05);
+    }
+
     public void updateTelemetry() {
         while (opModeIsActive()) {
 //            packet.put("x", gyroOdometry.x);
@@ -335,12 +364,12 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         }
     }
 
-    public void moveToPos(double x, double y, double theta){
+    public void moveToPos(double x, double y, double theta, double toleranceX, double toleranceY, double toleranceTheta){
         mecanumCommand.moveIntegralReset();
         // stop moving if within 5 ticks or 0.2 radians from the position
-        while ((Math.abs(x - gyroOdometry.x) > 2.5   //if within 2.5 ticks of target X position
-                || Math.abs(y - gyroOdometry.y) > 2.5 //if within 2.5 ticks of target y position
-                || Math.abs(theta - gyroOdometry.theta) > 0.15)
+        while ((Math.abs(x - gyroOdometry.x) > toleranceX  //if within 2.5 ticks of target X position
+                || Math.abs(y - gyroOdometry.y) > toleranceY //if within 2.5 ticks of target y position
+                || Math.abs(theta - gyroOdometry.theta) > toleranceTheta)
                 && this.opModeIsActive() && !this.isStopRequested()) {
             mecanumCommand.moveToGlobalPos(x, y, theta);
         }
