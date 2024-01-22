@@ -98,6 +98,8 @@ public class AutonomousBackBlueRough extends LinearOpMode {
             propPosition = webcamSubsystem.getXProp();
         }
         intakeCommand.raiseIntake();
+
+        propLeft();
         timer.reset();
 
 
