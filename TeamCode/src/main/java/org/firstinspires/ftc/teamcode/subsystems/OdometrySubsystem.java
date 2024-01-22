@@ -73,8 +73,15 @@ public class OdometrySubsystem extends Specifications {
         x += dx * Math.cos(theta) - dy * Math.sin(theta);
         y += dx * Math.sin(theta) + dy * Math.cos(theta);
         */
-        x += dx * Math.cos(theta) + dy * Math.cos(Math.PI/2 + theta);
-        y += dx * Math.sin(theta) + dy * Math.sin(Math.PI/2 + theta);
+
+        //TODO:other code
+
+        //x += dx * Math.cos(theta) + dy * Math.cos(Math.PI/2 + theta);
+        //y += dx * Math.sin(theta) + dy * Math.sin(Math.PI/2 + theta);
+
+
+        x += dx * Math.cos(theta) + dy * Math.sin(theta);
+        y += -dx * Math.sin(theta) + dy * Math.cos(theta);
 
 
         x = x+tempX;

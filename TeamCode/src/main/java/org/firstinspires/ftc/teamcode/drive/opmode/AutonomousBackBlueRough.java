@@ -101,7 +101,9 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         timer.reset();
 
 
-        propLeft();
+        moveToPos(0,0,-1.6,2.5,2.5,1.5);
+        sleep(1000);
+        moveToPos(10,0,-1.6,2.5,2.5,1.5);
 
 
 
@@ -320,12 +322,18 @@ public class AutonomousBackBlueRough extends LinearOpMode {
     }
 
     private void propLeft(){
-        timer.reset();
-        moveToPos(-58,0,0,2.5,10,1.5);
-        sleep(500);
-        moveToPos(-58,0,-3.2,2.5,2.5,0.05);
+        moveToPos(0,0,-1.6,2.5,2.5,0.5);
+        sleep(3000);
+        moveToPos(-10,0,-1.6,2.5,2.5,0.5);
         sleep(1000);
-        moveToPos(-80,0,-3.2,2.5,2.5,0.05);
+        moveToPos(-10,-20,-1.6,2.5,2.5,0.5);
+        /*
+        sleep(1000);
+        moveToPos(-68,0,-3.2,2.5,2.5,0.05);
+        sleep(1000);
+        moveToPos(-75,0,-3.2,2.5,2.5,0.05);
+
+         */
     }
 
     public void updateTelemetry() {
