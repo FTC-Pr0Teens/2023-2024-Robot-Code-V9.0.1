@@ -89,14 +89,6 @@ public class AutonomousBackBlue extends LinearOpMode {
         mecanumCommand.moveToGlobalPosition(0, 0, -1.6);
 
 
-
-
-
-
-
-
-
-
         /*
         webcamSubsystem.getXProp();
         double propPosition = 0; //propPosition - using the prop the identify the place of he robot

@@ -109,9 +109,6 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
 
 
-
-
-
             //TODO: tune
 //        if (propPosition > 175) {
 //            position = "middle";

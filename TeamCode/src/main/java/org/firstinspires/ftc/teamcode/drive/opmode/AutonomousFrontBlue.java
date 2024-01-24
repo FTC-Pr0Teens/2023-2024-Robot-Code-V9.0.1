@@ -78,47 +78,70 @@ public class AutonomousFrontBlue extends LinearOpMode {
         CompletableFuture.runAsync(this::updateTelemetry, executor);
         CompletableFuture.runAsync(this::liftProcess, executor);
 
+        String position = "left";
+
+        //find prop position
         double propPosition = 0;
         timer.reset();
         while(timer.milliseconds() < 1000) {
             propPosition = webcamSubsystem.getXProp();
         }
 //        sleep(8000);
+        /*
         timer.reset();
         while(timer.milliseconds() < 3500) {
             if (propPosition < 100 && propPosition > 0) {
                 //pos 2
-                mecanumCommand.moveToGlobalPosition(67, -3, 0);
+                position = "left";
             } else if (propPosition > 100) {
-                mecanumCommand.moveToGlobalPosition(57, 0, 0);
-                sleep(1500);
-                mecanumCommand.moveToGlobalPosition(55, -17, -0.832);
+                position = "right";
                 sleep(1000);
             } else {
-                mecanumCommand.moveToGlobalPosition(54, 24, 0);
+                position = "middle";
             }
         }
-        timer.reset();
+        */
 
+        //go to spike
+        if (position == "left"){
+            mecanumCommand.moveToGlobalPosition(67, -3, 0);
+        }
+        else if (position == "middle"){
+            mecanumCommand.moveToGlobalPosition(54, 24, 0);
+        }
+        else if (position == "right"){
+            mecanumCommand.moveToGlobalPosition(57, 0, 0);
+            sleep(1500);
+            mecanumCommand.moveToGlobalPosition(55, -17, -0.832);
+        }
+
+        //output prop
+        timer.reset();
         while(timer.milliseconds() < 1000) {
             intakeCommand.intakeOut(0.3);
         }
         intakeCommand.stopIntake();
+
+        /*
         level = 1;
         outputCommand.armToBoard();
         outputCommand.tiltToBoard();
+
+
         timer.reset();
         while(timer.milliseconds() < 3500) {
-            if (propPosition < 100 && propPosition > 0) {
+            if (target == "left") {
                 //pos 2
                 mecanumCommand.moveToGlobalPosition(53, 81, -1.58);
-            } else if (propPosition >= 100) {
+            } else if (target == "right") {
                 mecanumCommand.moveToGlobalPosition(62.5, 81.5, -1.58);
-            } else {
+            } else if (target == "middle"){
                 mecanumCommand.moveToGlobalPosition(38, 78.5, -1.58);
-
             }
         }
+
+
+
         timer.reset();
         while (timer.milliseconds() < 500){
             outputCommand.openGate();
@@ -130,6 +153,7 @@ public class AutonomousFrontBlue extends LinearOpMode {
         level = 0;
         mecanumCommand.moveToGlobalPosition(0, 84, -1.58);
 
+         */
 
     }
 
