@@ -107,21 +107,33 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         }
         intakeCommand.stopIntake();
 
+        if (position.equals("left")){
+            goToBoardLeft();
+        }
+        else if (position.equals("middle")){
+            goToBoardMiddle();
+        }
+        else if (position.equals("right")){
+            goToBoardRight();
+        }
+
         sleep(1000);
         stop();
 
 
 
 
-//        //prep for putting a pixel on to the backboard
-//        level = 1; //rise the lift to level 1
-//        outputCommand.armToBoard(); // arm towards the board
-//        outputCommand.tiltToBoard(); //tilt the output to the board
-//        timer.reset();
-//
-//        //move to board functions
-//        while(timer.milliseconds() < 3500) {
-//            //TODO: tune
+/*
+        //prep for putting a pixel on to the backboard
+        level = 5; //rise the lift to level 1
+        outputCommand.armToBoard(); // arm towards the board
+        outputCommand.tiltToBoard(); //tilt the output to the board
+        level = 1;
+
+
+        timer.reset();
+
+            //            //TODO: tune
 //            if (propPosition > 100) {
 //                //pos right
 //                mecanumCommand.moveToGlobalPosition(46, -78.5, 1.65); //1.65 radians = 94.53804 degrees
@@ -136,7 +148,9 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 //                left = true;
 //            }
 //        }
-//        timer.reset();
+
+*/
+
 //        while (timer.milliseconds() < 500){
 //            outputCommand.openGate();
 //        }
@@ -164,10 +178,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 //            intakeCommand.intakeIn(0.3);
 //        }
 //        intakeCommand.stopIntake();
-//        //prep for putting a pixel on to the backboard
-//        level = 1; //rise the lift to level 1
-//        outputCommand.armToBoard(); // arm towards the board
-//        outputCommand.tiltToBoard(); //tilt the output to the board
+
 //        timer.reset();
 //
 //        mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //going backward - coordinates not right/measured
@@ -318,6 +329,17 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         moveToPos(-10,-20,-3.2,2.5,2.5,0.5);
     }
 
+    private void goToBoardRight(){
+        moveToPos(46, -78.5, 1.65, 5, 5, 0.2); //1.65 radians = 94.53804 degrees
+    }
+
+    private void goToBoardMiddle(){
+        moveToPos(61, -80,1.65, 5,5,0.2);
+    }
+
+    private void goToBoardLeft(){
+        moveToPos(68, -81.5,1.65, 5,5,0.2);
+    }
 
 
     /*
@@ -330,4 +352,5 @@ public class AutonomousBackBlueRough extends LinearOpMode {
     }
 
      */
+
 }

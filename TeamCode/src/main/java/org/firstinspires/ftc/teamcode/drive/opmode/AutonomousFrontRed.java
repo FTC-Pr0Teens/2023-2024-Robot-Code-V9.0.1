@@ -95,7 +95,7 @@ public class AutonomousFrontRed extends LinearOpMode {
         //find the prop position
         //setPropPosition();
 
-        position = "left";
+        position = "right";
 
         //go to correct spike
         if (position.equals("left")){
@@ -115,6 +115,19 @@ public class AutonomousFrontRed extends LinearOpMode {
             intakeCommand.intakeOut(0.5);
         }
         intakeCommand.stopIntake();
+
+        /*
+
+        if (position.equals("left")){
+            goToBoardLeft();
+        }
+        else if (position.equals("middle")){
+            goToBoardMiddle();
+        }
+        else if (position.equals("right")){
+            goToBoardRight();
+        }
+        */
 
         sleep(1000);
         stop();
@@ -190,17 +203,27 @@ public class AutonomousFrontRed extends LinearOpMode {
     }
 
     private void goToRightSpike(){
-        moveToPos(57, 0, 0, 5, 5, 0.2);
-        sleep(1500);
-        moveToPos(55, -17, -0.832, 5, 5, 0.2);
+        moveToPos(-98, -50, 0, 3, 3, 0.1);
     }
 
     private void goToMiddleSpike(){
-        moveToPos(54, 24, 0, 5,5, 0.2);
+        moveToPos(-119, -20, 0, 3,3, 0.1);
     }
 
     private void goToLeftSpike(){
         moveToPos(67,-3,0, 5,5, 0.2);
+    }
+
+    private void goToBoardRight(){
+        moveToPos(46, -78.5, 1.65, 5, 5, 0.2); //1.65 radians = 94.53804 degrees
+    }
+
+    private void goToBoardMiddle(){
+        moveToPos(61, -80,1.65, 5,5,0.2);
+    }
+
+    private void goToBoardLeft(){
+        moveToPos(68, -81.5,1.65, 5,5,0.2);
     }
 
 

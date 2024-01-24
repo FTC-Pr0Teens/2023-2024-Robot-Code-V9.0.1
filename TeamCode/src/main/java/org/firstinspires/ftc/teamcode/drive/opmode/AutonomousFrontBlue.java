@@ -104,6 +104,16 @@ public class AutonomousFrontBlue extends LinearOpMode {
         }
         intakeCommand.stopIntake();
 
+        if (position.equals("left")){
+            goToBoardLeft();
+        }
+        else if (position.equals("middle")){
+            goToBoardMiddle();
+        }
+        else if (position.equals("right")){
+            goToBoardRight();
+        }
+
         sleep(1000);
         stop();
 
@@ -209,6 +219,16 @@ public class AutonomousFrontBlue extends LinearOpMode {
         moveToPos(67,-3,0, 5,5, 0.2);
     }
 
+    private void goToBoardRight(){
+        moveToPos(46, -78.5, 1.65, 5, 5, 0.2); //1.65 radians = 94.53804 degrees
+    }
 
+    private void goToBoardMiddle(){
+        moveToPos(61, -80,1.65, 5,5,0.2);
+    }
+
+    private void goToBoardLeft(){
+        moveToPos(68, -81.5,1.65, 5,5,0.2);
+    }
 
 }
