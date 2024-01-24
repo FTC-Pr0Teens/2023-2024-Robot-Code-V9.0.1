@@ -49,7 +49,6 @@ public class AutonomousBackBlueRough extends LinearOpMode {
     private String position = "initalized";
 
 
-
     @Override
     public void runOpMode() throws InterruptedException {
         //initializing the subsystems
@@ -86,76 +85,30 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         CompletableFuture.runAsync(this::updateTelemetry, executor);
         CompletableFuture.runAsync(this::liftProcess, executor);
        // CompletableFuture.runAsync(this::ThreadStop);
-        webcamSubsystem.getXProp();
-        double propPosition = 0; //propPosition - using the prop the identify the place of he robot
-        timer.reset();
-//        moveToPos(-100, 24, 0);
-//        sleep(3000);
-//        moveToPos(0,0, 0.7);
 
+        setPropPosition();
 
-        while (opModeInInit()) {
-            propPosition = webcamSubsystem.getXProp();
+        //go to correct spike
+        if (position.equals("left")){
+            goToLeftSpike();
         }
-        intakeCommand.raiseIntake();
+        else if (position.equals("middle")){
+            goToMiddleSpike();
+        }
+        else if (position.equals("right")){
+            goToRightSpike();
+        }
 
-        propLeft();
-        timer.reset();
-
-
-//        moveToPos(0,0,-1.6,2.5,2.5,1.5);
-//        sleep(1000);
-//        moveToPos(10,0,-1.6,2.5,2.5,1.5);
-
-
-
-            //TODO: tune
-//        if (propPosition > 175) {
-//            position = "middle";
-////            mecanumCommand.moveToGlobalPosition(-125, 0, 0);
-//            moveToPos(-125,0,0);
-//
-//
-//        } else if (propPosition <= 175 && propPosition > 0) {
-//            position = "left";
-//
-//            //TODO: I CHANGED THIS AS AN EXAMPLE. THE METHOD IS MOVED TO THE BOTTOM OF THIS AUTONOMOUS (CTRL + CLICK THE METHOD JUST BELOW)
-//            moveToPos(-90,-10,-1.6);
-//            moveToPos(-100,-10,-1.6);
-////
-////            mecanumCommand.moveToGlobalPosition(-95, 0, 0);
-////            while (!isStopRequested() && !mecanumCommand.isPositionReached() && opModeIsActive()) {
-////            }
-////            mecanumCommand.moveToGlobalPosition(-95, 0, 1.1);
-////            while (!isStopRequested() && !mecanumCommand.isPositionReached() && opModeIsActive()) {
-////            }
-//        } else {
-            //position = "right";
-//            moveToPos(0,-30,0,2.5,7,1.5);
-//            sleep(500);
-            //moveToPos(-90,-5,0);
-            //move to board if smth needs to be done while moving, add inside while loop
-            //mecanumCommand.moveToGlobalPosition(-400.5, 17.5, 0.2);
-        //}
-
-        // please use this, see what i mean
-
-
-
+        //output prop
         timer.reset();
         intakeCommand.raiseIntake();
         while(timer.milliseconds() < 1000) {
             intakeCommand.intakeOut(0.5);
         }
         intakeCommand.stopIntake();
-        //intakeCommand.lowerIntake();
+
         sleep(1000);
         stop();
-
-
-
-
-
 
 
 
@@ -194,33 +147,6 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 //        sleep(6000);
 //        level = 0;
 //
-//        //move to board functions
-//        while(timer.milliseconds() < 3500) {
-//            //TODO: tune
-//            if (propPosition > 100) {
-//                //pos right
-//                mecanumCommand.moveToGlobalPosition(46, -78.5, 1.65); //1.65 radians = 94.53804 degrees
-//                right = true;
-//            } else if (propPosition <= 100 && propPosition > 0) {
-//                //pos middle
-//                mecanumCommand.moveToGlobalPosition(61, -80, 1.65);
-//                middle = true;
-//            } else {
-//                //pos left
-//                mecanumCommand.moveToGlobalPosition(68, -81.5, 1.65);
-//                left = true;
-//            }
-//        }
-//        timer.reset();
-//        while (timer.milliseconds() < 500){
-//            outputCommand.openGate();
-//        }
-//        //sets every output related components to its idle position in preparation of the driver period
-//        outputCommand.closeGate();
-//        outputCommand.tiltToIdle();
-//        outputCommand.armToIdle();
-//        sleep(6000);
-//        level = 0;
 //
 //        //attempt on getting more pixels(rough values)
 //        if(right == true) {
@@ -309,33 +235,6 @@ public class AutonomousBackBlueRough extends LinearOpMode {
     }
 
 
-    private void propRight(){
-        //pos is good
-        moveToPos(-98,-37,0,2.5,7,1.5);
-        sleep(1000);
-    }
-
-    private void propMiddle(){
-        //pos is good
-        moveToPos(-124,0,0,2.5,2.5,1.5);
-    }
-
-    private void propLeft(){
-        moveToPos(0,0,-3.2,2.5,2.5,0.5);
-        sleep(3000);
-        moveToPos(-10,0,-3.2,2.5,2.5,0.5);
-        sleep(1000);
-        moveToPos(-10,-20,-3.2,2.5,2.5,0.5);
-
-        /*
-        sleep(1000);
-        moveToPos(-68,0,-3.2,2.5,2.5,0.05);
-        sleep(1000);
-        moveToPos(-75,0,-3.2,2.5,2.5,0.05);
-
-         */
-    }
-
     public void updateTelemetry() {
         while (opModeIsActive()) {
 //            packet.put("x", gyroOdometry.x);
@@ -365,7 +264,6 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         }
     }
 
-
     public void ThreadStop(){
         while (opModeIsActive()){
             isStopRequested();
@@ -383,6 +281,44 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         }
         mecanumSubsystem.stop(true);
     }
+
+    private void setPropPosition(){
+        double propPosition = 0;
+        timer.reset();
+        while(opModeInInit()) {
+            propPosition = webcamSubsystem.getXProp();
+        }
+        timer.reset();
+
+        if (propPosition < 100 && propPosition > 0) {
+            position = "left";
+        } else if (propPosition > 100) {
+            position = "right";
+            sleep(1000);
+        } else {
+            position = "middle";
+        }
+    }
+
+    private void goToRightSpike(){
+        //pos is good
+        moveToPos(-98,-37,0,2.5,7,1.5);
+    }
+
+    private void goToMiddleSpike(){
+        //pos is good
+        moveToPos(-124,0,0,2.5,2.5,1.5);
+    }
+
+    private void goToLeftSpike(){
+        moveToPos(0,0,-3.2,2.5,2.5,0.5);
+        sleep(3000);
+        moveToPos(-10,0,-3.2,2.5,2.5,0.5);
+        sleep(1000);
+        moveToPos(-10,-20,-3.2,2.5,2.5,0.5);
+    }
+
+
 
     /*
     public void stopIfPosReached(double targetX, double targetY, double targetTheta){

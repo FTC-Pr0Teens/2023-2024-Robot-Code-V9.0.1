@@ -53,12 +53,9 @@ public class AutonomousFrontRed extends LinearOpMode {
     private String position = "initialized";
 
 
-
-    //
     // NOTE:
     // CHANGE THIS DEPENDING ON ALLIANCE AUTO.
     // DEFAULT IS OFF, BUT IF ALLIANCE IS AFK, THEN SET THIS TO TRUE.
-    //
     private boolean doStacks = false;
 
     @Override
@@ -94,96 +91,33 @@ public class AutonomousFrontRed extends LinearOpMode {
         CompletableFuture.runAsync(this::updateOdometry, executor);
         CompletableFuture.runAsync(this::updateTelemetry, executor);
         CompletableFuture.runAsync(this::liftProcess, executor);
-        webcamSubsystem.getXProp();
-        double propPosition = 0; //integer value of prop position
 
-        timers.resetTimer("main");
-        while (!timers.checkTimePassed("main", 1000)) {
-            propPosition = webcamSubsystem.getXProp();
+        //find the prop position
+        //setPropPosition();
+
+        position = "left";
+
+        //go to correct spike
+        if (position.equals("left")){
+            goToLeftSpike();
         }
-//        sleep(8000);
-        timers.resetTimer("main");
-
-        //TODO: tune these values. This part gets the current position of the prop.
-        if (propPosition > 100) position = "right";
-        else if (propPosition <= 100 && propPosition > 0) position = "middle";
-        else position = "left";
-
-        mecanumCommand.moveToCheckpoint(0, 53, 0, 0.2);
-
-        //TODO: tune these movement values
-        switch (position){
-            case "right":
-                mecanumCommand.moveToGlobalPosition(54, -24, 0);
-                break;
-            case "middle":
-                mecanumCommand.moveToGlobalPosition(67, 3, 0);
-                break;
-            case "left":
-                mecanumCommand.moveToGlobalPosition(57, 0, 0);
-                sleep(1500);
-                mecanumCommand.moveToGlobalPosition(57, 17.5, 0.832);
-                break;
+        else if (position.equals("middle")){
+            goToMiddleSpike();
+        }
+        else if (position.equals("right")){
+            goToRightSpike();
         }
 
-        while(timer.milliseconds() < 3500) {
-            //TODO: tune
-            if (propPosition > 100) {
-                //pos RIGHT
-                position = "right";
-
-            } else if (propPosition <= 100 && propPosition > 0) {
-                //pos middle
-                position = "middle";
-                mecanumCommand.moveToGlobalPosition(67, 3, 0);
-                sleep(1000);
-            } else {
-                //pos left
-                position = "left";
-                mecanumCommand.moveToGlobalPosition(57, 0, 0);
-                sleep(1500);
-                mecanumCommand.moveToGlobalPosition(57, 17.5, 0.832);
-            }
-        }
-
-
-
+        //output prop
         timer.reset();
-
+        intakeCommand.raiseIntake();
         while(timer.milliseconds() < 1000) {
-            intakeCommand.intakeOut(0.3);
+            intakeCommand.intakeOut(0.5);
         }
-        // this camera stuff is outdated or something
-
         intakeCommand.stopIntake();
-        level = 1;
-        outputCommand.armToBoard();
-        outputCommand.tiltToBoard();
-        timer.reset();
-        while(timer.milliseconds() < 3500) {
-            //TODO: tune
-            if (propPosition > 100) {
-                //pos right
-                mecanumCommand.moveToGlobalPosition(46, -78.5, 1.65);
 
-            } else if (propPosition <= 100 && propPosition > 0) {
-                //pos middle
-                mecanumCommand.moveToGlobalPosition(61, -80, 1.65);
-            } else {
-                //pos left
-                mecanumCommand.moveToGlobalPosition(68, -81.5, 1.65);
-            }
-        }
-        timer.reset();
-        while (timer.milliseconds() < 500){
-            outputCommand.openGate();
-        }
-        outputCommand.closeGate();
-        outputCommand.tiltToIdle();
-        outputCommand.armToIdle();
-        sleep(6000);
-        level = 0;
-        mecanumCommand.moveToGlobalPosition(0, -84, 1.65);
+        sleep(1000);
+        stop();
 
 
     }
@@ -196,21 +130,78 @@ public class AutonomousFrontRed extends LinearOpMode {
 
     public void updateTelemetry() {
         while (opModeIsActive()) {
-//            packet.put("x", gyroOdometry.x);
-//            packet.put("y", gyroOdometry.y);
             telemetry.addData("x", gyroOdometry.x);
             telemetry.addData("y", gyroOdometry.y);
             telemetry.addData("theta", gyroOdometry.theta);
             telemetry.addData("position", position);
-//            packet.put("x", gyroOdometry.x);
-//            packet.put("y", gyroOdometry.y);
-//            dashboard.sendTelemetryPacket(packet);
+            telemetry.addData("global x", mecanumCommand.globalXController.getOutputPositionalValue());
+            telemetry.addData("global y", mecanumCommand.globalYController.getOutputPositionalValue());
+            telemetry.addData("global theta", mecanumCommand.globalThetaController.getOutputPositionalValue());
+            telemetry.addData("xprop", webcamSubsystem.getXProp());
+
             telemetry.update();
         }
+
+        while (opModeInInit()){
+            telemetry.addData("prop", webcamSubsystem.getXProp());
+            telemetry.addData("position", position);
+        }
     }
+
     public void liftProcess() {
         while(opModeIsActive()) {
             multiMotorCommand.LiftUp(true, level);
         }
     }
+
+    public void ThreadStop(){
+        while (opModeIsActive()){
+            isStopRequested();
+        }
+    }
+
+    public void moveToPos(double x, double y, double theta, double toleranceX, double toleranceY, double toleranceTheta){
+        mecanumCommand.moveIntegralReset();
+        // stop moving if within 5 ticks or 0.2 radians from the position
+        while ((Math.abs(x - gyroOdometry.x) > toleranceX  //if within 2.5 ticks of target X position
+                || Math.abs(y - gyroOdometry.y) > toleranceY //if within 2.5 ticks of target y position
+                || Math.abs(theta - gyroOdometry.theta) > toleranceTheta)
+                && this.opModeIsActive() && !this.isStopRequested()) {
+            mecanumCommand.moveToGlobalPos(x, y, theta);
+        }
+        mecanumSubsystem.stop(true);
+    }
+
+    //TODO: tune these values. This part gets the current position of the prop.
+    private void setPropPosition(){
+        double propPosition = 0;
+        timer.reset();
+        while(opModeInInit()) {
+            propPosition = webcamSubsystem.getXProp();
+        }
+        if (propPosition < 100 && propPosition > 0) {
+            position = "left";
+        } else if (propPosition > 100) {
+            position = "right";
+        } else {
+            position = "middle";
+        }
+        sleep(1000);
+    }
+
+    private void goToRightSpike(){
+        moveToPos(57, 0, 0, 5, 5, 0.2);
+        sleep(1500);
+        moveToPos(55, -17, -0.832, 5, 5, 0.2);
+    }
+
+    private void goToMiddleSpike(){
+        moveToPos(54, 24, 0, 5,5, 0.2);
+    }
+
+    private void goToLeftSpike(){
+        moveToPos(67,-3,0, 5,5, 0.2);
+    }
+
+
 }

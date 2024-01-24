@@ -44,13 +44,8 @@ public class AutonomousBackRed extends LinearOpMode {
     FtcDashboard dashboard;
     TelemetryPacket packet;
     private ElapsedTime timer;
-    //67, -3, 0
-    //54, 24, 0
-    //57, -22, -0.832
-    //38, 80, -1.58
     private int level = -1;
     private String position = "initalized";
-
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -69,10 +64,6 @@ public class AutonomousBackRed extends LinearOpMode {
         webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
         timer = new ElapsedTime();
 
-        //initializing some variables
-        boolean middle = false;
-        boolean left = false;
-        boolean right = false;
         double intakePower = 0;
 
         //resets the different subsystems to for preparation
@@ -90,46 +81,35 @@ public class AutonomousBackRed extends LinearOpMode {
         CompletableFuture.runAsync(this::updateOdometry, executor);
         CompletableFuture.runAsync(this::updateTelemetry, executor);
         CompletableFuture.runAsync(this::liftProcess, executor);
-        webcamSubsystem.getXProp();
-        double propPosition = 0; //propPosition - using the prop the identify the place of he robot
-        timer.reset();
 
-        while(opModeInInit()) {
-            propPosition = webcamSubsystem.getXProp();
+
+        setPropPosition();
+
+        position = "left";
+
+        //go to correct spike
+        if (position.equals("left")){
+            goToLeftSpike();
         }
+        else if (position.equals("middle")){
+            goToMiddleSpike();
+        }
+        else if (position.equals("right")){
+            goToRightSpike();
+        }
+
+        //output prop
+        timer.reset();
         intakeCommand.raiseIntake();
-//        sleep(8000);
-//        sleep(8000);
-//        sleep(8000);
-        timer.reset();
-            //TODO: tune
-        if (propPosition > 175) {
-            position = "middle";
-            mecanumCommand.moveToGlobalPosition(-116, 0, 0);
-            sleep(1000);
-            intakePower = 0.4;
-        } else if (propPosition <= 175 && propPosition > 0) {
-            position = "left";
-            mecanumCommand.moveToGlobalPosition(-95, 0, 0);
-            sleep(1100);
-            mecanumCommand.moveToGlobalPosition(-95, 0, 0.75);
-            intakePower = 0.5;
-        } else {
-            mecanumCommand.moveToGlobalPosition(-80, 0, 0);
-            sleep(1880);
-            mecanumCommand.moveToGlobalPosition(-80, 0, -0.96);
-            intakePower = 0.62;
-            //move to board
-            //mecanumCommand.moveToGlobalPosition(-400.5, 17.5, 0.2);
-            // changing theta to either more negative or more positive causes the robot to strafe / act weird
-
-        }
-        timer.reset();
-        while(timer.milliseconds() < 2500) {
-            intakeCommand.intakeOut(intakePower);
+        while(timer.milliseconds() < 1000) {
+            intakeCommand.intakeOut(0.5);
         }
         intakeCommand.stopIntake();
+
+        sleep(1000);
         stop();
+
+
 //        //prep for putting a pixel on to the backboard
 //        level = 1; //rise the lift to level 1
 //        outputCommand.armToBoard(); // arm towards the board
@@ -341,7 +321,6 @@ public class AutonomousBackRed extends LinearOpMode {
 //
 //        mecanumCommand.moveToGlobalPosition(0, -84, 1.65); //checkpoint
 
-
     public void updateOdometry() {
         while (opModeIsActive()) {
             gyroOdometry.odometryProcess();
@@ -358,16 +337,73 @@ public class AutonomousBackRed extends LinearOpMode {
             telemetry.addData("position", position);
             telemetry.addData("global x", mecanumCommand.globalXController.getOutputPositionalValue());
             telemetry.addData("global y", mecanumCommand.globalYController.getOutputPositionalValue());
+            telemetry.addData("global theta", mecanumCommand.globalThetaController.getOutputPositionalValue());
             telemetry.addData("xprop", webcamSubsystem.getXProp());
 //            packet.put("x", gyroOdometry.x);
 //            packet.put("y", gyroOdometry.y);
 //            dashboard.sendTelemetryPacket(packet);
             telemetry.update();
         }
+
+        while (opModeInInit()){
+            telemetry.addData("prop", webcamSubsystem.getXProp());
+            telemetry.addData("position", position);
+        }
     }
+
     public void liftProcess() {
         while(opModeIsActive()) {
             multiMotorCommand.LiftUp(true, level);
         }
+    }
+
+    public void ThreadStop(){
+        while (opModeIsActive()){
+            isStopRequested();
+        }
+    }
+
+    public void moveToPos(double x, double y, double theta, double toleranceX, double toleranceY, double toleranceTheta){
+        mecanumCommand.moveIntegralReset();
+        // stop moving if within 5 ticks or 0.2 radians from the position
+        while ((Math.abs(x - gyroOdometry.x) > toleranceX  //if within 2.5 ticks of target X position
+                || Math.abs(y - gyroOdometry.y) > toleranceY //if within 2.5 ticks of target y position
+                || Math.abs(theta - gyroOdometry.theta) > toleranceTheta)
+                && this.opModeIsActive() && !this.isStopRequested()) {
+            mecanumCommand.moveToGlobalPos(x, y, theta);
+        }
+        mecanumSubsystem.stop(true);
+    }
+
+    private void setPropPosition(){
+        double propPosition = 0;
+        timer.reset();
+        while(opModeInInit()) {
+            propPosition = webcamSubsystem.getXProp();
+        }
+        timer.reset();
+
+        if (propPosition < 100 && propPosition > 0) {
+            position = "left";
+        } else if (propPosition > 100) {
+            position = "right";
+            sleep(1000);
+        } else {
+            position = "middle";
+        }
+    }
+
+    private void goToRightSpike(){
+        moveToPos(57, 0, 0, 5, 5, 0.2);
+        sleep(1500);
+        moveToPos(55, -17, -0.832, 5, 5, 0.2);
+    }
+
+    private void goToMiddleSpike(){
+        moveToPos(54, 24, 0, 5,5, 0.2);
+    }
+
+    private void goToLeftSpike(){
+        moveToPos(67,-3,0, 5,5, 0.2);
     }
 }
