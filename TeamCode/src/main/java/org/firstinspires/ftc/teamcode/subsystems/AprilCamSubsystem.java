@@ -195,4 +195,24 @@ public class AprilCamSubsystem {
     }
 
 
+    //returns x axis distance of april tag in cm
+    public double getAprilXDistance(int target){
+        if(detectionsMap.containsKey(target)) {
+            return (detectionsMap.get(target).ftcPose.x * 2.54);
+        }
+        else{
+            return 0;
+        }
+    }
+
+    //returns y axis distance of april tag in cm
+    public double getAprilYDistance(int target){
+        if(detectionsMap.containsKey(target)) {
+            return (detectionsMap.get(target).ftcPose.y * 2.54);
+        }
+        else{
+            return 0;
+        }
+    }
+
 }
