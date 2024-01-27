@@ -47,6 +47,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
     //38, 80, -1.58
     private int level = -1;
     private String position = "initalized";
+    private String progress = "initalization";
 
 
     @Override
@@ -88,8 +89,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
         //setPropPosition();
         moveToPos(-124,0,0,2.5,2.5,1.5);
-//        while (!isStopRequested() && !mecanumCommand.isPositionReached() && opModeIsActive()) {
-//        }
+        progress = "move middle";
 
         //go to correct spike
 //        if (position.equals("left")){
@@ -104,10 +104,12 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
         //output prop
         timer.reset();
+        progress = "intake start";
         intakeCommand.raiseIntake();
         intakeCommand.intakeOut(0.5);
         sleep(1000);
         intakeCommand.stopIntake();
+        progress = "intake stop";
 
 //        if (position.equals("left")){
 //            goToBoardLeft();
@@ -260,6 +262,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
             telemetry.addData("global y", mecanumCommand.globalYController.getOutputPositionalValue());
             telemetry.addData("global theta", mecanumCommand.globalThetaController.getOutputPositionalValue());
             telemetry.addData("xprop", webcamSubsystem.getXProp());
+            telemetry.addData("progress", progress);
 //            packet.put("x", gyroOdometry.x);
 //            packet.put("y", gyroOdometry.y);
 //            dashboard.sendTelemetryPacket(packet);
