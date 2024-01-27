@@ -89,73 +89,30 @@ public class testingteleop extends LinearOpMode {
         waitForStart();
         Gamepad currentGamepad1 = new Gamepad();
         CompletableFuture.runAsync(this::moveRobot, executor);
-        Gamepad previousGamepad1 = new Gamepad();
-        while (opModeIsActive()) {
-            boolean hangingTrue = false;
-            boolean lastHangingState = false;
-            //timers.resetTimer("GameTimeElapsed");
-            previousGamepad1.copy(currentGamepad1);
-            mecanumCommand.moveGlobalPartial(true, gamepad1.left_stick_x, -gamepad1.left_stick_y, gamepad1.right_stick_x);
-            //x is for taking pixels in, b is for spitting pixels out
-            if (gamepad1.x) {
-                intakeCommand.intakeIn(0.6);
-                telemetry.addLine("Intake ran");
-            } else if (gamepad1.b) {
-                intakeCommand.intakeOut(0.6);
-                telemetry.addLine("intake reversed");
-            } else {
-                intakeCommand.stopIntake();
-            }
-            //Drone Launcher
-            if (gamepad1.back) {
-            //    droneShooter.setContinuousServoPower(1);
-                telemetry.addLine("Paper airplane launched");
-            }else{
-            //    droneShooter.setContinuousServoPower(0);
-                //droneShooter.setContinuousServoPower(1);
-                telemetry.addLine("Paper airplane launched");
-            //}else{
-                //droneShooter.setContinuousServoPower(0);
-            }
-//          //hangingServo toggle
-            if (gamepad1.dpad_right) {
-                hangingServoL.setPosition(0);
-                    hangingServoR.setPosition(0);
-                telemetry.addLine("Servo in position");
-            } else {
-                hangingServoL.setPosition(0.2);
-                hangingServoR.setPosition(0.2);
-                telemetry.addLine("servo restarted");
-            }
-            //start button is for turning on the hanging motor
-//            if (currentGamepad1.start && !previousGamepad1.start) {
-//                timer.reset();
-//                telemetry.addLine("Press dpad_up to cancel/reverse hanging");
-//                while (timer.milliseconds() < 5000) {
-//                    hangingMotor.setPower(0.7);
-//                }
-//                robotIsHanging = true;
-//                hangingMotor.setPower(0);
-//                //Dpad up for unhanging
-//            }
-//            if (gamepad1.dpad_up && robotIsHanging) {
-//                timer.reset();
-//                //motor will spin in the opposite direction until it reaches the end ground
-//                while (timer.milliseconds() < 5000) {
-//                    hangingMotor.setPower(-0.7);
-//                }
-//                hangingMotor.setPower(0);
-//                telemetry.addLine("hanging reversed");
-//
-//            }
+        CompletableFuture.runAsync(this::updateTelemetry, executor);
 
-                    telemetry.update();
-                //}
+
+
+
+
+        while (opModeIsActive()) {
             }
 
 
         }
-    private void moveRobot(){
-        mecanumSubsystem.motorProcessTeleOp();
+    public void moveRobot(){
+        while (opModeIsActive()) {
+            mecanumSubsystem.fieldOrientedMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, gyroOdometry.theta);
+        }
+    }
+
+    public void updateTelemetry() {
+        while (opModeIsActive()) {
+            telemetry.addData("LEFT_X", gamepad1.left_stick_x);
+            telemetry.addData("LEFT_Y", gamepad1.left_stick_y);
+            telemetry.addData("rotation", gamepad1.right_stick_x);
+            telemetry.addData("current theta", gyroOdometry.theta);
+            telemetry.update();
+        }
     }
 }

@@ -90,40 +90,46 @@ public class AutonomousBackRed extends LinearOpMode {
         CompletableFuture.runAsync(this::updateOdometry, executor);
         CompletableFuture.runAsync(this::updateTelemetry, executor);
         CompletableFuture.runAsync(this::liftProcess, executor);
-        webcamSubsystem.getXProp();
-        double propPosition = 0; //propPosition - using the prop the identify the place of he robot
-        timer.reset();
+        CompletableFuture.runAsync(this::updateMovement, executor);
 
-        while(opModeInInit()) {
-            propPosition = webcamSubsystem.getXProp();
-        }
-        intakeCommand.raiseIntake();
-//        sleep(8000);
-//        sleep(8000);
-//        sleep(8000);
-        timer.reset();
-            //TODO: tune
-        if (propPosition > 175) {
-            position = "middle";
-            mecanumCommand.moveToGlobalPosition(-116, 0, 0);
-            sleep(1000);
-            intakePower = 0.4;
-        } else if (propPosition <= 175 && propPosition > 0) {
-            position = "left";
-            mecanumCommand.moveToGlobalPosition(-95, 0, 0);
-            sleep(1100);
-            mecanumCommand.moveToGlobalPosition(-95, 0, 0.75);
-            intakePower = 0.5;
-        } else {
-            mecanumCommand.moveToGlobalPosition(-80, 0, 0);
-            sleep(1880);
-            mecanumCommand.moveToGlobalPosition(-80, 0, -0.96);
-            intakePower = 0.62;
-            //move to board
-            //mecanumCommand.moveToGlobalPosition(-400.5, 17.5, 0.2);
-            // changing theta to either more negative or more positive causes the robot to strafe / act weird
 
-        }
+
+
+        mecanumCommand.setFinalPosition(true,3,-10,0,0);
+//        webcamSubsystem.getXProp();
+//        double propPosition = 0; //propPosition - using the prop the identify the place of he robot
+//        timer.reset();
+//
+//        while(opModeInInit()) {
+//            propPosition = webcamSubsystem.getXProp();
+//        }
+//        intakeCommand.raiseIntake();
+////        sleep(8000);
+////        sleep(8000);
+////        sleep(8000);
+//        timer.reset();
+//            //TODO: tune
+//        if (propPosition > 175) {
+//            position = "middle";
+//            mecanumCommand.moveToGlobalPosition(-116, 0, 0);
+//            sleep(1000);
+//            intakePower = 0.4;
+//        } else if (propPosition <= 175 && propPosition > 0) {
+//            position = "left";
+//            mecanumCommand.moveToGlobalPosition(-95, 0, 0);
+//            sleep(1100);
+//            mecanumCommand.moveToGlobalPosition(-95, 0, 0.75);
+//            intakePower = 0.5;
+//        } else {
+//            mecanumCommand.moveToGlobalPosition(-80, 0, 0);
+//            sleep(1880);
+//            mecanumCommand.moveToGlobalPosition(-80, 0, -0.96);
+//            intakePower = 0.62;
+//            //move to board
+//            //mecanumCommand.moveToGlobalPosition(-400.5, 17.5, 0.2);
+//            // changing theta to either more negative or more positive causes the robot to strafe / act weird
+//
+//        }
         timer.reset();
         while(timer.milliseconds() < 2500) {
             intakeCommand.intakeOut(intakePower);
@@ -344,7 +350,13 @@ public class AutonomousBackRed extends LinearOpMode {
 
     public void updateOdometry() {
         while (opModeIsActive()) {
-            gyroOdometry.odometryProcess();
+            mecanumCommand.pidProcess();
+        }
+    }
+
+    public void updateMovement(){
+        while (opModeIsActive()) {
+            mecanumSubsystem.motorProcessTeleOp();
         }
     }
 
@@ -358,7 +370,11 @@ public class AutonomousBackRed extends LinearOpMode {
             telemetry.addData("position", position);
             telemetry.addData("global x", mecanumCommand.globalXController.getOutputPositionalValue());
             telemetry.addData("global y", mecanumCommand.globalYController.getOutputPositionalValue());
+            telemetry.addData("global theta", mecanumCommand.globalThetaController.getOutputPositionalValue());
             telemetry.addData("xprop", webcamSubsystem.getXProp());
+            telemetry.addData("back encoder count", odometrySubsystem.backEncoder());
+            telemetry.addData("left encoder count", odometrySubsystem.leftEncoder());
+            telemetry.addData("right encoder count", odometrySubsystem.rightEncoder());
 //            packet.put("x", gyroOdometry.x);
 //            packet.put("y", gyroOdometry.y);
 //            dashboard.sendTelemetryPacket(packet);

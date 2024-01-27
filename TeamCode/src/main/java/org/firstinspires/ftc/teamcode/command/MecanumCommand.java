@@ -78,8 +78,8 @@ public class MecanumCommand {
     }
 
     public void pidProcess(){
-        ex = globalXController.outputPositional(xFinal, gyroOdometry.x);
-        ey = globalYController.outputPositional(yFinal, gyroOdometry.y);
+        ex = -globalXController.outputPositional(xFinal, gyroOdometry.x);
+        ey = -globalYController.outputPositional(yFinal, gyroOdometry.y);
         etheta = globalThetaController.outputPositional(thetaFinal, gyroOdometry.theta);
         if (Math.abs(ex) > velocity || Math.abs(ey) > velocity){
             double max = Math.max(Math.abs(ex), Math.abs(ey));
@@ -629,14 +629,17 @@ public class MecanumCommand {
 
     public void moveToGlobalPos(double targetX, double targetY, double targetTheta){
          //if within 0.15 radians of target position
-            double moveX = globalXController.outputPositional(targetX, gyroOdometry.x);
+            double moveX = -globalXController.outputPositional(targetX, gyroOdometry.x);
+            double moveY = -globalYController.outputPositional(targetY, gyroOdometry.y);
+            double moveTheta = globalThetaController.outputPositional(targetTheta, gyroOdometry.theta);
+            // moveX = -globalXController.outputPositional(targetX, gyroOdometry.x);
             /*
             globalYController is set to neg bc if pos, it will adjust in the wrong way, increasing
             distance away, resulting in moving left infinitely
              */
-            double moveY = globalYController.outputPositional(targetY, gyroOdometry.y);
-            double moveTheta = globalThetaController.outputPositional(targetTheta, gyroOdometry.theta); // fieldOriented theta values set to opposite1
-            mecanumSubsystem.fieldOrientedMove(moveX, moveY, moveTheta, gyroOdometry.theta);
+        //-globalYController.outputPositional(targetY, gyroOdometry.y);
+            //double moveTheta = -globalThetaController.outputPositional(targetTheta, gyroOdometry.theta); // fieldOriented theta values set to opposite1
+            mecanumSubsystem.fieldOrientedMove(moveX, moveY, moveTheta,gyroOdometry.theta);
     }
 
     /**

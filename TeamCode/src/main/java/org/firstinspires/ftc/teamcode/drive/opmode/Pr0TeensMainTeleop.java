@@ -210,9 +210,12 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
 
             //drone Launcher
-            if (gamepad2.back) {
+            if (gamepad2.right_trigger > 0.5) {
                 droneShooter.launch();
                 telemetry.addLine("Paper airplane launched");
+            } else if (gamepad1.left_trigger > 0.5){
+                hangingServoL.setPosition(0.7);
+                hangingServoR.setPosition(0.7);
             }
 
 

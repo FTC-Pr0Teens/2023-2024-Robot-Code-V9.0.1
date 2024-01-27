@@ -19,10 +19,11 @@ public class DroneShooter {
     public void setPos(double pos){ droneServo.setPosition(pos); }
 
     public void lock(){
-        droneServo.setPosition(0.58);
+        droneServo.setPosition(0.6);
     }
 
     public void launch (){
-        droneServo.setPosition(0);
+        droneServo.setPosition(0.05);
     }
+
 }

@@ -69,17 +69,20 @@ public class OdometrySubsystem extends Specifications {
 //            y = y - (dy*Math.cos(Theta)) - (dx*Math.sin(Theta));
 //        }
         //Drive Gears
-        /*
+
         x += dx * Math.cos(theta) - dy * Math.sin(theta);
         y += dx * Math.sin(theta) + dy * Math.cos(theta);
-        */
+
+
 
         //TODO:other code
 
-        x += dx * Math.cos(theta) + dy * Math.cos(Math.PI/2 + theta);
-        y += dx * Math.sin(theta) + dy * Math.sin(Math.PI/2 + theta);
+        //x += dx * Math.cos(theta) + dy * Math.cos(Math.PI/2 + theta);
+        //y += dx * Math.sin(theta) + dy * Math.sin(Math.PI/2 + theta);
 
 
+
+        //TODO: edward's code
 //        x += dx * Math.cos(theta) + dy * Math.sin(theta);
 //        y += -dx * Math.sin(theta) + dy * Math.cos(theta);
 
@@ -88,9 +91,9 @@ public class OdometrySubsystem extends Specifications {
         y = y+tempY;
         theta += dTheta/*1.03746397695*/;
         if (theta > twoPi){
-            theta -= twoPi;
+            theta -= twoPi; // resets, if it is 370, theta = 10
         } else if (theta < -twoPi){
-            theta += twoPi;
+            theta += twoPi;// spins the other way more than 360, will reset
         }
         rEncoderi = rEncoderf;
         lEncoderi = lEncoderf;

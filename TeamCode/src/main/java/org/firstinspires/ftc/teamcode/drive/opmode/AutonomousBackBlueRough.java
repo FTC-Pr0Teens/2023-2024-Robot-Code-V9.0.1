@@ -324,19 +324,43 @@ public class AutonomousBackBlueRough extends LinearOpMode {
     }
 
     private void propLeft(){
-        moveToPos(0,0,-3.2,2.5,2.5,0.5);
-        sleep(3000);
-        moveToPos(-10,0,-3.2,2.5,2.5,0.5);
-        sleep(1000);
-        moveToPos(-10,-20,-3.2,2.5,2.5,0.5);
 
-        /*
-        sleep(1000);
-        moveToPos(-68,0,-3.2,2.5,2.5,0.05);
-        sleep(1000);
-        moveToPos(-75,0,-3.2,2.5,2.5,0.05);
+//        moveToPos(0,0,-  1.6,2.5,2.5,0.5);
+//        sleep(3000);
+//        moveToPos(-10,0,-1.6,2.5,7,0.5);
+//        sleep(1000);
+//        moveToPos(-10,-20,0,2.5,2.5,0.5);
 
-         */
+
+        //TODO: after turning 90 degrees counterclockwise, positive y goes towards to the board, decreasing x goes towards left side wall
+
+        moveToPos(-80,0,0,2.5,7,0.05);
+        sleep(1000);
+        moveToPos(-80,0,-1.6,2.5,2.5,0.05);
+        sleep(1000);
+        moveToPos(-80,0,-1.6,2.5,2.5,0.05);
+        timer.reset();
+        intakeCommand.raiseIntake();
+        while(timer.milliseconds() < 1000) {
+            intakeCommand.intakeOut(0.5);
+        }
+        intakeCommand.stopIntake();
+        //intakeCommand.lowerIntake();
+        moveToPos(-40,0,-1.6,2.5,2.5,0.05);
+        sleep(1000);
+        moveToPos(-40,30,-1.6,2.5,2.5,0.05);
+        stop();
+
+
+
+
+//        moveToPos(-20,0,0,2.5,2.5,0.05);
+//        sleep(1000);
+//        moveToPos(-20,0,1.6,2.5,2.5,0.05);
+//        sleep(1000);
+//        moveToPos(-75,0,-1.6,2.5,2.5,0.05);
+
+
     }
 
     public void updateTelemetry() {
@@ -351,6 +375,9 @@ public class AutonomousBackBlueRough extends LinearOpMode {
             telemetry.addData("global y", mecanumCommand.globalYController.getOutputPositionalValue());
             telemetry.addData("global theta", mecanumCommand.globalThetaController.getOutputPositionalValue());
             telemetry.addData("xprop", webcamSubsystem.getXProp());
+            telemetry.addData("back encoder count", odometrySubsystem.backEncoder());
+            telemetry.addData("left encoder count", odometrySubsystem.leftEncoder());
+            telemetry.addData("right encoder count", odometrySubsystem.rightEncoder());
 //            packet.put("x", gyroOdometry.x);
 //            packet.put("y", gyroOdometry.y);
 //            dashboard.sendTelemetryPacket(packet);

@@ -281,12 +281,11 @@ public class MecanumSubsystem extends Specifications{
         // translate the field relative movement (joystick) into the robot relative movement
 
         //changed all 3 lines below
-        double angle = Math.PI/2 - theta;
-        //Drive Gears
-        /*
-        double newX =  y * Math.sin(theta) + x * Math.sin(angle);
-        double newY = y * Math.cos(theta) - x * Math.cos(angle);
-        */
+
+        //drive gears code
+        double newX = x * Math.cos(theta) + y * Math.sin(theta);
+        double newY = - x * Math.sin(theta) + y * Math.cos(theta);
+
 
 
         //TODO: code below is after edward change
@@ -299,14 +298,21 @@ public class MecanumSubsystem extends Specifications{
 //        double newY = y * Math.cos(theta) + x * Math.sin(theta);
 //        double newX = - y * Math.sin(theta) + x * Math.cos(theta);
 
-        double newX = x * Math.cos(theta) + y * Math.cos(Math.PI/2 + theta);
-        double newY = x * Math.sin(theta) + y * Math.sin(Math.PI/2 + theta);
+       // double newX = x * Math.cos(theta) + y * Math.cos(Math.PI/2 + theta);
+       // double newY = x * Math.sin(theta) + y * Math.sin(Math.PI/2 + theta);
 
 
         double frontRightPow = - newY + newX - z;
         double frontLeftPow = newY + newX + z;
         double backRightPow = newY + newX -  z;
         double backLeftPow = - newY + newX + z;
+
+//        frontRightPow = - newX + newY - z;
+//        frontLeftPow = newX + newY + z;
+//        backRightPow = newX + newY - z;
+//        backLeftPow = - newX + newY + z;
+
+
 
         double largest = Math.max(
                 Math.max(Math.abs(frontRightPow), Math.abs(frontLeftPow)),
