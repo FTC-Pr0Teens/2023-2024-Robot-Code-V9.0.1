@@ -105,9 +105,8 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         //output prop
         timer.reset();
         intakeCommand.raiseIntake();
-        while(timer.milliseconds() < 1000 && !isStopRequested() && opModeIsActive()) {
-            intakeCommand.intakeOut(0.5);
-        }
+        intakeCommand.intakeOut(0.5);
+        sleep(1000);
         intakeCommand.stopIntake();
 
 //        if (position.equals("left")){
