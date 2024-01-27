@@ -86,18 +86,21 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         CompletableFuture.runAsync(this::liftProcess, executor);
        // CompletableFuture.runAsync(this::ThreadStop);
 
-        setPropPosition();
+        //setPropPosition();
+        moveToPos(-124,0,0,2.5,2.5,1.5);
+        while (!isStopRequested() && !mecanumCommand.isPositionReached() && opModeIsActive()) {
+        }
 
         //go to correct spike
-        if (position.equals("left")){
-            goToLeftSpike();
-        }
-        else if (position.equals("middle")){
-            goToMiddleSpike();
-        }
-        else if (position.equals("right")){
-            goToRightSpike();
-        }
+//        if (position.equals("left")){
+//            goToLeftSpike();
+//        }
+//        else if (position.equals("middle")){
+//            goToMiddleSpike();
+//        }
+//        else if (position.equals("right")){
+//            goToRightSpike();
+//        }
 
         //output prop
         timer.reset();
@@ -107,15 +110,15 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         }
         intakeCommand.stopIntake();
 
-        if (position.equals("left")){
-            goToBoardLeft();
-        }
-        else if (position.equals("middle")){
-            goToBoardMiddle();
-        }
-        else if (position.equals("right")){
-            goToBoardRight();
-        }
+//        if (position.equals("left")){
+//            goToBoardLeft();
+//        }
+//        else if (position.equals("middle")){
+//            goToBoardMiddle();
+//        }
+//        else if (position.equals("right")){
+//            goToBoardRight();
+//        }
 
         sleep(1000);
         stop();
@@ -304,10 +307,10 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         if (propPosition < 100 && propPosition > 0) {
             position = "left";
         } else if (propPosition > 100) {
-            position = "right";
+            position = "middle";
             sleep(1000);
         } else {
-            position = "middle";
+            position = "right";
         }
     }
 

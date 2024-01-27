@@ -629,7 +629,7 @@ public class MecanumCommand {
 
     public void moveToGlobalPos(double targetX, double targetY, double targetTheta){
          //if within 0.15 radians of target position
-            double moveX = globalXController.outputPositional(targetX, gyroOdometry.x);
+            double moveX = -globalXController.outputPositional(targetX, gyroOdometry.x);
             /*
             globalYController is set to neg bc if pos, it will adjust in the wrong way, increasing
             distance away, resulting in moving left infinitely
