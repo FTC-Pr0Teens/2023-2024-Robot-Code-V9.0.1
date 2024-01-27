@@ -44,13 +44,8 @@ public class AutonomousBackRed extends LinearOpMode {
     FtcDashboard dashboard;
     TelemetryPacket packet;
     private ElapsedTime timer;
-    //67, -3, 0
-    //54, 24, 0
-    //57, -22, -0.832
-    //38, 80, -1.58
     private int level = -1;
     private String position = "initalized";
-
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -61,7 +56,7 @@ public class AutonomousBackRed extends LinearOpMode {
         gyroOdometry = new GyroOdometry(odometrySubsystem, imu);
         mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem, gyroOdometry, this);
         //Note different for autonomous front red --> kpy
-        mecanumCommand.setConstants(0.07, 0.01, 0.0075/2, 0.05, 0.005, 0.0075/2, 2, 0.05, 0.0);
+        mecanumCommand.setConstants(0.07, 0.01, 0.0075 / 2, 0.05, 0.005, 0.0075 / 2, 2, 0.05, 0.0);
         intakeCommand = new IntakeCommand(hardwareMap);
         outputCommand = new OutputCommand(hardwareMap);
         multiMotorSubsystem = new MultiMotorSubsystem(hardwareMap, true, MultiMotorSubsystem.MultiMotorType.dualMotor);
@@ -69,10 +64,6 @@ public class AutonomousBackRed extends LinearOpMode {
         webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
         timer = new ElapsedTime();
 
-        //initializing some variables
-        boolean middle = false;
-        boolean left = false;
-        boolean right = false;
         double intakePower = 0;
 
         //resets the different subsystems to for preparation
@@ -87,15 +78,9 @@ public class AutonomousBackRed extends LinearOpMode {
         waitForStart();
 
         Executor executor = Executors.newFixedThreadPool(4);
-        CompletableFuture.runAsync(this::updateOdometry, executor);
-        CompletableFuture.runAsync(this::updateTelemetry, executor);
-        CompletableFuture.runAsync(this::liftProcess, executor);
-        CompletableFuture.runAsync(this::updateMovement, executor);
 
 
-
-
-        mecanumCommand.setFinalPosition(true,3,-10,0,0);
+        mecanumCommand.setFinalPosition(true, 3, -10, 0, 0);
 //        webcamSubsystem.getXProp();
 //        double propPosition = 0; //propPosition - using the prop the identify the place of he robot
 //        timer.reset();
@@ -131,259 +116,96 @@ public class AutonomousBackRed extends LinearOpMode {
 //
 //        }
         timer.reset();
-        while(timer.milliseconds() < 2500) {
+        while (timer.milliseconds() < 2500) {
             intakeCommand.intakeOut(intakePower);
-        }
-        intakeCommand.stopIntake();
-        stop();
-//        //prep for putting a pixel on to the backboard
-//        level = 1; //rise the lift to level 1
-//        outputCommand.armToBoard(); // arm towards the board
-//        outputCommand.tiltToBoard(); //tilt the output to the board
-//        timer.reset();
-//
-//        //move to board functions
-//        while(timer.milliseconds() < 3500) {
-//            //TODO: tune
-//            if (propPosition > 100) {
-//                //pos right
-//                mecanumCommand.moveToGlobalPosition(46, -78.5, 1.65); //1.65 radians = 94.53804 degrees
-//                right = true;
-//            } else if (propPosition <= 100 && propPosition > 0) {
-//                //pos middle
-//                mecanumCommand.moveToGlobalPosition(61, -80, 1.65);
-//                middle = true;
-//            } else {
-//                //pos left
-//                mecanumCommand.moveToGlobalPosition(68, -81.5, 1.65);
-//                left = true;
-//            }
-//        }
-//        timer.reset();
-//        while (timer.milliseconds() < 500){
-//            outputCommand.openGate();
-//        }
-//        //sets every output related components to its idle position in preparation of the driver period
-//        outputCommand.closeGate();
-//        outputCommand.tiltToIdle();
-//        outputCommand.armToIdle();
-//        sleep(6000);
-//        level = 0;
-//
-//        //move to board functions
-//        while(timer.milliseconds() < 3500) {
-//            //TODO: tune
-//            if (propPosition > 100) {
-//                //pos right
-//                mecanumCommand.moveToGlobalPosition(46, -78.5, 1.65); //1.65 radians = 94.53804 degrees
-//                right = true;
-//            } else if (propPosition <= 100 && propPosition > 0) {
-//                //pos middle
-//                mecanumCommand.moveToGlobalPosition(61, -80, 1.65);
-//                middle = true;
-//            } else {
-//                //pos left
-//                mecanumCommand.moveToGlobalPosition(68, -81.5, 1.65);
-//                left = true;
-//            }
-//        }
-//        timer.reset();
-//        while (timer.milliseconds() < 500){
-//            outputCommand.openGate();
-//        }
-//        //sets every output related components to its idle position in preparation of the driver period
-//        outputCommand.closeGate();
-//        outputCommand.tiltToIdle();
-//        outputCommand.armToIdle();
-//        sleep(6000);
-//        level = 0;
-//
-//        //attempt on getting more pixels(rough values)
-//        if(right == true) {
-//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //strafe leftward to the middle: 180 degrees? - coordinates not right/measured
-//        }else if(middle = true) {
-//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //coordinates not right/measured
-//        }else if(left = true) {
-//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //coordinates not right/measured
-//        }
-//
-//        mecanumCommand.moveToGlobalPosition(-10, 100, 0); //going forward to white pixels
-//
-//        timer.reset();
-//        while (timer.milliseconds() < 1000){
-//            intakeCommand.intakeIn(0.3);
-//        }
-//        intakeCommand.stopIntake();
-//        //prep for putting a pixel on to the backboard
-//        level = 1; //rise the lift to level 1
-//        outputCommand.armToBoard(); // arm towards the board
-//        outputCommand.tiltToBoard(); //tilt the output to the board
-//        timer.reset();
-//
-//        mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //going backward - coordinates not right/measured
-//        mecanumCommand.moveToGlobalPosition(46, -78.5, 0); //going leftward to the board - coordinates not right/measured
-//
-//        timer.reset();
-//        while (timer.milliseconds() < 500){
-//            outputCommand.openGate();
-//        }
-//        //sets every output related components to its idle position in preparation of the driver period
-//        outputCommand.closeGate();
-//        outputCommand.tiltToIdle();
-//        outputCommand.armToIdle();
-//        sleep(6000);
-//        level = 0;
-//
-//
-//        mecanumCommand.moveToGlobalPosition(0, -84, 1.65); //checkpoint
-//        timer.reset();
-//        while(opModeInInit()) {
-//            propPosition = webcamSubsystem.getXProp();
-//        }
-//        timer.reset();
-//        mecanumCommand.moveToGlobalPosition(-95, 0, 0);
-//        sleep(500);
-//        mecanumCommand.moveToGlobalPosition(-95, 0, -1.1);
-//        sleep(1000);
-//        //        sleep(8000);
-        /*
-        if(propPosition > 175){ //if middle
-            //middle
-            mecanumCommand.moveToGlobalPosition(-125, 0, 0);
-            sleep(1000);
-        }
-        else if(propPosition <= 175 && propPosition > 0){  // if right
-            //right
-            mecanumCommand.moveToGlobalPosition(-95, 0, 0);
-            sleep(500);
-            mecanumCommand.moveToGlobalPosition(-95, 0, -1.1);
-            sleep(1000);
-        }
-        else{ //if left
+
+
+            setPropPosition();
+
             position = "left";
+
+            //go to correct spike
+            if (position.equals("left")) {
+
+            } else if (position.equals("middle")) {
+
+            } else if (position.equals("right")) {
+
+            }
+
+            //output prop
+            timer.reset();
+            intakeCommand.raiseIntake();
+            while (timer.milliseconds() < 1000) {
+                intakeCommand.intakeOut(0.5);
+
+            }
+            intakeCommand.stopIntake();
+
+            if (position.equals("left")) {
+
+            } else if (position.equals("middle")) {
+
+            } else if (position.equals("right")) {
+
+            }
+
+            sleep(1000);
+            stop();
+
+        }
+
+
+        while (opModeInInit()) {
+            telemetry.addData("prop", webcamSubsystem.getXProp());
+            telemetry.addData("position", position);
+        }
+    }
+
+
+    private void setPropPosition() {
         double propPosition = 0;
         timer.reset();
-        while(opModeInInit()) {
+        while (opModeInInit()) {
             propPosition = webcamSubsystem.getXProp();
         }
         timer.reset();
-        while (timer.time() > 3500) {
-            mecanumCommand.moveToGlobalPosition(-95, 0, 0);
-            sleep(500);
-            mecanumCommand.moveToGlobalPosition(-95, 0, -1.1);
-            sleep(1000);
-        }
-        //        sleep(8000);
-        /*
-        if(propPosition > 175){ //if middle
-            //middle
-            mecanumCommand.moveToGlobalPosition(-125, 0, 0);
-            sleep(1000);
-        }
-        else if(propPosition <= 175 && propPosition > 0){  // if right
-            //right
-            mecanumCommand.moveToGlobalPosition(-95, 0, 0);
-            sleep(500);
-            mecanumCommand.moveToGlobalPosition(-95, 0, -1.1);
-            sleep(1000);
-        }
-        else{ //if left
+
+        if (propPosition < 100 && propPosition > 0) {
             position = "left";
-            mecanumCommand.moveToGlobalPosition(-107, 0, 0);
-            sleep(500);
-            mecanumCommand.moveToGlobalPosition(-107, 0, 0.8);
-            sleep(500);
-        }
-//        mecanumCommand.moveToGlobalPosition(65, -3.5, 0);
-        sleep(3000);
-         */
-
-//
-//            mecanumCommand.moveToGlobalPosition(-107, 0, 0);
-//            sleep(500);
-//            mecanumCommand.moveToGlobalPosition(-107, 0, 0.8);
-//            sleep(500);
-        }
-//        mecanumCommand.moveToGlobalPosition(65, -3.5, 0);
-
-
-
-//        //attempt on getting more pixels(rough values)
-//        if(right == true) {
-//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //strafe leftward to the middle: 180 degrees? - coordinates not right/measured
-//        }else if(middle = true) {
-//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //coordinates not right/measured
-//        }else if(left = true) {
-//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //coordinates not right/measured
-//        }
-//
-//        mecanumCommand.moveToGlobalPosition(-10, 100, 0); //going forward to white pixels
-//
-//        timer.reset();
-//        while (timer.milliseconds() < 1000){
-//            intakeCommand.intakeIn(0.3);
-//        }
-//        intakeCommand.stopIntake();
-//        //prep for putting a pixel on to the backboard
-//        level = 1; //rise the lift to level 1
-//        outputCommand.armToBoard(); // arm towards the board
-//        outputCommand.tiltToBoard(); //tilt the output to the board
-//        timer.reset();
-//
-//        mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //going backward - coordinates not right/measured
-//        mecanumCommand.moveToGlobalPosition(46, -78.5, 0); //going leftward to the board - coordinates not right/measured
-//
-//        timer.reset();
-//        while (timer.milliseconds() < 500){
-//            outputCommand.openGate();
-//        }
-//        //sets every output related components to its idle position in preparation of the driver period
-//        outputCommand.closeGate();
-//        outputCommand.tiltToIdle();
-//        outputCommand.armToIdle();
-//        sleep(6000);
-//        level = 0;
-//
-//
-//        mecanumCommand.moveToGlobalPosition(0, -84, 1.65); //checkpoint
-
-
-    public void updateOdometry() {
-        while (opModeIsActive()) {
-            mecanumCommand.pidProcess();
-        }
-    }
-
-    public void updateMovement(){
-        while (opModeIsActive()) {
-            mecanumSubsystem.motorProcessTeleOp();
-        }
-    }
-
-    public void updateTelemetry() {
-        while (opModeIsActive()) {
-//            packet.put("x", gyroOdometry.x);
-//            packet.put("y", gyroOdometry.y);
-            telemetry.addData("x", gyroOdometry.x);
-            telemetry.addData("y", gyroOdometry.y);
-            telemetry.addData("theta", gyroOdometry.theta);
-            telemetry.addData("position", position);
-            telemetry.addData("global x", mecanumCommand.globalXController.getOutputPositionalValue());
-            telemetry.addData("global y", mecanumCommand.globalYController.getOutputPositionalValue());
-            telemetry.addData("global theta", mecanumCommand.globalThetaController.getOutputPositionalValue());
-            telemetry.addData("xprop", webcamSubsystem.getXProp());
-            telemetry.addData("back encoder count", odometrySubsystem.backEncoder());
-            telemetry.addData("left encoder count", odometrySubsystem.leftEncoder());
-            telemetry.addData("right encoder count", odometrySubsystem.rightEncoder());
-//            packet.put("x", gyroOdometry.x);
-//            packet.put("y", gyroOdometry.y);
-//            dashboard.sendTelemetryPacket(packet);
-            telemetry.update();
-        }
-    }
-    public void liftProcess() {
-        while(opModeIsActive()) {
-            multiMotorCommand.LiftUp(true, level);
+        } else if (propPosition > 100) {
+            position = "right";
+            sleep(1000);
+        } else {
+            position = "middle";
         }
     }
 }
+
+//    private void goToRightSpike(){
+//        moveToPos(57, 0, 0, 5, 5, 0.2);
+//        sleep(1500);
+//        moveToPos(55, -17, -0.832, 5, 5, 0.2);
+//    }
+//
+//    private void goToMiddleSpike(){
+//        moveToPos(54, 24, 0, 5,5, 0.2);
+//    }
+//
+//    private void goToLeftSpike(){
+//        moveToPos(67,-3,0, 5,5, 0.2);
+//    }
+//
+//    private void goToBoardRight(){
+//        moveToPos(46, -78.5, 1.65, 5, 5, 0.2); //1.65 radians = 94.53804 degrees
+//    }
+//
+//    private void goToBoardMiddle(){
+//        moveToPos(61, -80,1.65, 5,5,0.2);
+//    }
+//
+//    private void goToBoardLeft(){
+//        moveToPos(68, -81.5,1.65, 5,5,0.2);
+//    }
+
+

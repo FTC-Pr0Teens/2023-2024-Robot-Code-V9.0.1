@@ -47,7 +47,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
     //38, 80, -1.58
     private int level = -1;
     private String position = "initalized";
-
+    private String progress = "initalization";
 
 
     @Override
@@ -86,92 +86,58 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         CompletableFuture.runAsync(this::updateTelemetry, executor);
         CompletableFuture.runAsync(this::liftProcess, executor);
        // CompletableFuture.runAsync(this::ThreadStop);
-        webcamSubsystem.getXProp();
-        double propPosition = 0; //propPosition - using the prop the identify the place of he robot
+
+        //setPropPosition();
+        moveToPos(-124,0,0,2.5,2.5,1.5);
+        progress = "move middle";
+
+        //go to correct spike
+//        if (position.equals("left")){
+//            goToLeftSpike();
+//        }
+//        else if (position.equals("middle")){
+//            goToMiddleSpike();
+//        }
+//        else if (position.equals("right")){
+//            goToRightSpike();
+//        }
+
+        //output prop
         timer.reset();
-//        moveToPos(-100, 24, 0);
-//        sleep(3000);
-//        moveToPos(0,0, 0.7);
-
-
-        while (opModeInInit()) {
-            propPosition = webcamSubsystem.getXProp();
-        }
+        progress = "intake start";
         intakeCommand.raiseIntake();
-
-        propLeft();
-        timer.reset();
-
-
-//        moveToPos(0,0,-1.6,2.5,2.5,1.5);
-//        sleep(1000);
-//        moveToPos(10,0,-1.6,2.5,2.5,1.5);
-
-
-
-
-
-
-            //TODO: tune
-//        if (propPosition > 175) {
-//            position = "middle";
-////            mecanumCommand.moveToGlobalPosition(-125, 0, 0);
-//            moveToPos(-125,0,0);
-//
-//
-//        } else if (propPosition <= 175 && propPosition > 0) {
-//            position = "left";
-//
-//            //TODO: I CHANGED THIS AS AN EXAMPLE. THE METHOD IS MOVED TO THE BOTTOM OF THIS AUTONOMOUS (CTRL + CLICK THE METHOD JUST BELOW)
-//            moveToPos(-90,-10,-1.6);
-//            moveToPos(-100,-10,-1.6);
-////
-////            mecanumCommand.moveToGlobalPosition(-95, 0, 0);
-////            while (!isStopRequested() && !mecanumCommand.isPositionReached() && opModeIsActive()) {
-////            }
-////            mecanumCommand.moveToGlobalPosition(-95, 0, 1.1);
-////            while (!isStopRequested() && !mecanumCommand.isPositionReached() && opModeIsActive()) {
-////            }
-//        } else {
-            //position = "right";
-//            moveToPos(0,-30,0,2.5,7,1.5);
-//            sleep(500);
-            //moveToPos(-90,-5,0);
-            //move to board if smth needs to be done while moving, add inside while loop
-            //mecanumCommand.moveToGlobalPosition(-400.5, 17.5, 0.2);
-        //}
-
-        // please use this, see what i mean
-
-
-
-        timer.reset();
-        intakeCommand.raiseIntake();
-        while(timer.milliseconds() < 1000) {
-            intakeCommand.intakeOut(0.5);
-        }
+        intakeCommand.intakeOut(0.5);
+        sleep(1000);
         intakeCommand.stopIntake();
-        //intakeCommand.lowerIntake();
+        progress = "intake stop";
+
+//        if (position.equals("left")){
+//            goToBoardLeft();
+//        }
+//        else if (position.equals("middle")){
+//            goToBoardMiddle();
+//        }
+//        else if (position.equals("right")){
+//            goToBoardRight();
+//        }
+
         sleep(1000);
         stop();
 
 
 
 
+/*
+        //prep for putting a pixel on to the backboard
+        level = 5; //rise the lift to level 1
+        outputCommand.armToBoard(); // arm towards the board
+        outputCommand.tiltToBoard(); //tilt the output to the board
+        level = 1;
 
 
+        timer.reset();
 
-
-
-//        //prep for putting a pixel on to the backboard
-//        level = 1; //rise the lift to level 1
-//        outputCommand.armToBoard(); // arm towards the board
-//        outputCommand.tiltToBoard(); //tilt the output to the board
-//        timer.reset();
-//
-//        //move to board functions
-//        while(timer.milliseconds() < 3500) {
-//            //TODO: tune
+            //            //TODO: tune
 //            if (propPosition > 100) {
 //                //pos right
 //                mecanumCommand.moveToGlobalPosition(46, -78.5, 1.65); //1.65 radians = 94.53804 degrees
@@ -186,7 +152,9 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 //                left = true;
 //            }
 //        }
-//        timer.reset();
+
+*/
+
 //        while (timer.milliseconds() < 500){
 //            outputCommand.openGate();
 //        }
@@ -197,33 +165,6 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 //        sleep(6000);
 //        level = 0;
 //
-//        //move to board functions
-//        while(timer.milliseconds() < 3500) {
-//            //TODO: tune
-//            if (propPosition > 100) {
-//                //pos right
-//                mecanumCommand.moveToGlobalPosition(46, -78.5, 1.65); //1.65 radians = 94.53804 degrees
-//                right = true;
-//            } else if (propPosition <= 100 && propPosition > 0) {
-//                //pos middle
-//                mecanumCommand.moveToGlobalPosition(61, -80, 1.65);
-//                middle = true;
-//            } else {
-//                //pos left
-//                mecanumCommand.moveToGlobalPosition(68, -81.5, 1.65);
-//                left = true;
-//            }
-//        }
-//        timer.reset();
-//        while (timer.milliseconds() < 500){
-//            outputCommand.openGate();
-//        }
-//        //sets every output related components to its idle position in preparation of the driver period
-//        outputCommand.closeGate();
-//        outputCommand.tiltToIdle();
-//        outputCommand.armToIdle();
-//        sleep(6000);
-//        level = 0;
 //
 //        //attempt on getting more pixels(rough values)
 //        if(right == true) {
@@ -241,10 +182,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 //            intakeCommand.intakeIn(0.3);
 //        }
 //        intakeCommand.stopIntake();
-//        //prep for putting a pixel on to the backboard
-//        level = 1; //rise the lift to level 1
-//        outputCommand.armToBoard(); // arm towards the board
-//        outputCommand.tiltToBoard(); //tilt the output to the board
+
 //        timer.reset();
 //
 //        mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //going backward - coordinates not right/measured
@@ -310,6 +248,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
             gyroOdometry.odometryProcess();
         }
     }
+
 
 
     private void propRight(){
@@ -378,6 +317,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
             telemetry.addData("back encoder count", odometrySubsystem.backEncoder());
             telemetry.addData("left encoder count", odometrySubsystem.leftEncoder());
             telemetry.addData("right encoder count", odometrySubsystem.rightEncoder());
+            telemetry.addData("progress", progress);
 //            packet.put("x", gyroOdometry.x);
 //            packet.put("y", gyroOdometry.y);
 //            dashboard.sendTelemetryPacket(packet);
@@ -394,7 +334,6 @@ public class AutonomousBackBlueRough extends LinearOpMode {
             multiMotorCommand.LiftUp(true, level);
         }
     }
-
 
     public void ThreadStop(){
         while (opModeIsActive()){
@@ -414,6 +353,55 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         mecanumSubsystem.stop(true);
     }
 
+    private void setPropPosition(){
+        double propPosition = 0;
+        timer.reset();
+        while(opModeInInit()) {
+            propPosition = webcamSubsystem.getXProp();
+        }
+        timer.reset();
+
+        if (propPosition < 100 && propPosition > 0) {
+            position = "left";
+        } else if (propPosition > 100) {
+            position = "middle";
+            sleep(1000);
+        } else {
+            position = "right";
+        }
+    }
+
+    private void goToRightSpike(){
+        //pos is good
+        moveToPos(-98,-37,0,2.5,7,1.5);
+    }
+
+    private void goToMiddleSpike(){
+        //pos is good
+        moveToPos(-124,0,0,2.5,2.5,1.5);
+    }
+
+    private void goToLeftSpike(){
+        moveToPos(0,0,-3.2,2.5,2.5,0.5);
+        sleep(3000);
+        moveToPos(-10,0,-3.2,2.5,2.5,0.5);
+        sleep(1000);
+        moveToPos(-10,-20,-3.2,2.5,2.5,0.5);
+    }
+
+    private void goToBoardRight(){
+        moveToPos(46, -78.5, 1.65, 5, 5, 0.2); //1.65 radians = 94.53804 degrees
+    }
+
+    private void goToBoardMiddle(){
+        moveToPos(61, -80,1.65, 5,5,0.2);
+    }
+
+    private void goToBoardLeft(){
+        moveToPos(68, -81.5,1.65, 5,5,0.2);
+    }
+
+
     /*
     public void stopIfPosReached(double targetX, double targetY, double targetTheta){
         while ((Math.abs(x - gyroOdometry.x) > 2.5   //if within 2.5 ticks of target X position
@@ -424,4 +412,5 @@ public class AutonomousBackBlueRough extends LinearOpMode {
     }
 
      */
+
 }

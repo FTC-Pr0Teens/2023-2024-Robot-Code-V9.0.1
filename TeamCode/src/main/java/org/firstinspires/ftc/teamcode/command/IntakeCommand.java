@@ -23,11 +23,11 @@ public class IntakeCommand {
     }
 
     public void raiseIntake() {
-        intakeServo.setPosition(0);
+        intakeServo.setPosition(1);
     }
 
     public void lowerIntake() {
-        intakeServo.setPosition(1);
+        intakeServo.setPosition(0);
     }
     public void intakeRollerIn(){
         intakeRoller.setPower(-1);

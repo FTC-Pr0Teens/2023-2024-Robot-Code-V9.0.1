@@ -47,6 +47,8 @@ public class AutonomousFrontBlue extends LinearOpMode {
     //38, 80, -1.58
     private int level = -1;
 
+    private String position = "initialized";
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -78,47 +80,49 @@ public class AutonomousFrontBlue extends LinearOpMode {
         CompletableFuture.runAsync(this::updateTelemetry, executor);
         CompletableFuture.runAsync(this::liftProcess, executor);
 
-        double propPosition = 0;
-        timer.reset();
-        while(timer.milliseconds() < 1000) {
-            propPosition = webcamSubsystem.getXProp();
-        }
-//        sleep(8000);
-        timer.reset();
-        while(timer.milliseconds() < 3500) {
-            if (propPosition < 100 && propPosition > 0) {
-                //pos 2
-                mecanumCommand.moveToGlobalPosition(67, -3, 0);
-            } else if (propPosition > 100) {
-                mecanumCommand.moveToGlobalPosition(57, 0, 0);
-                sleep(1500);
-                mecanumCommand.moveToGlobalPosition(55, -17, -0.832);
-                sleep(1000);
-            } else {
-                mecanumCommand.moveToGlobalPosition(54, 24, 0);
-            }
-        }
-        timer.reset();
+        //find the prop position
+        //setPropPosition();
 
+        position = "left";
+
+        //go to correct spike
+        if (position.equals("left")){
+            goToLeftSpike();
+        }
+        else if (position.equals("middle")){
+            goToMiddleSpike();
+        }
+        else if (position.equals("right")){
+            goToRightSpike();
+        }
+
+        //output prop
+        timer.reset();
+        intakeCommand.raiseIntake();
         while(timer.milliseconds() < 1000) {
-            intakeCommand.intakeOut(0.3);
+            intakeCommand.intakeOut(0.5);
         }
         intakeCommand.stopIntake();
+
+        if (position.equals("left")){
+            goToBoardLeft();
+        }
+        else if (position.equals("middle")){
+            goToBoardMiddle();
+        }
+        else if (position.equals("right")){
+            goToBoardRight();
+        }
+
+        sleep(1000);
+        stop();
+
+        /*
         level = 1;
         outputCommand.armToBoard();
         outputCommand.tiltToBoard();
-        timer.reset();
-        while(timer.milliseconds() < 3500) {
-            if (propPosition < 100 && propPosition > 0) {
-                //pos 2
-                mecanumCommand.moveToGlobalPosition(53, 81, -1.58);
-            } else if (propPosition >= 100) {
-                mecanumCommand.moveToGlobalPosition(62.5, 81.5, -1.58);
-            } else {
-                mecanumCommand.moveToGlobalPosition(38, 78.5, -1.58);
 
-            }
-        }
+
         timer.reset();
         while (timer.milliseconds() < 500){
             outputCommand.openGate();
@@ -130,6 +134,7 @@ public class AutonomousFrontBlue extends LinearOpMode {
         level = 0;
         mecanumCommand.moveToGlobalPosition(0, 84, -1.58);
 
+         */
 
     }
 
@@ -141,21 +146,89 @@ public class AutonomousFrontBlue extends LinearOpMode {
 
     public void updateTelemetry() {
         while (opModeIsActive()) {
-//            packet.put("x", gyroOdometry.x);
-//            packet.put("y", gyroOdometry.y);
             telemetry.addData("x", gyroOdometry.x);
             telemetry.addData("y", gyroOdometry.y);
             telemetry.addData("theta", gyroOdometry.theta);
-//            packet.put("x", gyroOdometry.x);
-//            packet.put("y", gyroOdometry.y);
-//            dashboard.sendTelemetryPacket(packet);
+            telemetry.addData("position", position);
+            telemetry.addData("global x", mecanumCommand.globalXController.getOutputPositionalValue());
+            telemetry.addData("global y", mecanumCommand.globalYController.getOutputPositionalValue());
+            telemetry.addData("global theta", mecanumCommand.globalThetaController.getOutputPositionalValue());
+            telemetry.addData("xprop", webcamSubsystem.getXProp());
             telemetry.update();
         }
+
+        while (opModeInInit()){
+            telemetry.addData("prop", webcamSubsystem.getXProp());
+            telemetry.addData("position", position);
+        }
     }
+
     public void liftProcess() {
         while(opModeIsActive()) {
             multiMotorCommand.LiftUp(true, level);
         }
+    }
+
+    public void ThreadStop(){
+        while (opModeIsActive()){
+            isStopRequested();
+        }
+    }
+
+    public void moveToPos(double x, double y, double theta, double toleranceX, double toleranceY, double toleranceTheta){
+        mecanumCommand.moveIntegralReset();
+        // stop moving if within 5 ticks or 0.2 radians from the position
+        while ((Math.abs(x - gyroOdometry.x) > toleranceX  //if within 2.5 ticks of target X position
+                || Math.abs(y - gyroOdometry.y) > toleranceY //if within 2.5 ticks of target y position
+                || Math.abs(theta - gyroOdometry.theta) > toleranceTheta)
+                && this.opModeIsActive() && !this.isStopRequested()) {
+            mecanumCommand.moveToGlobalPos(x, y, theta);
+        }
+        mecanumSubsystem.stop(true);
+    }
+
+    private void setPropPosition(){
+        double propPosition = 0;
+        timer.reset();
+        while(opModeInInit()) {
+            propPosition = webcamSubsystem.getXProp();
+        }
+        timer.reset();
+
+        if (propPosition < 100 && propPosition > 0) {
+            position = "left";
+        } else if (propPosition > 100) {
+            position = "right";
+            sleep(1000);
+        } else {
+            position = "middle";
+        }
+    }
+
+    private void goToRightSpike(){
+        moveToPos(57, 0, 0, 5, 5, 0.2);
+        sleep(1500);
+        moveToPos(55, -17, -0.832, 5, 5, 0.2);
+    }
+
+    private void goToMiddleSpike(){
+        moveToPos(54, 24, 0, 5,5, 0.2);
+    }
+
+    private void goToLeftSpike(){
+        moveToPos(67,-3,0, 5,5, 0.2);
+    }
+
+    private void goToBoardRight(){
+        moveToPos(46, -78.5, 1.65, 5, 5, 0.2); //1.65 radians = 94.53804 degrees
+    }
+
+    private void goToBoardMiddle(){
+        moveToPos(61, -80,1.65, 5,5,0.2);
+    }
+
+    private void goToBoardLeft(){
+        moveToPos(68, -81.5,1.65, 5,5,0.2);
     }
 
 }
