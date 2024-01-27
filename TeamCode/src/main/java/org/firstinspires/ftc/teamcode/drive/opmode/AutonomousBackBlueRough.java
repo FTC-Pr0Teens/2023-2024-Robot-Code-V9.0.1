@@ -88,8 +88,8 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
         //setPropPosition();
         moveToPos(-124,0,0,2.5,2.5,1.5);
-        while (!isStopRequested() && !mecanumCommand.isPositionReached() && opModeIsActive()) {
-        }
+//        while (!isStopRequested() && !mecanumCommand.isPositionReached() && opModeIsActive()) {
+//        }
 
         //go to correct spike
 //        if (position.equals("left")){
