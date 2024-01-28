@@ -634,7 +634,7 @@ public class MecanumCommand {
             globalYController is set to neg bc if pos, it will adjust in the wrong way, increasing
             distance away, resulting in moving left infinitely
              */
-            double moveY = globalYController.outputPositional(targetY, gyroOdometry.y);
+            double moveY = -globalYController.outputPositional(targetY, gyroOdometry.y);
             double moveTheta = globalThetaController.outputPositional(targetTheta, gyroOdometry.theta); // fieldOriented theta values set to opposite1
             mecanumSubsystem.fieldOrientedMove(moveX, moveY, moveTheta, gyroOdometry.theta);
     }

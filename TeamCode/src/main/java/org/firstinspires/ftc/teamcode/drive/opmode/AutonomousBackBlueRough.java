@@ -74,7 +74,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         odometrySubsystem.reset();
         imu.resetAngle();
 
-        intakeCommand.lowerIntake();
+        intakeCommand.raiseIntake();
         outputCommand.closeGate();
 
         outputCommand.armToIdle();
@@ -88,8 +88,11 @@ public class AutonomousBackBlueRough extends LinearOpMode {
        // CompletableFuture.runAsync(this::ThreadStop);
 
         //setPropPosition();
-        moveToPos(-124,0,0,2.5,2.5,1.5);
-        progress = "move middle";
+        progress = "move start";
+        moveToPos(-82,9,0,2.5,2.5,0.5);
+        sleep(1000);
+        moveToPos(-82,9,-Math.PI/2,2.5,2.5,0.5);
+        progress = "move finish";
 
         //go to correct spike
 //        if (position.equals("left")){
@@ -102,12 +105,13 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 //            goToRightSpike();
 //        }
 
-        //output prop
+        //outake prop
         timer.reset();
         progress = "intake start";
         intakeCommand.raiseIntake();
-        intakeCommand.intakeOut(0.5);
-        sleep(1000);
+        while (timer.milliseconds() < 1000) {
+            intakeCommand.intakeOut(0.7);
+        }
         intakeCommand.stopIntake();
         progress = "intake stop";
 
@@ -318,12 +322,12 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
     private void goToRightSpike(){
         //pos is good
-        moveToPos(-98,-37,0,2.5,7,1.5);
+        moveToPos(-102,-22,0,5,5,1.5);
     }
 
     private void goToMiddleSpike(){
         //pos is good
-        moveToPos(-124,0,0,2.5,2.5,1.5);
+        moveToPos(-125,6   ,0,5,5,1.5);
     }
 
     private void goToLeftSpike(){

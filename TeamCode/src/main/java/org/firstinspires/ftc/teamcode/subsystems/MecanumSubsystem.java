@@ -283,8 +283,8 @@ public class MecanumSubsystem extends Specifications{
         //changed all 3 lines below
         double angle = Math.PI/2 - theta;
         //Drive Gears
-        double newX =  y * Math.sin(theta) + x * Math.sin(angle);
-        double newY = y * Math.cos(theta) - x * Math.cos(angle);
+        double newX =  x*Math.cos(theta) - y*Math.cos(angle);
+        double newY = x*Math.sin(theta) + y*Math.sin(angle);
 
 
         //TODO: code below is after edward change
