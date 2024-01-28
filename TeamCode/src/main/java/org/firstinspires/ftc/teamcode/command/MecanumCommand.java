@@ -629,9 +629,9 @@ public class MecanumCommand {
 
     public void moveToGlobalPos(double targetX, double targetY, double targetTheta){
          //if within 0.15 radians of target position
-            double moveX = globalXController.outputPositional(targetX, gyroOdometry.x);
-            double moveY = globalYController.outputPositional(targetY, gyroOdometry.y);
-            double moveTheta = -globalThetaController.outputPositional(targetTheta, gyroOdometry.theta);
+            double moveX = -globalXController.outputPositional(targetX, gyroOdometry.x);
+            double moveY = -globalYController.outputPositional(targetY, gyroOdometry.y);
+            double moveTheta = globalThetaController.outputPositional(targetTheta, gyroOdometry.theta);
             // moveX = -globalXController.outputPositional(targetX, gyroOdometry.x);
             /*
             globalYController is set to neg bc if pos, it will adjust in the wrong way, increasing
@@ -639,7 +639,9 @@ public class MecanumCommand {
              */
         //-globalYController.outputPositional(targetY, gyroOdometry.y);
             //double moveTheta = -globalThetaController.outputPositional(targetTheta, gyroOdometry.theta); // fieldOriented theta values set to opposite1
-            mecanumSubsystem.fieldOrientedMove(moveX, moveY, moveTheta,gyroOdometry.theta);
+            mecanumSubsystem.fieldOrientedMove(moveX, moveY, moveTheta, gyroOdometry.theta);
+
+
     }
 
     /**
