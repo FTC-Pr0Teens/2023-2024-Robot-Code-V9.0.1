@@ -34,7 +34,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
     private OdometrySubsystem odometrySubsystem;
     private GyroOdometry gyroOdometry;
     private IntakeCommand intakeCommand;
-    private WebcamSubsystem webcamSubsystem;
+    //private WebcamSubsystem webcamSubsystem;
     private OutputCommand outputCommand;
     private MultiMotorSubsystem multiMotorSubsystem;
     private MultiMotorCommand multiMotorCommand;
@@ -59,12 +59,18 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         gyroOdometry = new GyroOdometry(odometrySubsystem, imu);
         mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem, gyroOdometry, this);
         //Note different for autonomous front red --> kpy
-        mecanumCommand.setConstants(0.07, 0.01, 0.0075/2, 0.05, 0.005, 0.0075/2, 2, 0.05, 0.0);
+        //TODO: constants are set higher than usual, approximately started at 0.07 for kpx, kpy and integral terms were 0.007
+        //kp overshoots, causing a lot of back and forth movement, thus making y reach less of its actual position
+        //most recent pid constants are for x axis
+        //if undershooting, increase integral or all of thje constantst
+
+        //TODO: increase kp to adjust faster, but this also increases oscillations so increase kd a little
+        mecanumCommand.setConstants(0.12, 0.02 , 0.0075/2, 0.055, 0.0005, 0.0075/2, 2, 0.005, 0.0);
         intakeCommand = new IntakeCommand(hardwareMap);
         outputCommand = new OutputCommand(hardwareMap);
         multiMotorSubsystem = new MultiMotorSubsystem(hardwareMap, true, MultiMotorSubsystem.MultiMotorType.dualMotor);
         multiMotorCommand = new MultiMotorCommand(multiMotorSubsystem);
-        webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_BLUE);
+        //webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_BLUE);
         timer = new ElapsedTime();
 
 
@@ -96,37 +102,8 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
         //TODO: when turning clockwise it is the opposite of the text above me
         //TODO: below is left
-        moveToPos(-70,10,0,2,3,0.075);
-        progress = "0";
-        sleep(100);
-        moveToPos(-70,10,-Math.PI/2,3,3,0.07);
-        progress = "1";
-        sleep(100);
-        progress = "intake start";
-        intakeCommand.raiseIntake();
-        timer.reset();
-        while (timer.milliseconds() < 1000) {
-            intakeCommand.intakeOut(0.5);
-        }
-        intakeCommand.lowerIntake();
-        sleep(1000);
-        intakeCommand.stopIntake();
-        progress = "intake stop";
-        sleep(250);
-        moveToPos(13,20,-Math.PI/2,7,3,0.07);
-        progress = "2";
-        sleep(100);
-        moveToPos(13,-150,-Math.PI/2,3,3,0.07);
-        progress = "3";
-        sleep(100);
-        moveToPos(13,-170,Math.PI/2,3,3,0.07);
-        progress = "4";
-        sleep(100);
-        moveToPos(-45,-200,Math.PI/2,3,3,0.06);
-        progress = "5";
-        sleep(3000);
-        progress = "propLeft starting";
-        //propLeft();
+        goToLeftSpike();
+        //goToBoardLeft();
 
 
         //go to correct spike
@@ -141,14 +118,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 //        }
 
         //outake prop
-        timer.reset();
-        progress = "intake start";
-        intakeCommand.raiseIntake();
-        while (timer.milliseconds() < 1000) {
-            intakeCommand.intakeOut(0.7);
-        }
-        intakeCommand.stopIntake();
-        progress = "intake stop";
+
 
 //        if (position.equals("left")){
 //            goToBoardLeft();
@@ -311,17 +281,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
         //TODO: after turning 90 degrees counterclockwise, positive y goes towards to the board, decreasing x goes towards left side wall
 
-        moveToPos(-70,0,0,2.5,5,0.5);
-        sleep(1000);
-        moveToPos(-70,0,Math.PI/2,2.5,5,0.5);
-        telemetry.addLine("intake will run");
-        sleep(1000);
-        moveToPos(0,0,Math.PI/2,2.5,5,0.5);
-        sleep(1000);
-        moveToPos(0,0,Math.PI/2,2.5,5,0.5);
-        sleep(1000);
-        moveToPos(0,60,Math.PI/2,2.5,5,0.5);
-        stop();
+
 
 
 
@@ -343,11 +303,11 @@ public class AutonomousBackBlueRough extends LinearOpMode {
             telemetry.addData("x", gyroOdometry.x);
             telemetry.addData("y", gyroOdometry.y);
             telemetry.addData("theta",  gyroOdometry.theta);
-            telemetry.addData("position", position);
-            telemetry.addData("global x", mecanumCommand.globalXController.getOutputPositionalValue());
-            telemetry.addData("global y", mecanumCommand.globalYController.getOutputPositionalValue());
-            telemetry.addData("global theta", mecanumCommand.globalThetaController.getOutputPositionalValue());
-            telemetry.addData("xprop", webcamSubsystem.getXProp());
+//            telemetry.addData("position", position);
+//            telemetry.addData("global x", mecanumCommand.globalXController.getOutputPositionalValue());
+//            telemetry.addData("global y", mecanumCommand.globalYController.getOutputPositionalValue());
+//            telemetry.addData("global theta", mecanumCommand.globalThetaController.getOutputPositionalValue());
+            //telemetry.addData("xprop", webcamSubsystem.getXProp());
             telemetry.addData("back encoder count", odometrySubsystem.backEncoder());
             telemetry.addData("left encoder count", odometrySubsystem.leftEncoder());
             telemetry.addData("right encoder count", odometrySubsystem.rightEncoder());
@@ -356,10 +316,12 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 //            packet.put("y", gyroOdometry.y);
 //            dashboard.sendTelemetryPacket(packet);
             telemetry.update();
+
+            intakeCommand.raiseIntake();
         }
 
         while (opModeInInit()){
-            telemetry.addData("prop", webcamSubsystem.getXProp());
+            //telemetry.addData("prop", webcamSubsystem.getXProp());
             telemetry.addData("position", position);
         }
     }
@@ -391,7 +353,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         double propPosition = 0;
         timer.reset();
         while(opModeInInit()) {
-            propPosition = webcamSubsystem.getXProp();
+            //propPosition = webcamSubsystem.getXProp();
         }
         timer.reset();
 
@@ -416,10 +378,44 @@ public class AutonomousBackBlueRough extends LinearOpMode {
     }
 
     private void goToLeftSpike(){
-        moveToPos(-70,-20,Math.PI/2,2.5,5,0.05);
+        //
+        moveToPos(-80,-5,0,2.5,2.5,0.05); //-70, -20
+        progress = "1";
         sleep(1000);
-        moveToPos(-70,-20,Math.PI/2,2.5,5,0.05);
+        moveToPos(-80,-5,Math.PI/2,2.5,2.5,0.05);
+        progress = "2";
         sleep(1000);
+        moveToPos(-80,4,Math.PI/2,2.5,2.5,0.05);
+        sleep(1000);
+
+
+        timer.reset();
+        progress = "intake start";
+        intakeCommand.raiseIntake();
+        sleep(1000);
+        while (timer.milliseconds() < 2000) {
+            intakeCommand.intakeOut(0.5);
+        }
+        intakeCommand.stopIntake();
+        progress = "intake stop";
+        sleep (1000);
+        progress = "checkpoint 1 start";
+        moveToPos(-150,-3,Math.PI/2,2.5,2.5,0.05);
+        progress = "checkpoint1 end";
+        sleep(100);
+        progress = "checkpoint 2 start";
+        moveToPos(-150,150,Math.PI/2,2.5,2.5,0.05);
+        progress = "checkpoint 2 end";
+        sleep(100);
+        progress = "checkpoint 3 start";
+        moveToPos(-150,150,-Math.PI/2,2.5,2.5,0.05);
+        progress = "checkpoint 3 end";
+        sleep(1000);
+        moveToPos(-90,150,-Math.PI/2,2.5,2.5,0.05);
+        sleep(1000);
+        moveToPos(-90,170,-Math.PI/2,2.5,2.5,0.05);
+        progress = "boardLeft starting";
+
 
     }
 
@@ -432,7 +428,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
     }
 
     private void goToBoardLeft(){
-        moveToPos(68, -81.5,1.65, 5,5,0.2);
+
     }
 
 

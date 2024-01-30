@@ -96,7 +96,7 @@ public class GyroOdometry extends Specifications{
         sEncoderf = odometrySubsystem.rightEncoder();
         bEncoderf = odometrySubsystem.backEncoder();
         dx = odometrySubsystem.dxc*((lEncoderf-lEncoderi)+(sEncoderf-sEncoderi));
-        dTheta = odometrySubsystem.dThetac*((sEncoderf-sEncoderi)-(lEncoderf-lEncoderi)); //unit circle direction
+        dTheta = -odometrySubsystem.dThetac*((sEncoderf-sEncoderi)-(lEncoderf-lEncoderi)); //unit circle direction
 //        dTheta = imuSubsystem.angleZ() - theta - imuSubsystem.cTheta;
 //        if (dTheta >= Math.PI){
 //            dTheta -= twoPi;
@@ -105,8 +105,8 @@ public class GyroOdometry extends Specifications{
 //        }
         theta = imuSubsystem.angleZ() - imuSubsystem.cTheta;
         dy = (odometrySubsystem.dyc*(bEncoderf-bEncoderi))+(lengthFromOdometrySideToFront*dTheta);
-        tempX = (dx*Math.cos(theta))+(dy*Math.sin(theta));
-        tempY = (dy*Math.cos(theta))-(dx*Math.sin(theta));
+        tempX = (dx*Math.cos(theta))-(dy*Math.sin(theta));
+        tempY = (dy*Math.cos(theta)+(dx*Math.sin(theta)));
         x = x+tempX;
         y = y+tempY;
         vxGlobal = tempX/time.time(TimeUnit.SECONDS);

@@ -218,6 +218,11 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
                 hangingServoR.setPosition(0.7);
             }
 
+            if (gamepad2.right_trigger > 0.5) {
+                intakeCommand.raiseIntake();
+            } else if (gamepad1.left_trigger > 0.5){
+                intakeCommand.lowerIntake();
+            }
 
             telemetry.addData("gateTimer:", gateTimer.time());
 
