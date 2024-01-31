@@ -1,13 +1,12 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
 // Android and FTC SDK imports for robot operation and telemetry
-import android.os.Build;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.command.IntakeCommand;
@@ -21,11 +20,11 @@ import org.firstinspires.ftc.teamcode.subsystems.MultiMotorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.WebcamSubsystem;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
+import org.firstinspires.ftc.teamcode.util.Specifications;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 @Autonomous(name="Autonomous Back Red")
 public class AutonomousBackRed extends LinearOpMode {
@@ -37,15 +36,26 @@ public class AutonomousBackRed extends LinearOpMode {
     private OdometrySubsystem odometrySubsystem;
     private GyroOdometry gyroOdometry;
     private IntakeCommand intakeCommand;
-    private WebcamSubsystem webcamSubsystem;
+    //private WebcamSubsystem webcamSubsystem;
     private OutputCommand outputCommand;
     private MultiMotorSubsystem multiMotorSubsystem;
     private MultiMotorCommand multiMotorCommand;
+    private Servo hangingServoL;
+    private Servo hangingServoR;
     FtcDashboard dashboard;
     TelemetryPacket packet;
     private ElapsedTime timer;
+    //67, -3, 0
+    //54, 24, 0
+    //57, -22, -0.832
+    //38, 80, -1.58
     private int level = -1;
     private String position = "initalized";
+    private String progress = "initalization";
+    private int finalX = -125;
+    private int finalY = 6;
+    private int finalTheta = 0;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -55,20 +65,36 @@ public class AutonomousBackRed extends LinearOpMode {
         odometrySubsystem = new OdometrySubsystem(hardwareMap);
         gyroOdometry = new GyroOdometry(odometrySubsystem, imu);
         mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem, gyroOdometry, this);
+        hangingServoL = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_L);
+        hangingServoL.setDirection(Servo.Direction.REVERSE);
+        hangingServoR = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_R);
         //Note different for autonomous front red --> kpy
-        mecanumCommand.setConstants(0.07, 0.01, 0.0075 / 2, 0.05, 0.005, 0.0075 / 2, 2, 0.05, 0.0);
+        //TODO: constants are set higher than usual, approximately started at 0.07 for kpx, kpy and integral terms were 0.007
+        //kp overshoots, causing a lot of back and forth movement, thus making y reach less of its actual position
+        //most recent pid constants are for x axis
+        //if undershooting, increase integral or all of thje constantst
+
+        //TODO: increase kp to adjust faster, but this also increases oscillations so increase kd a little
+        //derivative value is at 0.01
+        mecanumCommand.setConstants(0.07, 0.01, 0.0075/2, 0.059, 0.0005, 0.0075/2, 2.1, 0.0, 0.0);
         intakeCommand = new IntakeCommand(hardwareMap);
         outputCommand = new OutputCommand(hardwareMap);
         multiMotorSubsystem = new MultiMotorSubsystem(hardwareMap, true, MultiMotorSubsystem.MultiMotorType.dualMotor);
         multiMotorCommand = new MultiMotorCommand(multiMotorSubsystem);
-        webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
+        dashboard = FtcDashboard.getInstance();
+        packet = new TelemetryPacket();
+        //webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
         timer = new ElapsedTime();
 
-        double intakePower = 0;
+
+        //initializing some variables
 
         //resets the different subsystems to for preparation
         odometrySubsystem.reset();
         imu.resetAngle();
+
+        hangingServoL.setPosition(0.6);
+        hangingServoR.setPosition(0.6);
 
         intakeCommand.raiseIntake();
         outputCommand.closeGate();
@@ -78,134 +104,387 @@ public class AutonomousBackRed extends LinearOpMode {
         waitForStart();
 
         Executor executor = Executors.newFixedThreadPool(4);
+        CompletableFuture.runAsync(this::updateOdometry, executor);
+        CompletableFuture.runAsync(this::updateTelemetry, executor);
+        CompletableFuture.runAsync(this::liftProcess, executor);
+        // CompletableFuture.runAsync(this::ThreadStop);
+        //setPropPosition();
 
 
-        mecanumCommand.setFinalPosition(true, 3, -10, 0, 0);
-//        webcamSubsystem.getXProp();
-//        double propPosition = 0; //propPosition - using the prop the identify the place of he robot
-//        timer.reset();
-//
-//        while(opModeInInit()) {
-//            propPosition = webcamSubsystem.getXProp();
+
+        //TODO: positive x goes towards red side when turning 90 counter clockwise
+        //TODO: positive y goes away from the board
+
+        //TODO: when turning clockwise it is the opposite of the text above me
+        //TODO: below is left
+        telemetry.addData("test", gyroOdometry.x);
+        goToLeftSpike();
+        //goToBoardLeft();
+
+
+        //go to correct spike
+//        if (position.equals("left")){
+//            goToLeftSpike();
 //        }
-//        intakeCommand.raiseIntake();
-////        sleep(8000);
-////        sleep(8000);
-////        sleep(8000);
-//        timer.reset();
-//            //TODO: tune
-//        if (propPosition > 175) {
-//            position = "middle";
-//            mecanumCommand.moveToGlobalPosition(-116, 0, 0);
-//            sleep(1000);
-//            intakePower = 0.4;
-//        } else if (propPosition <= 175 && propPosition > 0) {
-//            position = "left";
-//            mecanumCommand.moveToGlobalPosition(-95, 0, 0);
-//            sleep(1100);
-//            mecanumCommand.moveToGlobalPosition(-95, 0, 0.75);
-//            intakePower = 0.5;
-//        } else {
-//            mecanumCommand.moveToGlobalPosition(-80, 0, 0);
-//            sleep(1880);
-//            mecanumCommand.moveToGlobalPosition(-80, 0, -0.96);
-//            intakePower = 0.62;
-//            //move to board
-//            //mecanumCommand.moveToGlobalPosition(-400.5, 17.5, 0.2);
-//            // changing theta to either more negative or more positive causes the robot to strafe / act weird
-//
+//        else if (position.equals("middle")){
+//            goToMiddleSpike();
 //        }
+//        else if (position.equals("right")){
+//            goToRightSpike();
+//        }
+
+//        if (position.equals("left")){
+//            goToBoardLeft();
+//        }
+//        else if (position.equals("middle")){
+//            goToBoardMiddle();
+//        }
+//        else if (position.equals("right")){
+//            goToBoardRight();
+//        }
+
+        sleep(1000);
+        stop();
+
+
+
+
+/*
+        //prep for putting a pixel on to the backboard
+        level = 5; //rise the lift to level 1
+        outputCommand.armToBoard(); // arm towards the board
+        outputCommand.tiltToBoard(); //tilt the output to the board
+        level = 1;
+
+
         timer.reset();
-        while (timer.milliseconds() < 2500) {
-            intakeCommand.intakeOut(intakePower);
 
+            //            //TODO: tune
+//            if (propPosition > 100) {
+//                //pos right
+//                mecanumCommand.moveToGlobalPosition(46, -78.5, 1.65); //1.65 radians = 94.53804 degrees
+//                right = true;
+//            } else if (propPosition <= 100 && propPosition > 0) {
+//                //pos middle
+//                mecanumCommand.moveToGlobalPosition(61, -80, 1.65);
+//                middle = true;
+//            } else {
+//                //pos left
+//                mecanumCommand.moveToGlobalPosition(68, -81.5, 1.65);
+//                left = true;
+//            }
+//        }
 
-            setPropPosition();
+*/
 
-            position = "left";
+//        while (timer.milliseconds() < 500){
+//            outputCommand.openGate();
+//        }
+//        //sets every output related components to its idle position in preparation of the driver period
+//        outputCommand.closeGate();
+//        outputCommand.tiltToIdle();
+//        outputCommand.armToIdle();
+//        sleep(6000);
+//        level = 0;
+//
+//
+//        //attempt on getting more pixels(rough values)
+//        if(right == true) {
+//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //strafe leftward to the middle: 180 degrees? - coordinates not right/measured
+//        }else if(middle = true) {
+//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //coordinates not right/measured
+//        }else if(left = true) {
+//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //coordinates not right/measured
+//        }
+//
+//        mecanumCommand.moveToGlobalPosition(-10, 100, 0); //going forward to white pixels
+//
+//        timer.reset();
+//        while (timer.milliseconds() < 1000){
+//            intakeCommand.intakeIn(0.3);
+//        }
+//        intakeCommand.stopIntake();
 
-            //go to correct spike
-            if (position.equals("left")) {
+//        timer.reset();
+//
+//        mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //going backward - coordinates not right/measured
+//        mecanumCommand.moveToGlobalPosition(46, -78.5, 0); //going leftward to the board - coordinates not right/measured
+//
+//        timer.reset();
+//        while (timer.milliseconds() < 500){
+//            outputCommand.openGate();
+//        }
+//        //sets every output related components to its idle position in preparation of the driver period
+//        outputCommand.closeGate();
+//        outputCommand.tiltToIdle();
+//        outputCommand.armToIdle();
+//        sleep(6000);
+//        level = 0;
+//
+//
+//        mecanumCommand.moveToGlobalPosition(0, -84, 1.65); //checkpoint
 
-            } else if (position.equals("middle")) {
+//        //attempt on getting more pixels(rough values)
+//        if(right == true) {
+//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //strafe leftward to the middle: 180 degrees? - coordinates not right/measured
+//        }else if(middle = true) {
+//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //coordinates not right/measured
+//        }else if(left = true) {
+//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //coordinates not right/measured
+//        }
+//
+//        mecanumCommand.moveToGlobalPosition(-10, 100, 0); //going forward to white pixels
+//
+//        timer.reset();
+//        while (timer.milliseconds() < 1000){
+//            intakeCommand.intakeIn(0.3);
+//        }
+//        intakeCommand.stopIntake();
+//        //prep for putting a pixel on to the backboard
+//        level = 1; //rise the lift to level 1
+//        outputCommand.armToBoard(); // arm towards the board
+//        outputCommand.tiltToBoard(); //tilt the output to the board
+//        timer.reset();
+//
+//        mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //going backward - coordinates not right/measured
+//        mecanumCommand.moveToGlobalPosition(46, -78.5, 0); //going leftward to the board - coordinates not right/measured
+//
+//        timer.reset();
+//        while (timer.milliseconds() < 500){
+//            outputCommand.openGate();
+//        }
+//        //sets every output related components to its idle position in preparation of the driver period
+//        outputCommand.closeGate();
+//        outputCommand.tiltToIdle();
+//        outputCommand.armToIdle();
+//        sleep(6000);
+//        level = 0;
+//
+//
+//        mecanumCommand.moveToGlobalPosition(0, -84, 1.65); //checkpoint
 
-            } else if (position.equals("right")) {
+    }
 
-            }
-
-            //output prop
-            timer.reset();
-            intakeCommand.raiseIntake();
-            while (timer.milliseconds() < 1000) {
-                intakeCommand.intakeOut(0.5);
-
-            }
-            intakeCommand.stopIntake();
-
-            if (position.equals("left")) {
-
-            } else if (position.equals("middle")) {
-
-            } else if (position.equals("right")) {
-
-            }
-
-            sleep(1000);
-            stop();
-
-        }
-
-
-        while (opModeInInit()) {
-            telemetry.addData("prop", webcamSubsystem.getXProp());
-            telemetry.addData("position", position);
+    public void updateOdometry() {
+        while (opModeIsActive()) {
+            gyroOdometry.odometryProcess();
         }
     }
 
 
-    private void setPropPosition() {
+
+    private void propRight(){
+        //pos is good
+        moveToPos(-98,-37,0,2.5,7,1.5);
+        sleep(1000);
+    }
+
+    private void propMiddle(){
+        //pos is good
+        moveToPos(-124,0,0,2.5,2.5,1.5);
+    }
+
+    private void propLeft(){
+
+//        moveToPos(0,0,-  1.6,2.5,2.5,0.5);
+//        sleep(3000);
+//        moveToPos(-10,0,-1.6,2.5,7,0.5);
+//        sleep(1000);
+//        moveToPos(-10,-20,0,2.5,2.5,0.5);
+
+        //TODO: after turning 90 degrees counterclockwise, positive y goes towards to the board, decreasing x goes towards left side wall
+
+
+
+
+
+
+
+//        moveToPos(-20,0,0,2.5,2.5,0.05);
+//        sleep(1000);
+//        moveToPos(-20,0,1.6,2.5,2.5,0.05);
+//        sleep(1000);
+//        moveToPos(-75,0,-1.6,2.5,2.5,0.05);
+
+
+    }
+
+    public void updateTelemetry() {
+        while (opModeIsActive()) {
+            packet.put("x", gyroOdometry.x);
+            packet.put("y", gyroOdometry.y);
+            packet.put("theta", gyroOdometry.theta);
+            packet.put("x pos", mecanumCommand.globalXController.getError());
+            packet.put("x integral", mecanumCommand.globalXController.getIntegralSum());
+            packet.put("x derivative", mecanumCommand.globalXController.getDerivative());
+            packet.put("y pos", mecanumCommand.globalYController.getError());
+            packet.put("y integral", mecanumCommand.globalYController.getIntegralSum());
+            packet.put("y derivative", mecanumCommand.globalYController.getDerivative());
+            packet.put("Theta pos", mecanumCommand.globalThetaController.getError());
+            packet.put("Theta integral", mecanumCommand.globalThetaController.getIntegralSum());
+            packet.put("Theta derivative", mecanumCommand.globalThetaController.getDerivative());
+            packet.put("final x", finalX);
+            packet.put("final y", finalY);
+            packet.put("final theta", finalTheta);
+            telemetry.addData("x", gyroOdometry.x);
+            telemetry.addData("y", gyroOdometry.y);
+            telemetry.addData("theta",  gyroOdometry.theta);
+//            telemetry.addData("position", position);
+//            telemetry.addData("global x", mecanumCommand.globalXController.getOutputPositionalValue());
+//            telemetry.addData("global y", mecanumCommand.globalYController.getOutputPositionalValue());
+//            telemetry.addData("global theta", mecanumCommand.globalThetaController.getOutputPositionalValue());
+            //telemetry.addData("xprop", webcamSubsystem.getXProp());
+            telemetry.addData("back encoder count", odometrySubsystem.backEncoder());
+            telemetry.addData("left encoder count", odometrySubsystem.leftEncoder());
+            telemetry.addData("right encoder count", odometrySubsystem.rightEncoder());
+            telemetry.addData("progress", progress);
+            dashboard.sendTelemetryPacket(packet);
+            telemetry.update();
+        }
+    }
+    public void liftProcess() {
+        while(opModeIsActive()) {
+            multiMotorCommand.LiftUp(true, level);
+        }
+    }
+
+    public void ThreadStop(){
+        while (opModeIsActive()){
+            isStopRequested();
+        }
+    }
+
+    public void moveToPos(double x, double y, double theta, double toleranceX, double toleranceY, double toleranceTheta){
+        mecanumCommand.moveIntegralReset();
+        // stop moving if within 5 ticks or 0.2 radians from the position
+        while ((Math.abs(x - gyroOdometry.x) > toleranceX  //if within 2.5 ticks of target X position
+                || Math.abs(y - gyroOdometry.y) > toleranceY //if within 2.5 ticks of target y position
+                || Math.abs(theta - gyroOdometry.theta) > toleranceTheta)
+                && this.opModeIsActive() && !this.isStopRequested()) {
+            mecanumCommand.moveToGlobalPos(x, y, theta);
+        }
+        mecanumSubsystem.stop(true);
+    }
+
+    private void setPropPosition(){
         double propPosition = 0;
         timer.reset();
-        while (opModeInInit()) {
-            propPosition = webcamSubsystem.getXProp();
+        while(opModeInInit()) {
+            //propPosition = webcamSubsystem.getXProp();
         }
         timer.reset();
 
         if (propPosition < 100 && propPosition > 0) {
             position = "left";
         } else if (propPosition > 100) {
-            position = "right";
+            position = "middle";
             sleep(1000);
         } else {
-            position = "middle";
+            position = "right";
         }
     }
+
+    private void goToRightSpike(){
+        //pos is good
+        moveToPos(-102,22,0,5,5,1.5);
+        sleep(1000);
+        timer.reset();
+        progress = "intake start";
+        intakeCommand.lowerIntake();
+        sleep(1500);
+        while (timer.milliseconds() < 2000) {
+            intakeCommand.intakeOut(0.7);
+        }
+        intakeCommand.stopIntake();
+        progress = "intake stop";
+        sleep (1000);
+        progress = "checkpoint 1 start";
+        moveToPos(-126,-22,-Math.PI/2,5,5,0.05);
+        progress = "checkpoint1 end";
+        sleep(1000);
+        progress = "checkpoint 2 start";
+        moveToPos(-126,-177,-Math.PI/2,2.5,2.5,0.05);
+        progress = "checkpoint 2 end";
+        sleep(1000);
+        progress = "checkpoint 3 start";
+        moveToPos(-126,-177,Math.PI/2,2.5,2.5,0.05);
+        progress = "checkpoint 3 end";
+        sleep(1000);
+        moveToPos(-88,-198,Math.PI/2,2.5,2.5,0.05);
+        sleep(1000);
+        progress = "boardLeft starting";
+
+    }
+
+    private void goToMiddleSpike(){
+        //pos is good
+        moveToPos(-125,0,0,5,5,1.5);
+    }
+
+    private void goToLeftSpike(){
+        //
+        moveToPos(-80,-15,0,2.5,2.5,0.05); //-70, -20
+        progress = "1";
+        sleep(500);
+        moveToPos(-80,-15,-Math.PI/2 + 0.089,3,3,0.05);
+        progress = "2";
+        sleep(500);
+        moveToPos(-80,-26,-Math.PI/2 + 0.089,3,3,0.05);
+        sleep(1000);
+
+        timer.reset();
+        progress = "intake start";
+        intakeCommand.lowerIntake();
+        sleep(1500);
+        while (timer.milliseconds() < 2000) {
+            intakeCommand.intakeOut(0.3);
+        }
+        intakeCommand.stopIntake();
+        progress = "intake stop";
+        sleep (1000);
+        progress = "checkpoint 1 start";
+        moveToPos(-80,-10,-Math.PI/2 + 0.089,3,3,0.05);
+        sleep(1000);
+        moveToPos(-126,-10,-Math.PI/2+ 0.089,5,5,0.05);
+        progress = "checkpoint1 end";
+        sleep(1000);
+        progress = "checkpoint 2 start";
+        moveToPos(-126,-177,-Math.PI/2+ 0.089,2.5,2.5,0.05);
+        progress = "checkpoint 2 end";
+        sleep(1000);
+        progress = "checkpoint 3 start";
+        moveToPos(-126,-177,Math.PI/2+ 0.089,2.5,2.5,0.05);
+        progress = "checkpoint 3 end";
+        sleep(1000);
+        moveToPos(-88,-198,Math.PI/2+ 0.089,2.5,2.5,0.05);
+        sleep(1000);
+        progress = "boardLeft starting";
+
+
+    }
+
+    private void goToBoardRight(){
+        moveToPos(46, -78.5, 1.65, 5, 5, 0.2); //1.65 radians = 94.53804 degrees
+    }
+
+    private void goToBoardMiddle(){
+        moveToPos(61, -80,1.65, 5,5,0.2);
+    }
+
+    private void goToBoardLeft(){
+
+    }
+
+
+    /*
+    public void stopIfPosReached(double targetX, double targetY, double targetTheta){
+        while ((Math.abs(x - gyroOdometry.x) > 2.5   //if within 2.5 ticks of target X position
+                || Math.abs(y - gyroOdometry.y) > 2.5 //if within 2.5 ticks of target y position
+                || Math.abs(theta - gyroOdometry.theta) > 0.15)){
+
+        }
+    }
+
+     */
+
 }
-
-//    private void goToRightSpike(){
-//        moveToPos(57, 0, 0, 5, 5, 0.2);
-//        sleep(1500);
-//        moveToPos(55, -17, -0.832, 5, 5, 0.2);
-//    }
-//
-//    private void goToMiddleSpike(){
-//        moveToPos(54, 24, 0, 5,5, 0.2);
-//    }
-//
-//    private void goToLeftSpike(){
-//        moveToPos(67,-3,0, 5,5, 0.2);
-//    }
-//
-//    private void goToBoardRight(){
-//        moveToPos(46, -78.5, 1.65, 5, 5, 0.2); //1.65 radians = 94.53804 degrees
-//    }
-//
-//    private void goToBoardMiddle(){
-//        moveToPos(61, -80,1.65, 5,5,0.2);
-//    }
-//
-//    private void goToBoardLeft(){
-//        moveToPos(68, -81.5,1.65, 5,5,0.2);
-//    }
-
-

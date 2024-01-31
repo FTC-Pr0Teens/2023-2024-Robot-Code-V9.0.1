@@ -33,6 +33,8 @@ public class DualMotorPowerTest extends LinearOpMode {
         multiMotorCommand = new MultiMotorCommand(multiMotorSubsystem);
         mecanumSubsystem = new MecanumSubsystem(hardwareMap);
 
+
+        multiMotorSubsystem.reset();
         waitForStart();
 
         CompletableFuture.runAsync(this::liftProcess);

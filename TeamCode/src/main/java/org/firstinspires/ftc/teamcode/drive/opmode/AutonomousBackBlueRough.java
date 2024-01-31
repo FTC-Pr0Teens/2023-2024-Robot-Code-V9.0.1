@@ -75,6 +75,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         //if undershooting, increase integral or all of thje constantst
 
         //TODO: increase kp to adjust faster, but this also increases oscillations so increase kd a little
+        //derivative value is at 0.01
         mecanumCommand.setConstants(0.07, 0.01, 0.0075/2, 0.059, 0.0005, 0.0075/2, 2.1, 0.0, 0.0);
         intakeCommand = new IntakeCommand(hardwareMap);
         outputCommand = new OutputCommand(hardwareMap);
@@ -92,8 +93,8 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         odometrySubsystem.reset();
         imu.resetAngle();
 
-        hangingServoL.setPosition(0.59);
-        hangingServoR.setPosition(0.59);
+        hangingServoL.setPosition(0.6);
+        hangingServoR.setPosition(0.6);
 
         intakeCommand.raiseIntake();
         outputCommand.closeGate();
@@ -395,18 +396,18 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
     private void goToLeftSpike(){
         //
-        moveToPos(-80,5,0,2.5,2.5,0.05); //-70, -20
+        moveToPos(-80,-5,0,2.5,2.5,0.05); //-70, -20
         progress = "1";
         sleep(500);
-        moveToPos(-80,5,Math.PI/2,2.5,2.5,0.05);
+        moveToPos(-80,-5,Math.PI/2,3,3,0.05);
         progress = "2";
         sleep(500);
 
         timer.reset();
         progress = "intake start";
         intakeCommand.lowerIntake();
-        sleep(500);
-        while (timer.milliseconds() < 2000) {
+        sleep(1500);
+        while (timer.milliseconds() < 1500) {
             intakeCommand.intakeOut(0.7);
         }
         intakeCommand.stopIntake();

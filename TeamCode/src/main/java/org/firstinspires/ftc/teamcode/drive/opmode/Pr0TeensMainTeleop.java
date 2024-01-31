@@ -85,6 +85,10 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
     private boolean doCentering = false;
     private double autoCenterAngle = 0;
 
+    private int targetPosition = 0;
+
+
+
     @Override
     public void runOpMode() throws InterruptedException {
         liftState.clear();
@@ -126,6 +130,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         droneShooter.lock();
         outputCommand.tiltToIdle(); //bring arm down BEFORE bringing lift down
         outputCommand.armToIdle();
+        multiMotorSubsystem.reset();
 
         waitForStart();
 
@@ -133,12 +138,15 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         CompletableFuture.runAsync(this::processIMU, executor);
         CompletableFuture.runAsync(this::processDriveController);
 
+
         Gamepad currentGamepad1 = new Gamepad();
         Gamepad previousGamepad1 = new Gamepad();
 
         outputTimer.reset();
 
         timers.resetTimer("testTimer");
+
+        multiMotorSubsystem.reset();
 
         while(opModeIsActive()) {
 /*
@@ -230,17 +238,19 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
                 mecanumSubsystem.forward(0);
             }
 
-            telemetry.addData("gateTimer:", gateTimer.time());
-
-            telemetry.addData("angle:", gyroOdometry.getAngle());
-            telemetry.addLine();
-            telemetry.addData("RIGHT_X", gamepad1.right_stick_x);
-            telemetry.addData("RIGHT_Y", gamepad1.right_stick_y);
-            telemetry.addData("LEFT_X", gamepad1.left_stick_x);
-            telemetry.addData("LEFTY", gamepad1.left_stick_y);
-
-            telemetry.addLine("MAIN TIMER" + timers.getTimerMillis("testTimer"));
+            telemetry.addData("Target Position", targetPosition);
+            telemetry.addData("position", multiMotorSubsystem.getPosition());
+            telemetry.addData("power", multiMotorSubsystem.getMainPower());
+            telemetry.addData("auxpower", multiMotorSubsystem.getAux1Power());
+            telemetry.addData("auxpos", multiMotorSubsystem.getAuxPos());
+            telemetry.addData("derivativeValue", multiMotorSubsystem.getDerivativeValue());
+            telemetry.addData("cascadeOutput", multiMotorSubsystem.getCascadeOutput());
+            telemetry.addData("outputPositional", multiMotorSubsystem.getCascadePositional());
+            telemetry.addData("outputVelocity", multiMotorSubsystem.getCascadeVelocity());
+            telemetry.addData("level", level);
             telemetry.update();
+
+
         }
     }
 
@@ -255,6 +265,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             }
         } else if (liftState.contains(LIFT_STATE.LIFT_MIDDLE)) {
             if (!liftState.contains(LIFT_STATE.LIFT_END)) {
+                targetPosition = -1100;
                 if (outputTimer.milliseconds() > 1000) {
                     liftState.clear();
                 } else if (outputTimer.milliseconds() > 250) { //bring lift up BEFORE extending arm
@@ -266,6 +277,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             }
         } else if (liftState.contains(LIFT_STATE.LIFT_END)) {
             if (!liftState.contains(LIFT_STATE.LIFT_MIDDLE)) {
+                targetPosition = -1400;
                 if (outputTimer.milliseconds() > 1000) {
                     liftState.clear();
                 } else if (outputTimer.milliseconds() > 250) { //bring lift up BEFORE extending arm
@@ -347,4 +359,6 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
     private void processLift(){
         while(opModeIsActive()) multiMotorCommand.LiftUp(true, level);
     }
+
+
 }

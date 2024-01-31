@@ -140,6 +140,8 @@ public class MultiMotorSubsystem extends Specifications {
             main = hardwareMap.get(DcMotorEx.class, EXTENSION_MOTOR_MAIN);
             aux1 = hardwareMap.get(DcMotor.class, EXTENSION_MOTOR_AUX1);
 
+
+
             main.setDirection(DcMotorSimple.Direction.FORWARD); //originally reverse
             aux1.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -350,7 +352,7 @@ public class MultiMotorSubsystem extends Specifications {
 
         //only for up
         intervalValue = velocityInterval.getOutput(getPosition());
-        cascadeOutput = -cascadePID.cascadeOutput(targetPos, getPosition(), intervalValue, getDerivativeValue());
+        cascadeOutput = -cascadePID.cascadeOutput(targetPos, getAuxPos(), intervalValue, getDerivativeValue());
         moveLift(cascadeOutput);
     }
 
@@ -383,6 +385,9 @@ public class MultiMotorSubsystem extends Specifications {
     public void reset(){
         main.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         main.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        aux1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        aux1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public boolean isBusy() {

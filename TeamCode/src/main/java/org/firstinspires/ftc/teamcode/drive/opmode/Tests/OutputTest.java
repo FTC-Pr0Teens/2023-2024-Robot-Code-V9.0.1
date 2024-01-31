@@ -23,6 +23,8 @@ public class OutputTest extends LinearOpMode {
     private Servo gate;
 
     public static double position = 0.5;
+
+
     @Override
     public void runOpMode() throws InterruptedException {
         outputCommand = new OutputCommand(hardwareMap);
