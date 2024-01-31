@@ -132,19 +132,12 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         //TODO: below is left
         //TODO: below is left
         telemetry.addData("test", gyroOdometry.x);
-        goToLeftSpike();
+        goToMiddleSpike();
         //goToBoardLeft();
 
 
         goToAprilTag = true;
         sleep(1000);
-
-        while(goToAprilTag && !isStopRequested()) {
-            if(aprilCamSubsystem.getHashmap().containsKey(aprilID)){
-                mecanumCommand.setFinalPosition(true, 30, getTargetX(10.0), getTargetY(-20.0), getTargetTheta());
-            }
-            while(!mecanumCommand.isPositionReached(true, true)){}
-        }
 
 
 
@@ -297,12 +290,77 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
     private void goToRightSpike(){
         //pos is good
-        moveToPos(-102,-22,0,5,5,1.5);
+        moveToPos(-102,-22,0,5,5,0.05);
+        timer.reset();
+        progress = "intake start";
+        intakeCommand.lowerIntake();
+        sleep(1500);
+        while (timer.milliseconds() < 2000) {
+            intakeCommand.intakeOut(0.7);
+        }
+        intakeCommand.stopIntake();
+        moveToPos(-150,-5,0,5,5,0.05);
+        progress = "checkpoint 1 start";
+        moveToPos(-150,-5,Math.PI/2,5,5,0.05);
+        sleep(3000);
+        progress = "checkpoint 2 start";
+        moveToPos(-150,150,Math.PI/2,5,5,0.05);
+        sleep(3000 );
+        progress = "checkpoint 3 start";
+        moveToPos(-150,150,-Math.PI/2,6.5,6.5,0.05);
+        progress = "checkpoint 3 end";
+        sleep(3000);
+        moveToPos(-80,150,-Math.PI/2,6.5,6.5,0.05);
+        sleep(3000);
+        moveToPos(-80,165,-Math.PI/2,6.5,6.5,0.05);
+        progress = "boardLeft starting";
+
+        goToAprilTag = true;
+        sleep(1000);
+
+        progress = "april tag start";
+
+        while(goToAprilTag && !isStopRequested()) {
+            if(aprilCamSubsystem.getHashmap().containsKey(aprilID)){
+                mecanumCommand.setFinalPosition(true, 30, getTargetX(10.0), getTargetY(-20.0), getTargetTheta());
+            }
+            while(!mecanumCommand.isPositionReached(true, true)){}
+        }
     }
 
     private void goToMiddleSpike(){
         //pos is good
-        moveToPos(-125,0,0,5,5,1.5);
+        moveToPos(-127.5,-15,0,5,5,1.5);
+        timer.reset();
+        progress = "intake start";
+        intakeCommand.lowerIntake();
+        while (timer.milliseconds() < 2000) {
+            intakeCommand.intakeOut(0.7);
+        }
+        intakeCommand.stopIntake();
+        moveToPos(-150,-5,0,5,5,0.05);
+        progress = "checkpoint 1 start";
+        moveToPos(-150,-5,Math.PI/2,5,5,0.05);
+        progress = "checkpoint 2 start";
+        moveToPos(-150,150,Math.PI/2,5,5,0.05);
+        progress = "checkpoint 3 start";
+        moveToPos(-150,150,-Math.PI/2,6.5,6.5,0.05);
+        progress = "checkpoint 3 end";
+        moveToPos(-72.5,150,-Math.PI/2,6.5,6.5,0.05);
+        moveToPos(-72.5,165,-Math.PI/2,6.5,6.5,0.05);
+        progress = "boardLeft starting";
+
+        goToAprilTag = true;
+        sleep(1000);
+
+        progress = "april tag start";
+
+        while(goToAprilTag && !isStopRequested()) {
+            if(aprilCamSubsystem.getHashmap().containsKey(aprilID)){
+                mecanumCommand.setFinalPosition(true, 30, getTargetX(10.0), getTargetY(-20.0), getTargetTheta());
+            }
+            while(!mecanumCommand.isPositionReached(true, true)){}
+        }
     }
 
     private void goToLeftSpike(){
@@ -313,7 +371,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         moveToPos(-80,-5,Math.PI/2,3,3,0.05);
         progress = "2";
         sleep(500);
-        moveToPos(-80,3.5,Math.PI/2,3,3,0.05);
+        moveToPos(-80,3.8,Math.PI/2,3,3,0.05);
         sleep(1000);
         timer.reset();
         progress = "intake start";
@@ -331,15 +389,27 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         sleep(3000);
         progress = "checkpoint 2 start";
         moveToPos(-150,150,Math.PI/2,5,5,0.05);
-        sleep(3000);
+        sleep(3000 );
         progress = "checkpoint 3 start";
         moveToPos(-150,150,-Math.PI/2,6.5,6.5,0.05);
         progress = "checkpoint 3 end";
         sleep(3000);
         moveToPos(-60,150,-Math.PI/2,6.5,6.5,0.05);
         sleep(3000);
-        moveToPos(-60,170,-Math.PI/2,6.5,6.5,0.05);
+        moveToPos(-60,175,-Math.PI/2,6.5,6.5,0.05);
         progress = "boardLeft starting";
+
+        goToAprilTag = true;
+        sleep(1000);
+
+        progress = "april tag start";
+
+        while(goToAprilTag && !isStopRequested()) {
+            if(aprilCamSubsystem.getHashmap().containsKey(aprilID)){
+                mecanumCommand.setFinalPosition(true, 30, getTargetX(10.0), getTargetY(-20.0), getTargetTheta());
+            }
+            while(!mecanumCommand.isPositionReached(true, true)){}
+        }
 
 
     }

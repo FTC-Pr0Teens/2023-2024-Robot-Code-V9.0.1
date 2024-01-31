@@ -319,11 +319,11 @@ public class AutonomousBackRed extends LinearOpMode {
         progress = "checkpoint 1 start";
         moveToPos(-80,-10,-Math.PI/2 + 0.1,3,3,0.05);
         sleep(1000);
-        moveToPos(-126,-10,-Math.PI/2+ 0.1,5,5,0.05);
+        moveToPos(-150,-10,-Math.PI/2+ 0.1,5,5,0.05);
         progress = "checkpoint1 end";
         sleep(1000);
         progress = "checkpoint 2 start";
-        moveToPos(-126,-177,-Math.PI/2+ 0.1,5,5,0.05);
+        moveToPos(-150,-177,-Math.PI/2+ 0.1,5,5,0.05);
         progress = "checkpoint 2 end";
         sleep(1000);
         progress = "checkpoint 3 start";
