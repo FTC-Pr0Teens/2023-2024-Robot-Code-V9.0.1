@@ -66,9 +66,10 @@ public class CoordinateTesting extends LinearOpMode {
         CompletableFuture.runAsync(this::updateOdometry, executor);
         CompletableFuture.runAsync(this::updateTelemetry, executor);
         CompletableFuture.runAsync(this::tagDetectionProcess, executor);
-        CompletableFuture.runAsync(this::setTagTargets);
 
-        while (opModeIsActive() && !isStopRequested()){}
+        while (opModeIsActive() && !isStopRequested()){
+            setTagTargets();
+        }
 
 //        sleep(8000);
 //        mecanumCommand.moveRotation(Math.PI);
@@ -121,20 +122,18 @@ public class CoordinateTesting extends LinearOpMode {
     }
 
     public void setTagTargets(){
-        while(opModeIsActive() && !isStopRequested()) {
             if(goToAprilTag) {
-                if(aprilCamSubsystem.getHashmap().containsKey(aprilID)) {
+                if (aprilCamSubsystem.getHashmap().containsKey(aprilID)) {
                     targetY = gyroOdometry.y + (-1) * aprilCamSubsystem.getAprilXDistance(aprilID, 20);
-                    moveToPos(0, targetY, 0, 2.5, 2.5,0.05 );
+                    moveToPos(0, targetY, 0, 2.5, 2.5, 0.05);
                 }
                 sleep(5000);
-                if(aprilCamSubsystem.getHashmap().containsKey(aprilID)){
-                    targetX = gyroOdometry.x + (-1)* aprilCamSubsystem.getAprilYDistance(aprilID, 0);
-                    moveToPos(targetX, targetY, 0, 2.5,2.5,0);
+                if (aprilCamSubsystem.getHashmap().containsKey(aprilID)) {
+                    targetX = gyroOdometry.x + (-1) * aprilCamSubsystem.getAprilYDistance(aprilID, 0);
+                    moveToPos(targetX, targetY, 0, 2.5, 2.5, 0);
                 }
                 sleep(5000);
             }
-        }
     }
 
     public void moveToPos(double x, double y, double theta, double toleranceX, double toleranceY, double toleranceTheta){
