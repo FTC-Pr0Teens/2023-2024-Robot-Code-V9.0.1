@@ -124,12 +124,12 @@ public class CoordinateTesting extends LinearOpMode {
     public void setTagTargets(){
             if(goToAprilTag) {
                 if (aprilCamSubsystem.getHashmap().containsKey(aprilID)) {
-                    targetY = gyroOdometry.y + (-1) * aprilCamSubsystem.getAprilXDistance(aprilID, 20);
+                    targetY = gyroOdometry.y + (-1) * aprilCamSubsystem.getAprilXDistance(aprilID, -20);
                     moveToPos(0, targetY, 0, 2.5, 2.5, 0.05);
                 }
                 sleep(5000);
                 if (aprilCamSubsystem.getHashmap().containsKey(aprilID)) {
-                    targetX = gyroOdometry.x + (-1) * aprilCamSubsystem.getAprilYDistance(aprilID, 0);
+                    targetX = gyroOdometry.x + (-1) * aprilCamSubsystem.getAprilYDistance(aprilID, -30);
                     moveToPos(targetX, targetY, 0, 2.5, 2.5, 0);
                 }
                 sleep(5000);
