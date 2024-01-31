@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.MecanumCommand;
 import org.firstinspires.ftc.teamcode.command.MultiMotorCommand;
 import org.firstinspires.ftc.teamcode.command.OutputCommand;
+import org.firstinspires.ftc.teamcode.subsystems.AprilCamSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IMUSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 
@@ -40,6 +41,8 @@ public class AutonomousBackBlueRough extends LinearOpMode {
     private OutputCommand outputCommand;
     private MultiMotorSubsystem multiMotorSubsystem;
     private MultiMotorCommand multiMotorCommand;
+
+    private AprilCamSubsystem aprilCamSubsystem;
     private Servo hangingServoL;
     private Servo hangingServoR;
     FtcDashboard dashboard;
@@ -55,6 +58,14 @@ public class AutonomousBackBlueRough extends LinearOpMode {
     private int finalX = -125;
     private int finalY = 6;
     private int finalTheta = 0;
+
+    private double targetX = 0;
+    private double targetY = 0;
+
+    private Integer aprilID = 2;
+
+    private boolean goToAprilTag = false;
+    private String autoColor = "blue";
 
 
     @Override
@@ -85,6 +96,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         packet = new TelemetryPacket();
         //webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_BLUE);
         timer = new ElapsedTime();
+        aprilCamSubsystem = new AprilCamSubsystem(hardwareMap);
 
 
         //initializing some variables
@@ -107,6 +119,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         CompletableFuture.runAsync(this::updateOdometry, executor);
         CompletableFuture.runAsync(this::updateTelemetry, executor);
         CompletableFuture.runAsync(this::liftProcess, executor);
+        CompletableFuture.runAsync(this::tagDetectionProcess);
        // CompletableFuture.runAsync(this::ThreadStop);
         //setPropPosition();
 
@@ -117,9 +130,22 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
         //TODO: when turning clockwise it is the opposite of the text above me
         //TODO: below is left
+        //TODO: below is left
         telemetry.addData("test", gyroOdometry.x);
         goToLeftSpike();
         //goToBoardLeft();
+
+
+        goToAprilTag = true;
+        sleep(1000);
+
+        while(goToAprilTag && !isStopRequested()) {
+            if(aprilCamSubsystem.getHashmap().containsKey(aprilID)){
+                mecanumCommand.setFinalPosition(true, 30, getTargetX(0.0), getTargetY(-20.0), getTargetTheta());
+            }
+            while(!mecanumCommand.isPositionReached(true, true)){}
+        }
+
 
 
         //go to correct spike
@@ -456,5 +482,41 @@ public class AutonomousBackBlueRough extends LinearOpMode {
     }
 
      */
+
+    public void tagDetectionProcess(){
+        while(opModeIsActive()) {
+            aprilCamSubsystem.runDetections();
+        }
+    }
+
+    public Double getTargetX(Double offset){
+        if(autoColor == "red"){
+            return(gyroOdometry.x - aprilCamSubsystem.getAprilXDistance(aprilID, offset));
+        }
+        else if (autoColor == "blue"){
+            return(gyroOdometry.x + aprilCamSubsystem.getAprilXDistance(aprilID, offset));
+        }
+        return(gyroOdometry.x); //this line won't be called unless autoColor is set to something else
+    }
+
+    public Double getTargetY(Double offset){
+        if(autoColor == "red"){
+            return(gyroOdometry.y - aprilCamSubsystem.getAprilYDistance(aprilID, offset));
+        }
+        else if (autoColor == "blue"){
+            return(gyroOdometry.y + aprilCamSubsystem.getAprilYDistance(aprilID, offset));
+        }
+        return(gyroOdometry.y); //this line won't be called unless autoColor is set to something else
+    }
+
+    public Double getTargetTheta(){
+        if(autoColor == "red"){
+            return(-Math.PI/2);
+        }
+        else if (autoColor == "blue"){
+            return(Math.PI/2);
+        }
+        return(0.0); //this line won't be called unless autoColor is set to something else
+    }
 
 }
