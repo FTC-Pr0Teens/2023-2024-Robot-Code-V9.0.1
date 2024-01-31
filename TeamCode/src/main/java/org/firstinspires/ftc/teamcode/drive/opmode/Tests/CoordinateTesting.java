@@ -65,14 +65,20 @@ public class CoordinateTesting extends LinearOpMode {
         Executor executor = Executors.newFixedThreadPool(4);
         CompletableFuture.runAsync(this::updateOdometry, executor);
         CompletableFuture.runAsync(this::updateTelemetry, executor);
+        CompletableFuture.runAsync(this::tagDetectionProcess, executor);
+        CompletableFuture.runAsync(this::setTagTargets);
+
+        while (opModeIsActive() && !isStopRequested()){}
 
 //        sleep(8000);
 //        mecanumCommand.moveRotation(Math.PI);
-        mecanumCommand.moveToGlobalPosition(0, 0, Math.PI);
-        sleep(4000);
+//        mecanumCommand.moveToGlobalPosition(0, 0, Math.PI);
+//        sleep(4000);
 //        mecanumCommand.moveToGlobalPosition(100, 100, Math.PI);
 //        sleep(4000);
 //        mecanumCommand.moveToGlobalPosition(100, 100, 2*Math.PI);
+
+
 
     }
 
