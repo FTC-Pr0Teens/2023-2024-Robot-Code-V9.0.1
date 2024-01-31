@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.MecanumCommand;
 import org.firstinspires.ftc.teamcode.command.MultiMotorCommand;
 import org.firstinspires.ftc.teamcode.command.OutputCommand;
+import org.firstinspires.ftc.teamcode.subsystems.AprilCamSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IMUSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 
@@ -22,6 +23,7 @@ import org.firstinspires.ftc.teamcode.subsystems.WebcamSubsystem;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
 import org.firstinspires.ftc.teamcode.util.Specifications;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -45,6 +47,7 @@ public class AutonomousBackRed extends LinearOpMode {
     FtcDashboard dashboard;
     TelemetryPacket packet;
     private ElapsedTime timer;
+    AprilCamSubsystem aprilCamSubsystem;
     //67, -3, 0
     //54, 24, 0
     //57, -22, -0.832
@@ -56,6 +59,14 @@ public class AutonomousBackRed extends LinearOpMode {
     private int finalY = 6;
     private int finalTheta = 0;
 
+    private double newX = 0;
+    private double newY;
+
+    private String autoColor = "red";
+
+    private int aprilID = 2;
+
+    int target = 4;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -68,6 +79,7 @@ public class AutonomousBackRed extends LinearOpMode {
         hangingServoL = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_L);
         hangingServoL.setDirection(Servo.Direction.REVERSE);
         hangingServoR = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_R);
+        aprilCamSubsystem = new AprilCamSubsystem(hardwareMap);
         //Note different for autonomous front red --> kpy
         //TODO: constants are set higher than usual, approximately started at 0.07 for kpx, kpy and integral terms were 0.007
         //kp overshoots, causing a lot of back and forth movement, thus making y reach less of its actual position
@@ -76,7 +88,7 @@ public class AutonomousBackRed extends LinearOpMode {
 
         //TODO: increase kp to adjust faster, but this also increases oscillations so increase kd a little
         //derivative value is at 0.01
-        mecanumCommand.setConstants(0.07, 0.01, 0.0075/2, 0.059, 0.0005, 0.0075/2, 2.1, 0.0, 0.0);
+        mecanumCommand.setConstants(0.07, 0.01, 0.0076/2, 0.059, 0.0005, 0.0075/2, 2.1, 0.0, 0.0);
         intakeCommand = new IntakeCommand(hardwareMap);
         outputCommand = new OutputCommand(hardwareMap);
         multiMotorSubsystem = new MultiMotorSubsystem(hardwareMap, true, MultiMotorSubsystem.MultiMotorType.dualMotor);
@@ -121,147 +133,13 @@ public class AutonomousBackRed extends LinearOpMode {
         goToLeftSpike();
         //goToBoardLeft();
 
-
-        //go to correct spike
-//        if (position.equals("left")){
-//            goToLeftSpike();
-//        }
-//        else if (position.equals("middle")){
-//            goToMiddleSpike();
-//        }
-//        else if (position.equals("right")){
-//            goToRightSpike();
-//        }
-
-//        if (position.equals("left")){
-//            goToBoardLeft();
-//        }
-//        else if (position.equals("middle")){
-//            goToBoardMiddle();
-//        }
-//        else if (position.equals("right")){
-//            goToBoardRight();
-//        }
-
         sleep(1000);
         stop();
 
 
 
 
-/*
-        //prep for putting a pixel on to the backboard
-        level = 5; //rise the lift to level 1
-        outputCommand.armToBoard(); // arm towards the board
-        outputCommand.tiltToBoard(); //tilt the output to the board
-        level = 1;
 
-
-        timer.reset();
-
-            //            //TODO: tune
-//            if (propPosition > 100) {
-//                //pos right
-//                mecanumCommand.moveToGlobalPosition(46, -78.5, 1.65); //1.65 radians = 94.53804 degrees
-//                right = true;
-//            } else if (propPosition <= 100 && propPosition > 0) {
-//                //pos middle
-//                mecanumCommand.moveToGlobalPosition(61, -80, 1.65);
-//                middle = true;
-//            } else {
-//                //pos left
-//                mecanumCommand.moveToGlobalPosition(68, -81.5, 1.65);
-//                left = true;
-//            }
-//        }
-
-*/
-
-//        while (timer.milliseconds() < 500){
-//            outputCommand.openGate();
-//        }
-//        //sets every output related components to its idle position in preparation of the driver period
-//        outputCommand.closeGate();
-//        outputCommand.tiltToIdle();
-//        outputCommand.armToIdle();
-//        sleep(6000);
-//        level = 0;
-//
-//
-//        //attempt on getting more pixels(rough values)
-//        if(right == true) {
-//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //strafe leftward to the middle: 180 degrees? - coordinates not right/measured
-//        }else if(middle = true) {
-//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //coordinates not right/measured
-//        }else if(left = true) {
-//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //coordinates not right/measured
-//        }
-//
-//        mecanumCommand.moveToGlobalPosition(-10, 100, 0); //going forward to white pixels
-//
-//        timer.reset();
-//        while (timer.milliseconds() < 1000){
-//            intakeCommand.intakeIn(0.3);
-//        }
-//        intakeCommand.stopIntake();
-
-//        timer.reset();
-//
-//        mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //going backward - coordinates not right/measured
-//        mecanumCommand.moveToGlobalPosition(46, -78.5, 0); //going leftward to the board - coordinates not right/measured
-//
-//        timer.reset();
-//        while (timer.milliseconds() < 500){
-//            outputCommand.openGate();
-//        }
-//        //sets every output related components to its idle position in preparation of the driver period
-//        outputCommand.closeGate();
-//        outputCommand.tiltToIdle();
-//        outputCommand.armToIdle();
-//        sleep(6000);
-//        level = 0;
-//
-//
-//        mecanumCommand.moveToGlobalPosition(0, -84, 1.65); //checkpoint
-
-//        //attempt on getting more pixels(rough values)
-//        if(right == true) {
-//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //strafe leftward to the middle: 180 degrees? - coordinates not right/measured
-//        }else if(middle = true) {
-//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //coordinates not right/measured
-//        }else if(left = true) {
-//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //coordinates not right/measured
-//        }
-//
-//        mecanumCommand.moveToGlobalPosition(-10, 100, 0); //going forward to white pixels
-//
-//        timer.reset();
-//        while (timer.milliseconds() < 1000){
-//            intakeCommand.intakeIn(0.3);
-//        }
-//        intakeCommand.stopIntake();
-//        //prep for putting a pixel on to the backboard
-//        level = 1; //rise the lift to level 1
-//        outputCommand.armToBoard(); // arm towards the board
-//        outputCommand.tiltToBoard(); //tilt the output to the board
-//        timer.reset();
-//
-//        mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //going backward - coordinates not right/measured
-//        mecanumCommand.moveToGlobalPosition(46, -78.5, 0); //going leftward to the board - coordinates not right/measured
-//
-//        timer.reset();
-//        while (timer.milliseconds() < 500){
-//            outputCommand.openGate();
-//        }
-//        //sets every output related components to its idle position in preparation of the driver period
-//        outputCommand.closeGate();
-//        outputCommand.tiltToIdle();
-//        outputCommand.armToIdle();
-//        sleep(6000);
-//        level = 0;
-//
-//
-//        mecanumCommand.moveToGlobalPosition(0, -84, 1.65); //checkpoint
 
     }
 
@@ -348,11 +226,6 @@ public class AutonomousBackRed extends LinearOpMode {
         }
     }
 
-    public void ThreadStop(){
-        while (opModeIsActive()){
-            isStopRequested();
-        }
-    }
 
     public void moveToPos(double x, double y, double theta, double toleranceX, double toleranceY, double toleranceTheta){
         mecanumCommand.moveIntegralReset();
@@ -391,9 +264,9 @@ public class AutonomousBackRed extends LinearOpMode {
         timer.reset();
         progress = "intake start";
         intakeCommand.lowerIntake();
-        sleep(1500);
+        sleep(2000);
         while (timer.milliseconds() < 2000) {
-            intakeCommand.intakeOut(0.7);
+            intakeCommand.intakeOut(0.4);
         }
         intakeCommand.stopIntake();
         progress = "intake stop";
@@ -414,6 +287,8 @@ public class AutonomousBackRed extends LinearOpMode {
         sleep(1000);
         progress = "boardLeft starting";
 
+
+
     }
 
     private void goToMiddleSpike(){
@@ -429,36 +304,46 @@ public class AutonomousBackRed extends LinearOpMode {
         moveToPos(-80,-15,-Math.PI/2 + 0.089,3,3,0.05);
         progress = "2";
         sleep(500);
-        moveToPos(-80,-26,-Math.PI/2 + 0.089,3,3,0.05);
-        sleep(1000);
+        moveToPos(-80,-22.5,-Math.PI/2 + 0.089,3,3,0.05);
 
         timer.reset();
         progress = "intake start";
         intakeCommand.lowerIntake();
         sleep(1500);
         while (timer.milliseconds() < 2000) {
-            intakeCommand.intakeOut(0.3);
+            intakeCommand.intakeOut(0.4);
         }
         intakeCommand.stopIntake();
         progress = "intake stop";
         sleep (1000);
         progress = "checkpoint 1 start";
-        moveToPos(-80,-10,-Math.PI/2 + 0.089,3,3,0.05);
+        moveToPos(-80,-10,-Math.PI/2 + 0.1,3,3,0.05);
         sleep(1000);
-        moveToPos(-126,-10,-Math.PI/2+ 0.089,5,5,0.05);
+        moveToPos(-126,-10,-Math.PI/2+ 0.1,5,5,0.05);
         progress = "checkpoint1 end";
         sleep(1000);
         progress = "checkpoint 2 start";
-        moveToPos(-126,-177,-Math.PI/2+ 0.089,2.5,2.5,0.05);
+        moveToPos(-126,-177,-Math.PI/2+ 0.1,5,5,0.05);
         progress = "checkpoint 2 end";
         sleep(1000);
         progress = "checkpoint 3 start";
-        moveToPos(-126,-177,Math.PI/2+ 0.089,2.5,2.5,0.05);
+        moveToPos(-126,-177,Math.PI/2+ 0.1,5,5,0.05);
         progress = "checkpoint 3 end";
         sleep(1000);
-        moveToPos(-88,-198,Math.PI/2+ 0.089,2.5,2.5,0.05);
-        sleep(1000);
+        moveToPos(-39,-195,Math.PI/2+ 0.1,5,5,0.05);
+        sleep(5000);
         progress = "boardLeft starting";
+
+        if (aprilCamSubsystem.getIdValues(target) != null && aprilCamSubsystem.getIdValues(target) != null) {
+
+            double targetX = getTargetX(-15.0);
+            double targetY = getTargetY(-10.0);
+            double targetTheta = getTargetTheta();
+
+            telemetry.addData("target X", targetX);
+            telemetry.addData("target Y", targetY);
+            moveToPos(targetX, targetY,targetTheta,2.5,2.5,0.05);
+        }
 
 
     }
@@ -475,6 +360,42 @@ public class AutonomousBackRed extends LinearOpMode {
 
     }
 
+
+    public void tagDetectionProcess(){
+        while(opModeIsActive()) {
+            aprilCamSubsystem.runDetections();
+        }
+    }
+
+    public Double getTargetX(Double offset){
+        if(autoColor == "red"){
+            return(gyroOdometry.x + aprilCamSubsystem.getAprilXDistance(aprilID, offset));
+        }
+        else if (autoColor == "blue"){
+            return(gyroOdometry.x - aprilCamSubsystem.getAprilXDistance(aprilID, offset));
+        }
+        return(gyroOdometry.x); //this line won't be called unless autoColor is set to something else
+    }
+
+    public Double getTargetY(Double offset){
+        if(autoColor == "red"){
+            return(gyroOdometry.y - aprilCamSubsystem.getAprilYDistance(aprilID, offset));
+        }
+        else if (autoColor == "blue"){
+            return(gyroOdometry.y + aprilCamSubsystem.getAprilYDistance(aprilID, offset));
+        }
+        return(gyroOdometry.y); //this line won't be called unless autoColor is set to something else
+    }
+
+    public Double getTargetTheta(){
+        if(autoColor == "red"){
+            return(Math.PI/2);
+        }
+        else if (autoColor == "blue"){
+            return(-Math.PI/2);
+        }
+        return(0.0); //this line won't be called unless autoColor is set to something else
+    }
 
     /*
     public void stopIfPosReached(double targetX, double targetY, double targetTheta){
