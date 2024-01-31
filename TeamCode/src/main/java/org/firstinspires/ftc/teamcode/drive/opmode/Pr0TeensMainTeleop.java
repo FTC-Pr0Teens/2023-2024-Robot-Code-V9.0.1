@@ -107,10 +107,10 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         //INITIALIZES THE HANGING SERVO
         hangingServoL = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_L);
         hangingServoL.setDirection(Servo.Direction.REVERSE);
-        hangingServoL.setPosition(0.8);
+        hangingServoL.setPosition(0.6);
 
         hangingServoR = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_R);
-        hangingServoR.setPosition(0.8);
+        hangingServoR.setPosition(0.6);
 
         hangingMotor = hardwareMap.dcMotor.get(Specifications.HANGING_MOTOR);
         hangingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -191,13 +191,13 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             //TODO: Set positions for hangingServo
             if (gamepad2.dpad_right) {
                 //idle
-                hangingServoL.setPosition(0.75);
-                hangingServoR.setPosition(0.75); //NOT PREPARED TO HANG
+                hangingServoL.setPosition(0.6);
+                hangingServoR.setPosition(0.6); //NOT PREPARED TO HANG
 
             } else if (gamepad2.dpad_left){
                 //hang
-                hangingServoL.setPosition(0.1);
-                hangingServoR.setPosition(0.1);
+                hangingServoL.setPosition(0.525);
+                hangingServoR.setPosition(0.525);
             } else  if(gamepad2.dpad_up) {
                 //hang
                 hangingMotor.setPower(1);
@@ -213,15 +213,21 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             if (gamepad2.right_trigger > 0.5) {
                 droneShooter.launch();
                 telemetry.addLine("Paper airplane launched");
-            } else if (gamepad1.left_trigger > 0.5){
-                hangingServoL.setPosition(0.7);
-                hangingServoR.setPosition(0.7);
+            } else if (gamepad2.left_trigger > 0.5){
+                hangingServoL.setPosition(0.5635);
+                hangingServoR.setPosition(0.5635);
             }
 
-            if (gamepad2.right_trigger > 0.5) {
+            if (gamepad2.right_bumper) {
                 intakeCommand.raiseIntake();
-            } else if (gamepad1.left_trigger > 0.5){
+            } else if (gamepad2.left_bumper){
                 intakeCommand.lowerIntake();
+            }
+
+            if (gamepad1.a) {
+                mecanumSubsystem.forward(0.5);
+            } else {
+                mecanumSubsystem.forward(0);
             }
 
             telemetry.addData("gateTimer:", gateTimer.time());

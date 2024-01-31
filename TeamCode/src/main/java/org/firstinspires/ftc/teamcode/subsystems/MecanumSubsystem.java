@@ -129,6 +129,13 @@ public class MecanumSubsystem extends Specifications{
         leftBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
+    public void forward (double power) {
+        leftBack.setPower(power);
+        leftForward.setPower(power);
+        rightBack.setPower(power);
+        rightForward.setPower(power);
+    }
+
     public void move(boolean run, double vertical, double horizontal, double rotational){
         if (run){
             rb = (vertical * Math.cos(Math.toRadians(45)) + horizontal * Math.sin(Math.toRadians(45)) + rotational * Math.sin(Math.toRadians(45)))*(1.41421356237);

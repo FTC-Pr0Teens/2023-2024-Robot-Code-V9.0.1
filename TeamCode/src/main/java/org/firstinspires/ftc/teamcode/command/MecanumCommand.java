@@ -742,6 +742,7 @@ public class MecanumCommand {
             this.velocity = velocity;
         }
     }
+
     public double getXFinal() {
         return xFinal;
     }

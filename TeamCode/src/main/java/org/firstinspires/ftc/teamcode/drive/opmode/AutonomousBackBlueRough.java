@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.command.IntakeCommand;
@@ -19,6 +20,7 @@ import org.firstinspires.ftc.teamcode.subsystems.MultiMotorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.WebcamSubsystem;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
+import org.firstinspires.ftc.teamcode.util.Specifications;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -38,6 +40,8 @@ public class AutonomousBackBlueRough extends LinearOpMode {
     private OutputCommand outputCommand;
     private MultiMotorSubsystem multiMotorSubsystem;
     private MultiMotorCommand multiMotorCommand;
+    private Servo hangingServoL;
+    private Servo hangingServoR;
     FtcDashboard dashboard;
     TelemetryPacket packet;
     private ElapsedTime timer;
@@ -48,6 +52,9 @@ public class AutonomousBackBlueRough extends LinearOpMode {
     private int level = -1;
     private String position = "initalized";
     private String progress = "initalization";
+    private int finalX = -125;
+    private int finalY = 6;
+    private int finalTheta = 0;
 
 
     @Override
@@ -58,6 +65,9 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         odometrySubsystem = new OdometrySubsystem(hardwareMap);
         gyroOdometry = new GyroOdometry(odometrySubsystem, imu);
         mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem, gyroOdometry, this);
+        hangingServoL = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_L);
+        hangingServoL.setDirection(Servo.Direction.REVERSE);
+        hangingServoR = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_R);
         //Note different for autonomous front red --> kpy
         //TODO: constants are set higher than usual, approximately started at 0.07 for kpx, kpy and integral terms were 0.007
         //kp overshoots, causing a lot of back and forth movement, thus making y reach less of its actual position
@@ -65,11 +75,13 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         //if undershooting, increase integral or all of thje constantst
 
         //TODO: increase kp to adjust faster, but this also increases oscillations so increase kd a little
-        mecanumCommand.setConstants(0.12, 0.02 , 0.0075/2, 0.055, 0.0005, 0.0075/2, 2, 0.005, 0.0);
+        mecanumCommand.setConstants(0.07, 0.01, 0.0075/2, 0.059, 0.0005, 0.0075/2, 2.1, 0.0, 0.0);
         intakeCommand = new IntakeCommand(hardwareMap);
         outputCommand = new OutputCommand(hardwareMap);
         multiMotorSubsystem = new MultiMotorSubsystem(hardwareMap, true, MultiMotorSubsystem.MultiMotorType.dualMotor);
         multiMotorCommand = new MultiMotorCommand(multiMotorSubsystem);
+        dashboard = FtcDashboard.getInstance();
+        packet = new TelemetryPacket();
         //webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_BLUE);
         timer = new ElapsedTime();
 
@@ -79,6 +91,9 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         //resets the different subsystems to for preparation
         odometrySubsystem.reset();
         imu.resetAngle();
+
+        hangingServoL.setPosition(0.59);
+        hangingServoR.setPosition(0.59);
 
         intakeCommand.raiseIntake();
         outputCommand.closeGate();
@@ -92,7 +107,6 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         CompletableFuture.runAsync(this::updateTelemetry, executor);
         CompletableFuture.runAsync(this::liftProcess, executor);
        // CompletableFuture.runAsync(this::ThreadStop);
-
         //setPropPosition();
 
 
@@ -102,6 +116,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
         //TODO: when turning clockwise it is the opposite of the text above me
         //TODO: below is left
+        telemetry.addData("test", gyroOdometry.x);
         goToLeftSpike();
         //goToBoardLeft();
 
@@ -116,9 +131,6 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 //        else if (position.equals("right")){
 //            goToRightSpike();
 //        }
-
-        //outake prop
-
 
 //        if (position.equals("left")){
 //            goToBoardLeft();
@@ -298,8 +310,21 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
     public void updateTelemetry() {
         while (opModeIsActive()) {
-//            packet.put("x", gyroOdometry.x);
-//            packet.put("y", gyroOdometry.y);
+            packet.put("x", gyroOdometry.x);
+            packet.put("y", gyroOdometry.y);
+            packet.put("theta", gyroOdometry.theta);
+            packet.put("x pos", mecanumCommand.globalXController.getError());
+            packet.put("x integral", mecanumCommand.globalXController.getIntegralSum());
+            packet.put("x derivative", mecanumCommand.globalXController.getDerivative());
+            packet.put("y pos", mecanumCommand.globalYController.getError());
+            packet.put("y integral", mecanumCommand.globalYController.getIntegralSum());
+            packet.put("y derivative", mecanumCommand.globalYController.getDerivative());
+            packet.put("Theta pos", mecanumCommand.globalThetaController.getError());
+            packet.put("Theta integral", mecanumCommand.globalThetaController.getIntegralSum());
+            packet.put("Theta derivative", mecanumCommand.globalThetaController.getDerivative());
+            packet.put("final x", finalX);
+            packet.put("final y", finalY);
+            packet.put("final theta", finalTheta);
             telemetry.addData("x", gyroOdometry.x);
             telemetry.addData("y", gyroOdometry.y);
             telemetry.addData("theta",  gyroOdometry.theta);
@@ -312,17 +337,8 @@ public class AutonomousBackBlueRough extends LinearOpMode {
             telemetry.addData("left encoder count", odometrySubsystem.leftEncoder());
             telemetry.addData("right encoder count", odometrySubsystem.rightEncoder());
             telemetry.addData("progress", progress);
-//            packet.put("x", gyroOdometry.x);
-//            packet.put("y", gyroOdometry.y);
-//            dashboard.sendTelemetryPacket(packet);
+            dashboard.sendTelemetryPacket(packet);
             telemetry.update();
-
-            intakeCommand.raiseIntake();
-        }
-
-        while (opModeInInit()){
-            //telemetry.addData("prop", webcamSubsystem.getXProp());
-            telemetry.addData("position", position);
         }
     }
     public void liftProcess() {
@@ -374,33 +390,30 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
     private void goToMiddleSpike(){
         //pos is good
-        moveToPos(-125,6   ,0,5,5,1.5);
+        moveToPos(-125,0,0,5,5,1.5);
     }
 
     private void goToLeftSpike(){
         //
-        moveToPos(-80,-5,0,2.5,2.5,0.05); //-70, -20
+        moveToPos(-80,5,0,2.5,2.5,0.05); //-70, -20
         progress = "1";
-        sleep(1000);
-        moveToPos(-80,-5,Math.PI/2,2.5,2.5,0.05);
+        sleep(500);
+        moveToPos(-80,5,Math.PI/2,2.5,2.5,0.05);
         progress = "2";
-        sleep(1000);
-        moveToPos(-80,4,Math.PI/2,2.5,2.5,0.05);
-        sleep(1000);
-
+        sleep(500);
 
         timer.reset();
         progress = "intake start";
-        intakeCommand.raiseIntake();
-        sleep(1000);
+        intakeCommand.lowerIntake();
+        sleep(500);
         while (timer.milliseconds() < 2000) {
-            intakeCommand.intakeOut(0.5);
+            intakeCommand.intakeOut(0.7);
         }
         intakeCommand.stopIntake();
         progress = "intake stop";
-        sleep (1000);
+        sleep (100);
         progress = "checkpoint 1 start";
-        moveToPos(-150,-3,Math.PI/2,2.5,2.5,0.05);
+        moveToPos(-150,-3,Math.PI/2,5,5,0.05);
         progress = "checkpoint1 end";
         sleep(100);
         progress = "checkpoint 2 start";
