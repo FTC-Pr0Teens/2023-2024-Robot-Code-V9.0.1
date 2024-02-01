@@ -132,20 +132,9 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         //TODO: below is left
         //TODO: below is left
         telemetry.addData("test", gyroOdometry.x);
-        goToLeftSpike();
+
+        goToMiddleSpike();
         //goToBoardLeft();
-
-
-        goToAprilTag = true;
-        sleep(1000);
-
-        while(goToAprilTag && !isStopRequested()) {
-            if(aprilCamSubsystem.getHashmap().containsKey(aprilID)){
-                mecanumCommand.setFinalPosition(true, 30, getTargetX(0.0), getTargetY(-20.0), getTargetTheta());
-                mecanumCommand.setFinalPosition(true, 30, getTargetX(10.0), getTargetY(-20.0), getTargetTheta());
-            }
-            while(!mecanumCommand.isPositionReached(true, true)){}
-        }
 
 
 
@@ -443,11 +432,12 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
         progress = "april tag start";
 
-        while(goToAprilTag && !isStopRequested()) {
+        while(!isStopRequested()) {
             if(aprilCamSubsystem.getHashmap().containsKey(aprilID)){
-                mecanumCommand.setFinalPosition(true, 30, getTargetX(10.0), getTargetY(-20.0), getTargetTheta());
+                moveToPos(getTargetX(-15.0), getTargetY(-10.0), getTargetTheta(), 2.5, 2.5, 0.05);
+                progress = "april tag end";
+                break;
             }
-            while(!mecanumCommand.isPositionReached(true, true)){}
         }
     }
 
@@ -475,13 +465,16 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         goToAprilTag = true;
         sleep(1000);
 
+
+
         progress = "april tag start";
 
-        while(goToAprilTag && !isStopRequested()) {
+        while(!isStopRequested()) {
             if(aprilCamSubsystem.getHashmap().containsKey(aprilID)){
-                mecanumCommand.setFinalPosition(true, 30, getTargetX(10.0), getTargetY(-20.0), getTargetTheta());
+                moveToPos(getTargetX(-15.0), getTargetY(-10.0), getTargetTheta(), 2.5, 2.5, 0.05);
+                progress = "april tag end";
+                break;
             }
-            while(!mecanumCommand.isPositionReached(true, true)){}
         }
     }
 
@@ -524,22 +517,25 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         sleep(1000);
         moveToPos(-90,170,-Math.PI/2,2.5,2.5,0.05);
         sleep(3000);
-        moveToPos(-60,150,-Math.PI/2,6.5,6.5,0.05);
+        moveToPos(-60,170,-Math.PI/2,6.5,6.5,0.05);
         sleep(3000);
-        moveToPos(-60,175,-Math.PI/2,6.5,6.5,0.05);
+        moveToPos(-60,190,-Math.PI/2,6.5,6.5,0.05);
         progress = "boardLeft starting";
 
-        goToAprilTag = true;
+
         sleep(1000);
 
         progress = "april tag start";
 
-        while(goToAprilTag && !isStopRequested()) {
+        while(!isStopRequested()) {
             if(aprilCamSubsystem.getHashmap().containsKey(aprilID)){
-                mecanumCommand.setFinalPosition(true, 30, getTargetX(10.0), getTargetY(-20.0), getTargetTheta());
+                moveToPos(getTargetX(-15.0), getTargetY(-10.0), getTargetTheta(), 2.5, 2.5, 0.05);
+                progress = "april tag end";
+                break;
             }
-            while(!mecanumCommand.isPositionReached(true, true)){}
         }
+
+
 
 
     }
@@ -596,10 +592,10 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
     public Double getTargetTheta(){
         if(autoColor == "red"){
-            return(-Math.PI/2);
+            return(Math.PI/2);
         }
         else if (autoColor == "blue"){
-            return(Math.PI/2);
+            return(-Math.PI/2);
         }
         return(0.0); //this line won't be called unless autoColor is set to something else
     }
