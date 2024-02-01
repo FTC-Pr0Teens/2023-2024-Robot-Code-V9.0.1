@@ -64,6 +64,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
     private Integer aprilID = 2;
 
+    private boolean goToAprilTag = false;
     private String autoColor = "blue";
 
 
@@ -134,12 +135,15 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         goToLeftSpike();
         //goToBoardLeft();
 
+
+        goToAprilTag = true;
         sleep(1000);
 
-        while(!isStopRequested()) {
+        while(goToAprilTag && !isStopRequested()) {
             if(aprilCamSubsystem.getHashmap().containsKey(aprilID)){
-                moveToPos(getTargetX(0.0), getTargetY(0.0),getTargetTheta(), 2.5, 2.5, 0.05);
+                mecanumCommand.setFinalPosition(true, 30, getTargetX(0.0), getTargetY(-20.0), getTargetTheta());
             }
+            while(!mecanumCommand.isPositionReached(true, true)){}
         }
 
 
@@ -487,10 +491,10 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
     public Double getTargetX(Double offset){
         if(autoColor == "red"){
-            return(gyroOdometry.x + aprilCamSubsystem.getAprilXDistance(aprilID, offset));
+            return(gyroOdometry.x - aprilCamSubsystem.getAprilXDistance(aprilID, offset));
         }
         else if (autoColor == "blue"){
-            return(gyroOdometry.x - aprilCamSubsystem.getAprilXDistance(aprilID, offset));
+            return(gyroOdometry.x + aprilCamSubsystem.getAprilXDistance(aprilID, offset));
         }
         return(gyroOdometry.x); //this line won't be called unless autoColor is set to something else
     }
@@ -507,10 +511,10 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
     public Double getTargetTheta(){
         if(autoColor == "red"){
-            return(Math.PI/2);
+            return(-Math.PI/2);
         }
         else if (autoColor == "blue"){
-            return(-Math.PI/2);
+            return(Math.PI/2);
         }
         return(0.0); //this line won't be called unless autoColor is set to something else
     }
