@@ -129,7 +129,7 @@ public class CoordinateTesting extends LinearOpMode {
                 }
                 sleep(5000);
                 if (aprilCamSubsystem.getHashmap().containsKey(aprilID)) {
-                    targetX = gyroOdometry.x + (-1) * aprilCamSubsystem.getAprilYDistance(aprilID, -10);
+                    targetX = gyroOdometry.x + (-1) * aprilCamSubsystem.getAprilYDistance(aprilID, -30);
                     moveToPos(targetX, targetY, 0, 2.5, 2.5, 0);
                 }
                 sleep(5000);

@@ -115,7 +115,7 @@ public class MoveToAprilTagTest extends LinearOpMode {
                 telemetry.addData("target Y", targetY);
                 //double targetTheta = Math.PI / 2;
                 double targetTheta = 0;
-                mecanumCommand.move(true, 30, targetX, targetY, targetTheta);
+                mecanumCommand.setFinalPosition(true, 30, targetX, targetY, targetTheta);
             }
         }
         //while (!mecanumCommand.isPositionReached(false, false)) {
