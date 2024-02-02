@@ -140,9 +140,9 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         CompletableFuture.runAsync(this::updateOdometry, executor);
         CompletableFuture.runAsync(this::updateTelemetry, executor);
         CompletableFuture.runAsync(this::liftProcess, executor);
-        CompletableFuture.runAsync(this::tagDetectionProcess);
-        CompletableFuture.runAsync(this::processLift);
-        CompletableFuture.runAsync(this::checkLiftState);
+        CompletableFuture.runAsync(this::tagDetectionProcess, executor);
+        CompletableFuture.runAsync(this::processLift,executor);
+        CompletableFuture.runAsync(this::checkLiftState,executor);
        // CompletableFuture.runAsync(this::ThreadStop);
         //setPropPosition();
 
@@ -158,38 +158,41 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         //TODO: below is left
         //TODO: below is left
         telemetry.addData("test", gyroOdometry.x);
+        while(opModeIsActive()) {
 
-        moveToPos(50,0,0,5,5,0.05);
-
-
-        //goToLeftSpike();
-        //goToBoardLeft();
-
-
-
-        //go to correct spike
-//        if (position.equals("left")){
-//            goToLeftSpike();
-//        }
-//        else if (position.equals("middle")){
-//            goToMiddleSpike();
-//        }
-//        else if (position.equals("right")){
-//            goToRightSpike();
-//        }
-
-//        if (position.equals("left")){
-//            goToBoardLeft();
-//        }
-//        else if (position.equals("middle")){
-//            goToBoardMiddle();
-//        }
-//        else if (position.equals("right")){
-//            goToBoardRight();
-//        }
-
-        sleep(1000);
-        stop();
+        }
+//
+//        moveToPos(50,0,0,5,5,0.05);
+//
+//
+//        //goToLeftSpike();
+//        //goToBoardLeft();
+//
+//
+//
+//        //go to correct spike
+////        if (position.equals("left")){
+////            goToLeftSpike();
+////        }
+////        else if (position.equals("middle")){
+////            goToMiddleSpike();
+////        }
+////        else if (position.equals("right")){
+////            goToRightSpike();
+////        }
+//
+////        if (position.equals("left")){
+////            goToBoardLeft();
+////        }
+////        else if (position.equals("middle")){
+////            goToBoardMiddle();
+////        }
+////        else if (position.equals("right")){
+////            goToBoardRight();
+////        }
+//
+//        sleep(1000);
+//        stop();
 
 
 

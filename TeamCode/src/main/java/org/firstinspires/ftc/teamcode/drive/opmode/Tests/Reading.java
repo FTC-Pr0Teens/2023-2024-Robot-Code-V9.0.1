@@ -36,25 +36,25 @@ public class Reading extends LinearOpMode {
         odometrySubsystem = new OdometrySubsystem(hardwareMap);
         odo = new GyroOdometry(odometrySubsystem, imu);
 
-        frontLeft = hardwareMap.get(DcMotor.class, "leftForward");
-        frontRight = hardwareMap.get(DcMotor.class, "rightForward");
-        backLeft = hardwareMap.get(DcMotor.class, "leftBack");
-        backRight = hardwareMap.get(DcMotor.class, "rightBack");
-
-        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        frontLeft.setDirection(DcMotorSimple.Direction.FORWARD);
-        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        backLeft.setDirection(DcMotorSimple.Direction.FORWARD);
-
-        frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        frontLeft = hardwareMap.get(DcMotor.class, "leftForward");
+//        frontRight = hardwareMap.get(DcMotor.class, "rightForward");
+//        backLeft = hardwareMap.get(DcMotor.class, "leftBack");
+//        backRight = hardwareMap.get(DcMotor.class, "rightBack");
+//
+//        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+//        frontLeft.setDirection(DcMotorSimple.Direction.FORWARD);
+//        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+//        backLeft.setDirection(DcMotorSimple.Direction.FORWARD);
+//
+//        frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//
+//        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         imu.resetAngle();
         dash = FtcDashboard.getInstance();
@@ -70,36 +70,36 @@ public class Reading extends LinearOpMode {
         CompletableFuture.runAsync(this::runOdometry);
 
         while (opModeIsActive()) {
-            if(gamepad1.a){
-                frontLeft.setPower(1);
-                frontRight.setPower(0);
-                backLeft.setPower(0);
-                backRight.setPower(0);
-            }
-            else if(gamepad1.b){
-                frontRight.setPower(1);
-                frontLeft.setPower(0);
-                backLeft.setPower(0);
-                backRight.setPower(0);
-            }
-            else if(gamepad1.y){
-                backLeft.setPower(1);
-                frontLeft.setPower(0);
-                frontRight.setPower(0);
-                backRight.setPower(0);
-            }
-            else if(gamepad1.x){
-                backRight.setPower(1);
-                frontLeft.setPower(0);
-                frontRight.setPower(0);
-                backLeft.setPower(0);
-            }
-            else{
-                frontLeft.setPower(0);
-                frontRight.setPower(0);
-                backLeft.setPower(0);
-                backRight.setPower(0);
-            }
+//            if(gamepad1.a){
+//                frontLeft.setPower(1);
+//                frontRight.setPower(0);
+//                backLeft.setPower(0);
+//                backRight.setPower(0);
+//            }
+//            else if(gamepad1.b){
+//                frontRight.setPower(1);
+//                frontLeft.setPower(0);
+//                backLeft.setPower(0);
+//                backRight.setPower(0);
+//            }
+//            else if(gamepad1.y){
+//                backLeft.setPower(1);
+//                frontLeft.setPower(0);
+//                frontRight.setPower(0);
+//                backRight.setPower(0);
+//            }
+//            else if(gamepad1.x){
+//                backRight.setPower(1);
+//                frontLeft.setPower(0);
+//                frontRight.setPower(0);
+//                backLeft.setPower(0);
+//            }
+//            else{
+//                frontLeft.setPower(0);
+//                frontRight.setPower(0);
+//                backLeft.setPower(0);
+//                backRight.setPower(0);
+//            }
             telemetry.addData("x", odo.x);
             telemetry.addData("y", odo.y);
             telemetry.addData("heading", odo.theta);

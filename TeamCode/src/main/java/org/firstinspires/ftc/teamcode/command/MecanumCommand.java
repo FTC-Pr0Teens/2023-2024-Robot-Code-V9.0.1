@@ -646,7 +646,7 @@ public class MecanumCommand {
 
         //-globalYController.outputPositional(targetY, gyroOdometry.y);
             //double moveTheta = globalThetaController.outputPositional(targetTheta, gyroOdometry.theta); // fieldOriented theta values set to opposite1
-            mecanumSubsystem.fieldOrientedMove(moveY, moveX, moveTheta, gyroOdometry.theta);
+            mecanumSubsystem.fieldOrientedMove(moveX, moveY, moveTheta, gyroOdometry.theta);
 
 
     }
