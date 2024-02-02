@@ -5,26 +5,14 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.MecanumCommand;
-import org.firstinspires.ftc.teamcode.command.MultiMotorCommand;
-import org.firstinspires.ftc.teamcode.command.OutputCommand;
-import org.firstinspires.ftc.teamcode.subsystems.DroneShooter;
 import org.firstinspires.ftc.teamcode.subsystems.IMUSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.MultiMotorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
 import org.firstinspires.ftc.teamcode.util.GridAutoCentering;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
-import org.firstinspires.ftc.teamcode.util.Specifications;
-import org.firstinspires.ftc.teamcode.util.TimerList;
 
-import java.util.HashSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -71,6 +59,8 @@ public class FieldOrientedAutoCenter extends LinearOpMode {
 
         Executor executor = Executors.newFixedThreadPool(5);
 
+        dashboard = FtcDashboard.getInstance();
+        packet = new TelemetryPacket(true);
 
         waitForStart();
 
@@ -88,7 +78,7 @@ public class FieldOrientedAutoCenter extends LinearOpMode {
                     .setFill("blue")
                     .setAlpha(0.4)
                     .fillRect(odometrySubsystem.x, odometrySubsystem.y, 16.5, 18)
-                            .strokeLine(odometrySubsystem.x,odometrySubsystem.y,odometrySubsystem.x,odometrySubsystem.y + 9);
+                    .strokeLine(odometrySubsystem.x,odometrySubsystem.y,odometrySubsystem.x,odometrySubsystem.y + 9);
             dashboard.sendTelemetryPacket(packet);
         }
     }
