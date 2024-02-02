@@ -629,7 +629,7 @@ public class MecanumCommand {
 
     public void moveToGlobalPos(double targetX, double targetY, double targetTheta){
          //if within 0.15 radians of target position
-            double moveX = -globalXController.outputPositionalIntegral(targetX,gyroOdometry.x);
+            double moveX = -globalXController.outputPositionalIntegral(targetX, gyroOdometry.x);
             double moveY = -globalYController.outputPositionalIntegral(targetY, gyroOdometry.y);
             double moveTheta = -globalThetaController.outputPositionalIntegral(targetTheta, gyroOdometry.theta);
 

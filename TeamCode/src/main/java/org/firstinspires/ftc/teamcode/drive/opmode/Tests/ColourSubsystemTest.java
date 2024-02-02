@@ -22,16 +22,26 @@ public class ColourSubsystemTest extends LinearOpMode{
 
     @Override
     public void runOpMode() {
-        CompletableFuture.runAsync(this::telemetry, executor);
         colorSensorSubsystem = new ColorSensorSubsystem(hardwareMap);
-        colorSensorSubsystem.findColor2();
 
-        ;
+        waitForStart();
+
+        Executor executor = Executors.newFixedThreadPool(5);
+        CompletableFuture.runAsync(this::telemetry, executor);
+
+        while (opModeIsActive()){
+            if (colorSensorSubsystem.findColor2().equalsIgnoreCase("White")){
+                telemetry.addLine("white");
+            }
+        }
+
+
     }
 
-    private void telemetry(){
+    public void telemetry(){
         while (opModeIsActive()){
             telemetry.addLine(colorSensorSubsystem.findColor2());
+            telemetry.addLine("test");
             telemetry.update();
         }
     }

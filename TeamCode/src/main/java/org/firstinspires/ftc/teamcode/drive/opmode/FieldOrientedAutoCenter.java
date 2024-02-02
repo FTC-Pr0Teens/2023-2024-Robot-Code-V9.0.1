@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -31,9 +32,11 @@ public class FieldOrientedAutoCenter extends LinearOpMode {
     private FtcDashboard dashboard;
     private TelemetryPacket packet;
 
-    static private volatile double kp = 0.6;
-    static private volatile double ki = 0;
-    static private volatile double kd = 0;
+    static public volatile double kp = 0.6;
+    static public volatile double ki = 0;
+    static public volatile double kd = 0;
+
+
 
     private GridAutoCentering gridAutoCentering;
 
@@ -68,18 +71,21 @@ public class FieldOrientedAutoCenter extends LinearOpMode {
         CompletableFuture.runAsync(this::processIMU, executor);
         CompletableFuture.runAsync(this::processDriveController);
 
+        MultipleTelemetry multiTele = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         while(opModeIsActive()) {
             gridAutoCentering.setConstants(kp,ki,kd);
-
+            packet = new TelemetryPacket(true);
             packet.put("x", odometrySubsystem.x);
             packet.put("y", odometrySubsystem.y);
             packet.put("theta", odometrySubsystem.theta);
             packet.fieldOverlay() //in inches
                     .setFill("blue")
                     .setAlpha(0.4)
-                    .fillRect(odometrySubsystem.x, odometrySubsystem.y, 16.5, 18)
-                    .strokeLine(odometrySubsystem.x,odometrySubsystem.y,odometrySubsystem.x,odometrySubsystem.y + 9);
+                    .fillRect(odometrySubsystem.y, odometrySubsystem.x, 16.5, 18)
+                    .fillPolygon(odometrySubsystem.x, odometrySubsystem.y, {0 - odometrySubsystem.y * Math.cos(odometrySubsystem.theta), 18)
+                    .strokeLine(odometrySubsystem.y+16.5/2, odometrySubsystem.x,odometrySubsystem.y + 16.5/2,odometrySubsystem.x + 9);
             dashboard.sendTelemetryPacket(packet);
+            telemetry.update();
         }
     }
 

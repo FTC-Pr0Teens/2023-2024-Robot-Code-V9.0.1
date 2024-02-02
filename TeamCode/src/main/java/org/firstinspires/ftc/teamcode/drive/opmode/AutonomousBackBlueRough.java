@@ -158,14 +158,11 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         //TODO: below is left
         //TODO: below is left
         telemetry.addData("test", gyroOdometry.x);
-        while(opModeIsActive()) {
 
-        }
-//
-//        moveToPos(50,0,0,5,5,0.05);
-//
-//
-//        //goToLeftSpike();
+        moveToPos(50,0,0,5,5,0.05);
+
+
+        goToLeftSpike();
 //        //goToBoardLeft();
 //
 //

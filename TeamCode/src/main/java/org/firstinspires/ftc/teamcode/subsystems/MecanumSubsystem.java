@@ -290,7 +290,7 @@ public class MecanumSubsystem extends Specifications{
 //        double newY = y * Math.cos(theta) - x * Math.cos(angle);
 
         double newX = x * Math.cos(theta) + y * Math.sin(theta);
-        double newY = -x * Math.sin(theta) + y * Math.cos(theta);
+        double newY = x * Math.sin(theta) + y * Math.cos(theta);
 
 
 

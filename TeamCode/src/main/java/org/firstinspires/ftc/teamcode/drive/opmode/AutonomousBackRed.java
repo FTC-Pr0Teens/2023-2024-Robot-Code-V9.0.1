@@ -129,7 +129,9 @@ public class AutonomousBackRed extends LinearOpMode {
         //TODO: when turning clockwise it is the opposite of the text above me
         //TODO: below is left
         telemetry.addData("test", gyroOdometry.x);
-        goToRightSpike();
+
+        moveToPos(-69.48,-19,-2.11,5,5,0.05);
+//        goToRightSpike();
         //goToBoardLeft();
 
 
