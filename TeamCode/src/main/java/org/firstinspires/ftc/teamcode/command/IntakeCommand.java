@@ -60,4 +60,16 @@ public class IntakeCommand {
         intake.motorTurnPurePower(true, 0);
         intakeRoller.setPower(0);
     }
+
+    public void autoPixel(){
+        intakeServo.setPosition(0.65);
+    }
+
+    public void teleOpStart(){
+        intakeServo.setPosition(0.8);
+    }
+
+    public void intakeOutNoRoller(double power){
+        intake.motorTurnPurePower(true, -Math.abs(power));
+    }
 }

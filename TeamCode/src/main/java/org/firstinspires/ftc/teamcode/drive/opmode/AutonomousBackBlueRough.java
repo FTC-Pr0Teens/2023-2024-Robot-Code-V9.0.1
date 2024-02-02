@@ -22,7 +22,9 @@ import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.WebcamSubsystem;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
 import org.firstinspires.ftc.teamcode.util.Specifications;
+import org.firstinspires.ftc.teamcode.util.TimerList;
 
+import java.util.HashSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -37,7 +39,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
     private OdometrySubsystem odometrySubsystem;
     private GyroOdometry gyroOdometry;
     private IntakeCommand intakeCommand;
-    //private WebcamSubsystem webcamSubsystem;
+    private WebcamSubsystem webcamSubsystem;
     private OutputCommand outputCommand;
     private MultiMotorSubsystem multiMotorSubsystem;
     private MultiMotorCommand multiMotorCommand;
@@ -48,6 +50,8 @@ public class AutonomousBackBlueRough extends LinearOpMode {
     FtcDashboard dashboard;
     TelemetryPacket packet;
     private ElapsedTime timer;
+
+    ElapsedTime outputTimer = new ElapsedTime();
     //67, -3, 0
     //54, 24, 0
     //57, -22, -0.832
@@ -66,6 +70,17 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
     private boolean goToAprilTag = false;
     private String autoColor = "blue";
+
+
+    private HashSet <LIFT_STATE> liftState = new HashSet<>();
+
+
+    private enum LIFT_STATE {
+        LIFT_IDLE,
+        LIFT_MIDDLE,
+        LIFT_END,
+        HANGSERVO, DROP_PIXEL
+    }
 
 
     @Override
@@ -87,7 +102,9 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
         //TODO: increase kp to adjust faster, but this also increases oscillations so increase kd a little
         //derivative value is at 0.01
-        mecanumCommand.setConstants(0.07, 0.01, 0.0075/2, 0.059, 0.0005, 0.0075/2, 2.1, 0.0, 0.0);
+
+        // mecanumCommand.setConstants(0.07, 0.01, 0.0075/2, 0.059, 0.0005, 0.0075/2, 2.1, 0.0, 0.0);
+        mecanumCommand.setConstants(0.07, 0.01, 0.0075/2, 0.07, 0.001, 0.0075/2, 2.1, 0.0, 0.0);
         intakeCommand = new IntakeCommand(hardwareMap);
         outputCommand = new OutputCommand(hardwareMap);
         multiMotorSubsystem = new MultiMotorSubsystem(hardwareMap, true, MultiMotorSubsystem.MultiMotorType.dualMotor);
@@ -113,15 +130,24 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
         outputCommand.armToIdle();
         outputCommand.tiltToIdle();
+
+
+
+
         waitForStart();
 
-        Executor executor = Executors.newFixedThreadPool(4);
+        Executor executor = Executors.newFixedThreadPool(6);
         CompletableFuture.runAsync(this::updateOdometry, executor);
         CompletableFuture.runAsync(this::updateTelemetry, executor);
         CompletableFuture.runAsync(this::liftProcess, executor);
         CompletableFuture.runAsync(this::tagDetectionProcess);
+        CompletableFuture.runAsync(this::processLift);
+        CompletableFuture.runAsync(this::checkLiftState);
        // CompletableFuture.runAsync(this::ThreadStop);
         //setPropPosition();
+
+
+
 
 
 
@@ -133,7 +159,10 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         //TODO: below is left
         telemetry.addData("test", gyroOdometry.x);
 
-        goToMiddleSpike();
+        moveToPos(50,0,0,5,5,0.05);
+
+
+        //goToLeftSpike();
         //goToBoardLeft();
 
 
@@ -401,30 +430,30 @@ public class AutonomousBackBlueRough extends LinearOpMode {
     }
 
     private void goToRightSpike(){
-        moveToPos(-102,-22,0,5,5,1.5);
-        moveToPos(-102,-22,0,5,5,0.05);
+        //pos is good
+        moveToPos(-102,-17,0,5,5,0.05);
         timer.reset();
         progress = "intake start";
         intakeCommand.lowerIntake();
         sleep(1500);
-        while (timer.milliseconds() < 2000) {
+        while (timer.milliseconds() < 17000) {
             intakeCommand.intakeOut(0.7);
         }
         intakeCommand.stopIntake();
-        moveToPos(-150,-5,0,5,5,0.05);
+        moveToPos(-150,-5,0,2.5,2.5,0.05);
         progress = "checkpoint 1 start";
-        moveToPos(-150,-5,Math.PI/2,5,5,0.05);
+        moveToPos(-150,-5,Math.PI/2,2.5,2.5,0.05);
         sleep(3000);
         progress = "checkpoint 2 start";
-        moveToPos(-150,150,Math.PI/2,5,5,0.05);
+        moveToPos(-150,150,Math.PI/2,2.5,2.5,0.05);
         sleep(3000 );
         progress = "checkpoint 3 start";
-        moveToPos(-150,150,-Math.PI/2,6.5,6.5,0.05);
+        moveToPos(-150,150,-Math.PI/2,2.5,2.5,0.05);
         progress = "checkpoint 3 end";
         sleep(3000);
-        moveToPos(-80,150,-Math.PI/2,6.5,6.5,0.05);
+        moveToPos(-80,150,-Math.PI/2,2.5,2.5,0.05);
         sleep(3000);
-        moveToPos(-80,165,-Math.PI/2,6.5,6.5,0.05);
+        moveToPos(-80,165,-Math.PI/2,2.5,2.5,0.05);
         progress = "boardLeft starting";
 
         goToAprilTag = true;
@@ -434,15 +463,15 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
         while(!isStopRequested()) {
             if(aprilCamSubsystem.getHashmap().containsKey(aprilID)){
-                moveToPos(getTargetX(-15.0), getTargetY(-10.0), getTargetTheta(), 2.5, 2.5, 0.05);
-                progress = "april tag end";
-                break;
+                moveToPos(getTargetX(10.0), getTargetY(-20.0), getTargetTheta(),2.5,2.5,0.05);
             }
+
         }
     }
 
     private void goToMiddleSpike(){
-        moveToPos(-127.5,-15,0,5,5,1.5);
+        //pos is good
+        moveToPos(-126,0,0,2.5,6,1.5);
         timer.reset();
         progress = "intake start";
         intakeCommand.lowerIntake();
@@ -450,16 +479,16 @@ public class AutonomousBackBlueRough extends LinearOpMode {
             intakeCommand.intakeOut(0.7);
         }
         intakeCommand.stopIntake();
-        moveToPos(-150,-5,0,5,5,0.05);
+        moveToPos(-150,-5,0,2.5,6,0.05);
         progress = "checkpoint 1 start";
-        moveToPos(-150,-5,Math.PI/2,5,5,0.05);
+        moveToPos(-150,-5,Math.PI/2,5,6,0.05);
         progress = "checkpoint 2 start";
-        moveToPos(-150,150,Math.PI/2,5,5,0.05);
+        moveToPos(-150,150,Math.PI/2,5,6,0.05);
         progress = "checkpoint 3 start";
-        moveToPos(-150,150,-Math.PI/2,6.5,6.5,0.05);
+        moveToPos(-150,150,-Math.PI/2,5,6,0.05);
         progress = "checkpoint 3 end";
-        moveToPos(-72.5,150,-Math.PI/2,6.5,6.5,0.05);
-        moveToPos(-72.5,165,-Math.PI/2,6.5,6.5,0.05);
+        moveToPos(-72.5,150,-Math.PI/2,7,7,0.05);
+        moveToPos(-72.5,165,-Math.PI/2,7,7,0.05);
         progress = "boardLeft starting";
 
         goToAprilTag = true;
@@ -471,24 +500,15 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
         while(!isStopRequested()) {
             if(aprilCamSubsystem.getHashmap().containsKey(aprilID)){
-                moveToPos(getTargetX(-15.0), getTargetY(-10.0), getTargetTheta(), 2.5, 2.5, 0.05);
-                progress = "april tag end";
-                break;
+                moveToPos(getTargetX(10.0), getTargetY(-20.0), getTargetTheta(),2.5,2.5,0.05);
             }
         }
     }
 
     private void goToLeftSpike(){
-        //
-        moveToPos(-80,-5,0,2.5,2.5,0.05); //-70, -20
-        progress = "1";
-        sleep(500);
-        moveToPos(-80,-5,Math.PI/2,3,3,0.05);
-        progress = "2";
-        sleep(500);
 
-        moveToPos(-80,3.8,Math.PI/2,3,3,0.05);
-        sleep(1000);
+        moveToPos(69.48,19,2.11,5,5,0.05);
+        progress = "2";
         timer.reset();
         progress = "intake start";
         intakeCommand.lowerIntake();
@@ -497,11 +517,27 @@ public class AutonomousBackBlueRough extends LinearOpMode {
             intakeCommand.intakeOut(0.7);
         }
         intakeCommand.stopIntake();
+
+        moveToPos(-129,-62,-Math.PI/2,5,5,0.05);
+        intakeCommand.autoPixel();
+        timer.reset();
+        do{
+            intakeCommand.intakeIn(0.5);
+        } while (timer.milliseconds() < 3000);
+        sleep(500);
+        timer.reset();
+        while (timer.milliseconds() < 2000) {
+            intakeCommand.intakeOutNoRoller(0.8);
+        }
+        intakeCommand.raiseIntake();
+        sleep(150);
         progress = "intake stop";
         sleep (100);
+
         progress = "checkpoint 1 start";
         moveToPos(-150,-3,Math.PI/2,5,5,0.05);
         progress = "checkpoint1 end";
+
         sleep(100);
         progress = "checkpoint 2 start";
         moveToPos(-150,150,Math.PI/2,2.5,2.5,0.05);
@@ -522,18 +558,40 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         moveToPos(-60,190,-Math.PI/2,6.5,6.5,0.05);
         progress = "boardLeft starting";
 
+        sleep(150);
+        progress = "checkpoint 2 start";
+        moveToPos(-150,150,-Math.PI/2,6.5,6.5,0.05);
+        progress = "checkpoint 3 end";
+        sleep(150);
+        moveToPos(-60,150,-Math.PI/2,6.5,6.5,0.05);
+        sleep(150);
+        moveToPos(-60,190,-Math.PI/2,6.5,6.5,0.05);
+        progress = "boardLeft starting";
 
-        sleep(1000);
+        liftState.add(LIFT_STATE.LIFT_END);
 
-        progress = "april tag start";
+//        goToAprilTag = true;
+//        sleep(1000);
+//
+//        progress = "april tag start";
+//
+//        while(goToAprilTag && !isStopRequested()) {
+//            if(aprilCamSubsystem.getHashmap().containsKey(aprilID)){
+//                moveToPos(getTargetX(10.0), getTargetY(-20.0), getTargetTheta(),2.5,2.5,0.05);
+//            }
+//        }
 
-        while(!isStopRequested()) {
-            if(aprilCamSubsystem.getHashmap().containsKey(aprilID)){
-                moveToPos(getTargetX(-15.0), getTargetY(-10.0), getTargetTheta(), 2.5, 2.5, 0.05);
-                progress = "april tag end";
-                break;
-            }
-        }
+
+
+
+//        while(!isStopRequested()) {
+//            if(aprilCamSubsystem.getHashmap().containsKey(aprilID)){
+//                moveToPos(getTargetX(-15.0), getTargetY(-10.0), getTargetTheta(), 2.5, 2.5, 0.05);
+//                progress = "april tag end";
+//                break;
+//            }
+//        }
+
 
 
 
@@ -598,6 +656,45 @@ public class AutonomousBackBlueRough extends LinearOpMode {
             return(-Math.PI/2);
         }
         return(0.0); //this line won't be called unless autoColor is set to something else
+    }
+
+
+    public void processLift(){
+        multiMotorCommand.LiftUp(true, level);
+    }
+
+
+    private void checkLiftState() {
+        if (liftState.contains(LIFT_STATE.LIFT_IDLE)) {
+            outputCommand.tiltToIdle(); //bring arm down BEFORE bringing lift down
+            outputCommand.armToIdle();
+            if (outputTimer.milliseconds() > 900) {
+                level = 0;
+                if (outputTimer.milliseconds() > 1300) liftState.clear(); //moved here
+            }
+        } else if (liftState.contains(LIFT_STATE.LIFT_MIDDLE)) {
+            if (!liftState.contains(LIFT_STATE.LIFT_END)) {
+                if (outputTimer.milliseconds() > 1000) {
+                    liftState.clear();
+                } else if (outputTimer.milliseconds() > 250) { //bring lift up BEFORE extending arm
+                    outputCommand.armToBoard();
+                    outputCommand.tiltToBoard();
+                } else {
+                    level = 1;
+                }
+            }
+        } else if (liftState.contains(LIFT_STATE.LIFT_END)) {
+            if (!liftState.contains(LIFT_STATE.LIFT_MIDDLE)) {
+                if (outputTimer.milliseconds() > 1000) {
+                    liftState.clear();
+                } else if (outputTimer.milliseconds() > 250) { //bring lift up BEFORE extending arm
+                    outputCommand.armToBoard();
+                    outputCommand.tiltToBoard();
+                } else {
+                    level = 2;
+                }
+            }
+        }
     }
 
 }

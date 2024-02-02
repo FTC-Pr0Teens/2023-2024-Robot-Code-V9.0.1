@@ -49,8 +49,8 @@ public class Specifications {
     public static final String FTRT_MOTOR = "rightForward";
     public static final String BKLF_MOTOR = "leftBack";
     public static final String BKRT_MOTOR = "rightBack";
-    public static final String BK_ENCODER = "rightForward";
-    public static final String LF_ENCODER = "rightBack";
+    public static final String BK_ENCODER = "leftForward";
+    public static final String LF_ENCODER = "hangingMotor";
     public static final String RT_ENCODER = "leftBack";
     public static final String DRONE_SHOOTER = "droneServo";
 

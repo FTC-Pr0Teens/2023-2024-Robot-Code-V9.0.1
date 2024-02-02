@@ -11,9 +11,9 @@ public class ColorSensorSubsystem {
     private RevBlinkinLedDriver Light;
     private RevColorSensorV3 colorSensor1;
     private RevColorSensorV3 colorSensor2;
+
     public ColorSensorSubsystem(HardwareMap hardwareMap) {
-        Light = hardwareMap.get(RevBlinkinLedDriver.class, "led");
-        colorSensor1 = hardwareMap.get(RevColorSensorV3.class, Specifications.FIRST_COLOR_SENSOR);
+
         colorSensor2 = hardwareMap.get(RevColorSensorV3.class, Specifications.SECOND_COLOR_SENSOR);
     }
 
@@ -61,27 +61,27 @@ public class ColorSensorSubsystem {
         }
     }
 
-    public String findColor1(){
-        int red = colorSensor1.red();
-        int green = colorSensor1.green();
-        int blue = colorSensor1.blue();
-        
-        if (isDominant(blue, red, green)) {
-            return "Lilac Purple";
-        } else if (isBlack(red, green, blue)) {
-            return "none";
-        } else if (isYellow(red, green, blue)) {
-            return "Yellow";
-        } else if (isDominant(green, red, blue)) {
-            return "Green";
-        } else if (isSignificantlyDominant(red, blue, green)) {
-            return "Red";
-        } else if (isWhite(red, green, blue)) {
-            return "White";
-        } else {
-            return "error";
-        }
-    }
+//    public String findColor1(){
+//        int red = colorSensor1.red();
+//        int green = colorSensor1.green();
+//        int blue = colorSensor1.blue();
+//
+//        if (isDominant(blue, red, green)) {
+//            return "Lilac Purple";
+//        } else if (isBlack(red, green, blue)) {
+//            return "none";
+//        } else if (isYellow(red, green, blue)) {
+//            return "Yellow";
+//        } else if (isDominant(green, red, blue)) {
+//            return "Green";
+//        } else if (isSignificantlyDominant(red, blue, green)) {
+//            return "Red";
+//        } else if (isWhite(red, green, blue)) {
+//            return "White";
+//        } else {
+//            return "error";
+//        }
+//    }
 
 
     public String findColor2(){
@@ -143,9 +143,9 @@ public class ColorSensorSubsystem {
     public int getGreen1(){ return colorSensor1.green();}
     public int getBlue1(){ return colorSensor1.blue();}
 
-    public int getRed2(){ return colorSensor2.red();}
-    public int getGreen2(){ return colorSensor2.green();}
-    public int getBlue2(){ return colorSensor2.blue();}
+//    public int getRed2(){ return colorSensor2.red();}
+//    public int getGreen2(){ return colorSensor2.green();}
+//    public int getBlue2(){ return colorSensor2.blue();}
     public void setPatternRed() {
         Light.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
     }

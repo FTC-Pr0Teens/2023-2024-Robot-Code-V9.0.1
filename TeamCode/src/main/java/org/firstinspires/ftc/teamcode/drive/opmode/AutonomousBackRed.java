@@ -13,12 +13,15 @@ import org.firstinspires.ftc.teamcode.command.IntakeCommand;
 import org.firstinspires.ftc.teamcode.command.MecanumCommand;
 import org.firstinspires.ftc.teamcode.command.MultiMotorCommand;
 import org.firstinspires.ftc.teamcode.command.OutputCommand;
+
+import org.firstinspires.ftc.teamcode.subsystems.AprilCamSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.ColorSensorSubsystem;
+
 import org.firstinspires.ftc.teamcode.subsystems.IMUSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 
 import org.firstinspires.ftc.teamcode.subsystems.MultiMotorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.WebcamSubsystem;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
 import org.firstinspires.ftc.teamcode.util.Specifications;
 
@@ -45,6 +48,11 @@ public class AutonomousBackRed extends LinearOpMode {
     FtcDashboard dashboard;
     TelemetryPacket packet;
     private ElapsedTime timer;
+
+    AprilCamSubsystem aprilCamSubsystem;
+
+    private ColorSensorSubsystem colorSensor;
+
     //67, -3, 0
     //54, 24, 0
     //57, -22, -0.832
@@ -68,6 +76,9 @@ public class AutonomousBackRed extends LinearOpMode {
         hangingServoL = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_L);
         hangingServoL.setDirection(Servo.Direction.REVERSE);
         hangingServoR = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_R);
+
+        aprilCamSubsystem = new AprilCamSubsystem(hardwareMap);
+        colorSensor = new ColorSensorSubsystem(hardwareMap);
         //Note different for autonomous front red --> kpy
         //TODO: constants are set higher than usual, approximately started at 0.07 for kpx, kpy and integral terms were 0.007
         //kp overshoots, causing a lot of back and forth movement, thus making y reach less of its actual position
@@ -118,7 +129,7 @@ public class AutonomousBackRed extends LinearOpMode {
         //TODO: when turning clockwise it is the opposite of the text above me
         //TODO: below is left
         telemetry.addData("test", gyroOdometry.x);
-        goToLeftSpike();
+        goToRightSpike();
         //goToBoardLeft();
 
 
@@ -386,31 +397,39 @@ public class AutonomousBackRed extends LinearOpMode {
 
     private void goToRightSpike(){
         //pos is good
-        moveToPos(-102,22,0,5,5,1.5);
-        sleep(1000);
+        moveToPos(-69.48,-19,-2.11,5,5,0.05);
+//        sleep(1000);
+//        moveToPos(-80,-24,-Math.PI/2,5,5,0.05);
         timer.reset();
         progress = "intake start";
         intakeCommand.lowerIntake();
-        sleep(1500);
+
         while (timer.milliseconds() < 2000) {
-            intakeCommand.intakeOut(0.7);
+            intakeCommand.intakeOut(0.5);
+
         }
         intakeCommand.stopIntake();
+        intakeCommand.raiseIntake();
         progress = "intake stop";
-        sleep (1000);
         progress = "checkpoint 1 start";
-        moveToPos(-126,-22,-Math.PI/2,5,5,0.05);
-        progress = "checkpoint1 end";
-        sleep(1000);
-        progress = "checkpoint 2 start";
-        moveToPos(-126,-177,-Math.PI/2,2.5,2.5,0.05);
+        //129, 43.5, -Math.PI/2
+        moveToPos(-129,62,Math.PI/2,5,5,0.05);
+        intakeCommand.autoPixel();
+        do{
+            intakeCommand.intakeIn(0.5);
+        } while (!colorSensor.findColor2().equalsIgnoreCase("white"));
+        timer.reset();
+        while (timer.milliseconds() < 1000) {
+            intakeCommand.intakeOutNoRoller(0.8);
+        }
+        intakeCommand.raiseIntake();
+        sleep(150);
+        moveToPos(-129,-177,-Math.PI/2,7,5,0.05);
         progress = "checkpoint 2 end";
-        sleep(1000);
-        progress = "checkpoint 3 start";
-        moveToPos(-126,-177,Math.PI/2,2.5,2.5,0.05);
-        progress = "checkpoint 3 end";
-        sleep(1000);
-        moveToPos(-88,-198,Math.PI/2,2.5,2.5,0.05);
+//        moveToPos(-150, -177,Math.PI/2,7,5,0.05);
+//        progress = "checkpoint 3 end";
+//        sleep(1000);
+        moveToPos(-88,-198,Math.PI/2,7,7,0.05);
         sleep(1000);
         progress = "boardLeft starting";
 
@@ -423,15 +442,15 @@ public class AutonomousBackRed extends LinearOpMode {
 
     private void goToLeftSpike(){
         //
-        moveToPos(-80,-15,0,2.5,2.5,0.05); //-70, -20
+        moveToPos(-107,-19.99,0,2.5,2.5,0.05); //-70, -20
         progress = "1";
         sleep(500);
+
         moveToPos(-80,-15,-Math.PI/2 + 0.089,3,3,0.05);
         progress = "2";
         sleep(500);
         moveToPos(-80,-26,-Math.PI/2 + 0.089,3,3,0.05);
         sleep(1000);
-
         timer.reset();
         progress = "intake start";
         intakeCommand.lowerIntake();
@@ -443,6 +462,7 @@ public class AutonomousBackRed extends LinearOpMode {
         progress = "intake stop";
         sleep (1000);
         progress = "checkpoint 1 start";
+
         moveToPos(-80,-10,-Math.PI/2 + 0.089,3,3,0.05);
         sleep(1000);
         moveToPos(-150,-10,-Math.PI/2+ 0.089,5,5,0.05);
@@ -451,10 +471,11 @@ public class AutonomousBackRed extends LinearOpMode {
         progress = "checkpoint 2 start";
         moveToPos(-126,-177,-Math.PI/2+ 0.089,2.5,2.5,0.05);
         moveToPos(-126,-10,-Math.PI/2+ 0.1,5,5,0.05);
+
         progress = "checkpoint1 end";
         sleep(1000);
         progress = "checkpoint 2 start";
-        moveToPos(-150,-177,-Math.PI/2+ 0.1,5,5,0.05);
+        moveToPos(-150,-177,-Math.PI/2,5,5,0.05);
         progress = "checkpoint 2 end";
         sleep(1000);
         progress = "checkpoint 3 start";
@@ -463,6 +484,7 @@ public class AutonomousBackRed extends LinearOpMode {
         sleep(1000);
         moveToPos(-88,-198,Math.PI/2+ 0.089,2.5,2.5,0.05);
         sleep(1000);
+
         progress = "boardLeft starting";
 
 

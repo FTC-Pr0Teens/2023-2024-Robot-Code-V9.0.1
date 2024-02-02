@@ -14,7 +14,7 @@ public class MecanumSubsystem extends Specifications{
     private DcMotorEx rightBack;
     private DcMotorEx leftForward;
     private DcMotorEx rightForward;
-    private final double SCALE = 1;
+    private final double SCALE = 0.9;
 
     //rf: right front/forward
     //rb: right back

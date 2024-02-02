@@ -148,6 +148,8 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
         multiMotorSubsystem.reset();
 
+        intakeCommand.teleOpStart();
+
         while(opModeIsActive()) {
 /*
             processLift has to continuously run because PID only allows you to set the lift to

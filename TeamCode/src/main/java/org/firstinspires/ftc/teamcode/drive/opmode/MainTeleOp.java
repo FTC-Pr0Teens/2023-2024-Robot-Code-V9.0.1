@@ -388,12 +388,12 @@ public class MainTeleOp extends LinearOpMode{
             while(opModeIsActive()){
                 if(timers.checkTimePassed("colorLoop", 250)){
                     timers.resetTimer("colorLoop");
-                    red1 = colorSensorSubsystem.getRed1();
-                    green1 = colorSensorSubsystem.getGreen1();
-                    blue1 = colorSensorSubsystem.getBlue1();
-                    red2 = colorSensorSubsystem.getRed2();
-                    green2 = colorSensorSubsystem.getGreen2();
-                    blue2 = colorSensorSubsystem.getBlue2();
+//                    red1 = colorSensorSubsystem.getRed1();
+//                    green1 = colorSensorSubsystem.getGreen1();
+//                    blue1 = colorSensorSubsystem.getBlue1();
+//                    red2 = colorSensorSubsystem.getRed2();
+//                    green2 = colorSensorSubsystem.getGreen2();
+//                    blue2 = colorSensorSubsystem.getBlue2();
                 }
             }
         }

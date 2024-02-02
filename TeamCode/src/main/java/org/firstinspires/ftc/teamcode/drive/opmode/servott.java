@@ -27,7 +27,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 @TeleOp(name = "servott")
-public class atestingteleop2 extends LinearOpMode {
+public class servott extends LinearOpMode {
     private MecanumSubsystem mecanumSubsystem;
     private MecanumCommand mecanumCommand;
     private IMUSubsystem imuSubsystem;
@@ -120,7 +120,6 @@ public class atestingteleop2 extends LinearOpMode {
             }
 
             if(gamepad1.y){
-
                 tiltPosition += 0.005;
             } else if(gamepad1.a){
 

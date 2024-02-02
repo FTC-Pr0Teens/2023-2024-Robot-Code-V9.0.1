@@ -66,6 +66,9 @@ public class FieldOrientedAutoCenter extends LinearOpMode {
         mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem,  gyroOdometry, this);
         gridAutoCentering = new GridAutoCentering(mecanumSubsystem, gyroOdometry);
 
+        packet = new TelemetryPacket(true);
+
+
         Executor executor = Executors.newFixedThreadPool(5);
 
 

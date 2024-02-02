@@ -70,8 +70,8 @@ public class OdometrySubsystem extends Specifications {
 //        }
         //Drive Gears
 
-        x += dx * Math.cos(theta) - dy * Math.sin(theta);
-        y += dx * Math.sin(theta) + dy * Math.cos(theta);
+        x += dx * Math.cos(theta) +dy * Math.sin(theta);
+        y += -dx * Math.sin(theta) + dy * Math.cos(theta);
 
 
 
@@ -104,15 +104,15 @@ public class OdometrySubsystem extends Specifications {
 
         if (navSystem != NavSystem.IMU){
             if (navSystem == NavSystem.ODOMETRY){
-                leftEncoder = hardwareMap.get(DcMotor.class, LF_ENCODER);
-                leftEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
-                leftEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                rightEncoder = hardwareMap.get(DcMotor.class, RT_ENCODER);
+                rightEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
+                rightEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             }
-            rightEncoder = hardwareMap.get(DcMotor.class, RT_ENCODER);
+            leftEncoder = hardwareMap.get(DcMotor.class, LF_ENCODER);
             backEncoder = hardwareMap.get(DcMotor.class, BK_ENCODER);
-            rightEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
+            leftEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
             backEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
-            rightEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            leftEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             backEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
 
