@@ -19,8 +19,10 @@ public class WhyNotBrokenTeleOp extends LinearOpMode {
             double leftPower = drive + turn;
             double rightPower = drive - turn;
             double armPower = gamepad1.right_stick_y;
+            double claw = gamepad1.right_trigger;
 
             notMecanumSubsystem.move(leftPower, rightPower, armPower);
+            notMecanumSubsystem.setContinuousServoPower(claw);
         }
     }
 }
