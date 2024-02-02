@@ -54,12 +54,6 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
     private int level;
 
-    private Servo leftArm;
-    private Servo rightArm;
-    private Servo leftTilt;
-    private Servo rightTilt;
-    private Servo gate;
-
     private DroneShooter droneShooter;
 
     private Servo hangingServoL;
@@ -77,8 +71,22 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         LIFT_IDLE,
         LIFT_MIDDLE,
         LIFT_END,
-        HANGSERVO, DROP_PIXEL
+        HANGSERVO,
+        DROP_PIXEL
     }
+
+
+    // TODO: leos stuff
+    private enum LIFT{
+        REST,
+        RAISE,
+        SET,
+        LOWER,
+    }
+
+    private LIFT lift = LIFT.REST;
+
+
 
     private boolean right_stick_pressed = false;
     private boolean left_stick_pressed = false;

@@ -78,12 +78,41 @@ public class FieldOrientedAutoCenter extends LinearOpMode {
             packet.put("x", odometrySubsystem.x);
             packet.put("y", odometrySubsystem.y);
             packet.put("theta", odometrySubsystem.theta);
+
+            double posX = odometrySubsystem.x;
+            double posY = odometrySubsystem.y;
+            double posTheta = odometrySubsystem.theta;
+            double robotWidth = 16.5;
+            double robotLength = 18;
+
+
+            //up down
+            final double v2 = 0 - (robotWidth / 2) * Math.cos(posTheta) + posY;
+            double v3 = 0 + (robotWidth / 2) * Math.cos(posTheta) + posY;
+            double[] xcoords = {
+                    v2,
+                    v3,
+                    v2,
+                    v3,
+            };
+
+            //up down
+            final double v = 0 + (robotLength / 2) * Math.cos(posTheta) + posX;
+            final double v1 = 0 - (robotLength / 2) * Math.cos(posTheta) + posX;
+            double[] ycoords = {
+                    v1,
+                    v,
+                    v,
+                    v1,
+            };
+
             packet.fieldOverlay() //in inches
                     .setFill("blue")
                     .setAlpha(0.4)
                     .fillRect(odometrySubsystem.y, odometrySubsystem.x, 16.5, 18)
-                    .fillPolygon(odometrySubsystem.x, odometrySubsystem.y, {0 - odometrySubsystem.y * Math.cos(odometrySubsystem.theta), 18)
-                    .strokeLine(odometrySubsystem.y+16.5/2, odometrySubsystem.x,odometrySubsystem.y + 16.5/2,odometrySubsystem.x + 9);
+                    .fillPolygon(xcoords, ycoords)
+                    .strokeLine(odometrySubsystem.y+16.5/2, odometrySubsystem.x,odometrySubsystem.y + 16.5/2,odometrySubsystem.x + 9)
+                    .strokeLine(odometrySubsystem.y, odometrySubsystem.x, odometrySubsystem.x + 9*Math.sin(posTheta), odometrySubsystem.y + Math.cos(posTheta));
             dashboard.sendTelemetryPacket(packet);
             telemetry.update();
         }
