@@ -26,6 +26,7 @@ public class WhyNotBrokenTeleOp extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        waitForStart();
         while(opModeIsActive()){
             NotMecanumSubsystem.move(gamepad1.left_stick_y, gamepad1.right_stick_y);
 
