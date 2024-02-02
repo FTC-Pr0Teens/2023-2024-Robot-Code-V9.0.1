@@ -14,9 +14,13 @@ public class WhyNotBrokenTeleOp extends LinearOpMode {
 
         waitForStart();
         while(opModeIsActive()) {
-            double leftPower = -gamepad1.left_stick_y; // Inverting to match joystick direction
-            double rightPower = -gamepad1.right_stick_y; // Inverting to match joystick direction
-            notMecanumSubsystem.move(leftPower, rightPower);
+            double drive = -gamepad1.left_stick_y; // Forward and backward
+            double turn  =  gamepad1.left_stick_x; // Left and right
+            double leftPower = drive + turn;
+            double rightPower = drive - turn;
+            double armPower = gamepad1.right_stick_y;
+
+            notMecanumSubsystem.move(leftPower, rightPower, armPower);
         }
     }
 }
