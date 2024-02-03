@@ -345,6 +345,12 @@ public class MultiMotorSubsystem extends Specifications {
         aux2.setPower(getMainPower());
     }
 
+    public void LiftPositionalProcess(double targetPos){
+        runToPosition = true;
+        power = pidUp.outputPositional(targetPos, getPosition());
+        moveLift(power);
+    }
+
     public void LiftCascadeProcess(double targetPos, Interval... interval){
         runToPosition = true;
         IntervalControl velocityInterval = new IntervalControl(interval);
@@ -461,5 +467,9 @@ public class MultiMotorSubsystem extends Specifications {
     }
     public double getCascadeVelocity(){
         return cascadePID.getOutputVelocityValue();
+    }
+
+    public PIDCore getPidUp() {
+        return pidUp;
     }
 }
