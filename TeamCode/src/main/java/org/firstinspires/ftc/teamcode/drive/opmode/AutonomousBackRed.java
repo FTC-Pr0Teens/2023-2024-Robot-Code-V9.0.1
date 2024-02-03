@@ -130,8 +130,7 @@ public class AutonomousBackRed extends LinearOpMode {
         //TODO: below is left
         telemetry.addData("test", gyroOdometry.x);
 
-        moveToPos(-69.48,-19,-2.11,5,5,0.05);
-//        goToRightSpike();
+        goToRightSpike();
         //goToBoardLeft();
 
 
@@ -399,7 +398,7 @@ public class AutonomousBackRed extends LinearOpMode {
 
     private void goToRightSpike(){
         //pos is good
-        moveToPos(-69.48,-19,-2.11,5,5,0.05);
+        moveToPos(-69.48,-19,2.11,2,2,0.05);
 //        sleep(1000);
 //        moveToPos(-80,-24,-Math.PI/2,5,5,0.05);
         timer.reset();
@@ -415,7 +414,7 @@ public class AutonomousBackRed extends LinearOpMode {
         progress = "intake stop";
         progress = "checkpoint 1 start";
         //129, 43.5, -Math.PI/2
-        moveToPos(-129,62,Math.PI/2,5,5,0.05);
+        moveToPos(-129,62,-Math.PI/2,2.5,2.5,0.05);
         intakeCommand.autoPixel();
         do{
             intakeCommand.intakeIn(0.5);
@@ -426,12 +425,12 @@ public class AutonomousBackRed extends LinearOpMode {
         }
         intakeCommand.raiseIntake();
         sleep(150);
-        moveToPos(-129,-177,-Math.PI/2,7,5,0.05);
+        moveToPos(-129,-177,Math.PI/2,2.5,2.5,0.05);
         progress = "checkpoint 2 end";
 //        moveToPos(-150, -177,Math.PI/2,7,5,0.05);
 //        progress = "checkpoint 3 end";
 //        sleep(1000);
-        moveToPos(-88,-198,Math.PI/2,7,7,0.05);
+        moveToPos(-88,-198,-Math.PI/2,2.5,2.5,0.05);
         sleep(1000);
         progress = "boardLeft starting";
 

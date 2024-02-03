@@ -67,9 +67,9 @@ public class FieldOrientedAutoCenter extends LinearOpMode {
 
         waitForStart();
 
-        CompletableFuture.runAsync(this::processDriveMotor, executor);
+//        CompletableFuture.runAsync(this::processDriveMotor, executor);
         CompletableFuture.runAsync(this::processIMU, executor);
-        CompletableFuture.runAsync(this::processDriveController);
+//        CompletableFuture.runAsync(this::processDriveController);
 
         MultipleTelemetry multiTele = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         while(opModeIsActive()) {
@@ -87,18 +87,18 @@ public class FieldOrientedAutoCenter extends LinearOpMode {
 
 
             //up down
-            final double v2 = 0 - (robotWidth / 2) * Math.cos(posTheta) + posY;
+            final double v2 = -(robotWidth / 2) * Math.cos(posTheta) + posY;
             double v3 = 0 + (robotWidth / 2) * Math.cos(posTheta) + posY;
             double[] xcoords = {
                     v2,
-                    v3,
                     v2,
+                    v3,
                     v3,
             };
 
             //up down
-            final double v = 0 + (robotLength / 2) * Math.cos(posTheta) + posX;
-            final double v1 = 0 - (robotLength / 2) * Math.cos(posTheta) + posX;
+            final double v = 0 + (robotLength / 2) * Math.sin(posTheta) + posX;
+            final double v1 = 0 - (robotLength / 2) * Math.sin(posTheta) + posX;
             double[] ycoords = {
                     v1,
                     v,
@@ -109,10 +109,8 @@ public class FieldOrientedAutoCenter extends LinearOpMode {
             packet.fieldOverlay() //in inches
                     .setFill("blue")
                     .setAlpha(0.4)
-                    .fillRect(odometrySubsystem.y, odometrySubsystem.x, 16.5, 18)
-                    .fillPolygon(xcoords, ycoords)
-                    .strokeLine(odometrySubsystem.y+16.5/2, odometrySubsystem.x,odometrySubsystem.y + 16.5/2,odometrySubsystem.x + 9)
-                    .strokeLine(odometrySubsystem.y, odometrySubsystem.x, odometrySubsystem.x + 9*Math.sin(posTheta), odometrySubsystem.y + Math.cos(posTheta));
+                    .fillCircle(posY,posX,9)
+                    .strokeLine(posY,posX, posY + 9 * Math.cos(posTheta), posX + 9 *Math.sin(posTheta));
             dashboard.sendTelemetryPacket(packet);
             telemetry.update();
         }
