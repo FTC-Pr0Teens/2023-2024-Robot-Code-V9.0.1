@@ -155,7 +155,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
         multiMotorSubsystem.reset();
 
-        intakeCommand.teleOpStart();
+        intakeCommand.raiseIntake();
 
         while(opModeIsActive()) {
 /*
@@ -286,7 +286,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             }
         } else if (liftState.contains(LIFT_STATE.LIFT_END)) {
             if (!liftState.contains(LIFT_STATE.LIFT_MIDDLE)) {
-                targetPosition = -1400;
+                targetPosition = -2020;
                 if (outputTimer.milliseconds() > 1000) {
                     liftState.clear();
                 } else if (outputTimer.milliseconds() > 250) { //bring lift up BEFORE extending arm
