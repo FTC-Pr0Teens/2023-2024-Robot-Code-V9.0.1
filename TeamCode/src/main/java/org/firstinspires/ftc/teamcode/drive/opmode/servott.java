@@ -66,7 +66,6 @@ public class servott extends LinearOpMode {
         multiMotorSubsystem = new MultiMotorSubsystem(hardwareMap, true, MultiMotorSubsystem.MultiMotorType.dualMotor);
         multiMotorCommand = new MultiMotorCommand(multiMotorSubsystem);
         intakeCommand = new IntakeCommand(hardwareMap);
-        intakeCommand.lowerIntake();
 
         //INITIALIZES THE HANGING SERVO
         hangingServoL = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_L);
@@ -96,23 +95,29 @@ public class servott extends LinearOpMode {
         double hangingPositionR = 0;
         double tiltPosition = 0;
         double dronePosition = 0;
+
+        double intakePosition = 0;
         //0.03 close
         //0.115 open
 
         while (opModeIsActive()) {
             sleep(50);
-            hangingServoL.setPosition(hangingPositionL);
-            hangingServoR.setPosition(hangingPositionR);
+//            hangingServoL.setPosition(hangingPositionL);
+//            hangingServoR.setPosition(hangingPositionR);
             droneShooter.setPos(dronePosition);
             outputCommand.tiltToPos(tiltPosition);
+            intakeCommand.setPosition(intakePosition);
             if(gamepad1.dpad_up){
 
-                hangingPositionL += 0.01;
-                hangingPositionR += 0.01;
+//                hangingPositionL += 0.01;
+//                hangingPositionR += 0.01;
+
+                intakePosition +=0.01;
             } else if(gamepad1.dpad_down){
-                hangingPositionL -= 0.01;
-                hangingPositionR -= 0.01;
-            }
+//                hangingPositionL -= 0.01;
+//                hangingPositionR -= 0.01;
+                intakePosition -=0.01
+;            }
             if(gamepad1.dpad_right){
                 dronePosition += 0.005;
             } else if(gamepad1.dpad_left){
@@ -130,6 +135,7 @@ public class servott extends LinearOpMode {
             telemetry.addData("arm", hangingPositionL);
             telemetry.addData("drone", dronePosition);
             telemetry.addData("tilt", tiltPosition);
+            telemetry.addData("intake", intakePosition);
 
 
                     telemetry.update();

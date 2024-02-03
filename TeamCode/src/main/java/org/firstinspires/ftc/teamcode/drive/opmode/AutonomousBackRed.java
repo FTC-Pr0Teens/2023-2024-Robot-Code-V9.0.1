@@ -25,6 +25,7 @@ import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
 import org.firstinspires.ftc.teamcode.util.Specifications;
 
+import java.util.HashSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -57,12 +58,26 @@ public class AutonomousBackRed extends LinearOpMode {
     //54, 24, 0
     //57, -22, -0.832
     //38, 80, -1.58
-    private int level = -1;
+    private int level = 0;
     private String position = "initalized";
     private String progress = "initalization";
     private int finalX = -125;
     private int finalY = 6;
     private int finalTheta = 0;
+
+    ElapsedTime outputTimer;
+
+    private HashSet<LIFT_STATE> liftState = new HashSet<>();
+
+
+    private enum LIFT_STATE {
+        LIFT_IDLE,
+        LIFT_MIDDLE,
+        LIFT_END,
+        HANGSERVO, DROP_PIXEL
+    }
+
+
 
 
     @Override
@@ -87,7 +102,7 @@ public class AutonomousBackRed extends LinearOpMode {
 
         //TODO: increase kp to adjust faster, but this also increases oscillations so increase kd a little
         //derivative value is at 0.01
-        mecanumCommand.setConstants(0.07, 0.01, 0.0075/2, 0.059, 0.0005, 0.0075/2, 2.1, 0.0, 0.0);
+        mecanumCommand.setConstants(0.11, 0.014, 0.0095/2, 0.059, 0.0005, 0.0095/2, 2.1, 0.0, 0.001);
         intakeCommand = new IntakeCommand(hardwareMap);
         outputCommand = new OutputCommand(hardwareMap);
         multiMotorSubsystem = new MultiMotorSubsystem(hardwareMap, true, MultiMotorSubsystem.MultiMotorType.dualMotor);
@@ -96,6 +111,7 @@ public class AutonomousBackRed extends LinearOpMode {
         packet = new TelemetryPacket();
         //webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
         timer = new ElapsedTime();
+        outputTimer = new ElapsedTime();
 
 
         //initializing some variables
@@ -104,8 +120,8 @@ public class AutonomousBackRed extends LinearOpMode {
         odometrySubsystem.reset();
         imu.resetAngle();
 
-        hangingServoL.setPosition(0.6);
-        hangingServoR.setPosition(0.6);
+        hangingServoL.setPosition(0.56);
+        hangingServoR.setPosition(0.56);
 
         intakeCommand.raiseIntake();
         outputCommand.closeGate();
@@ -118,8 +134,8 @@ public class AutonomousBackRed extends LinearOpMode {
         CompletableFuture.runAsync(this::updateOdometry, executor);
         CompletableFuture.runAsync(this::updateTelemetry, executor);
         CompletableFuture.runAsync(this::liftProcess, executor);
-        // CompletableFuture.runAsync(this::ThreadStop);
-        //setPropPosition();
+        CompletableFuture.runAsync(this::liftProcess, executor);
+        CompletableFuture.runAsync(this::checkLiftState,executor);
 
 
 
@@ -129,6 +145,9 @@ public class AutonomousBackRed extends LinearOpMode {
         //TODO: when turning clockwise it is the opposite of the text above me
         //TODO: below is left
         telemetry.addData("test", gyroOdometry.x);
+
+//        outputTimer.reset();
+//        liftState.add(LIFT_STATE.LIFT_END);
 
         goToRightSpike();
         //goToBoardLeft();
@@ -160,120 +179,6 @@ public class AutonomousBackRed extends LinearOpMode {
 
 
 
-
-/*
-        //prep for putting a pixel on to the backboard
-        level = 5; //rise the lift to level 1
-        outputCommand.armToBoard(); // arm towards the board
-        outputCommand.tiltToBoard(); //tilt the output to the board
-        level = 1;
-
-
-        timer.reset();
-
-            //            //TODO: tune
-//            if (propPosition > 100) {
-//                //pos right
-//                mecanumCommand.moveToGlobalPosition(46, -78.5, 1.65); //1.65 radians = 94.53804 degrees
-//                right = true;
-//            } else if (propPosition <= 100 && propPosition > 0) {
-//                //pos middle
-//                mecanumCommand.moveToGlobalPosition(61, -80, 1.65);
-//                middle = true;
-//            } else {
-//                //pos left
-//                mecanumCommand.moveToGlobalPosition(68, -81.5, 1.65);
-//                left = true;
-//            }
-//        }
-
-*/
-
-//        while (timer.milliseconds() < 500){
-//            outputCommand.openGate();
-//        }
-//        //sets every output related components to its idle position in preparation of the driver period
-//        outputCommand.closeGate();
-//        outputCommand.tiltToIdle();
-//        outputCommand.armToIdle();
-//        sleep(6000);
-//        level = 0;
-//
-//
-//        //attempt on getting more pixels(rough values)
-//        if(right == true) {
-//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //strafe leftward to the middle: 180 degrees? - coordinates not right/measured
-//        }else if(middle = true) {
-//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //coordinates not right/measured
-//        }else if(left = true) {
-//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //coordinates not right/measured
-//        }
-//
-//        mecanumCommand.moveToGlobalPosition(-10, 100, 0); //going forward to white pixels
-//
-//        timer.reset();
-//        while (timer.milliseconds() < 1000){
-//            intakeCommand.intakeIn(0.3);
-//        }
-//        intakeCommand.stopIntake();
-
-//        timer.reset();
-//
-//        mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //going backward - coordinates not right/measured
-//        mecanumCommand.moveToGlobalPosition(46, -78.5, 0); //going leftward to the board - coordinates not right/measured
-//
-//        timer.reset();
-//        while (timer.milliseconds() < 500){
-//            outputCommand.openGate();
-//        }
-//        //sets every output related components to its idle position in preparation of the driver period
-//        outputCommand.closeGate();
-//        outputCommand.tiltToIdle();
-//        outputCommand.armToIdle();
-//        sleep(6000);
-//        level = 0;
-//
-//
-//        mecanumCommand.moveToGlobalPosition(0, -84, 1.65); //checkpoint
-
-//        //attempt on getting more pixels(rough values)
-//        if(right == true) {
-//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //strafe leftward to the middle: 180 degrees? - coordinates not right/measured
-//        }else if(middle = true) {
-//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //coordinates not right/measured
-//        }else if(left = true) {
-//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //coordinates not right/measured
-//        }
-//
-//        mecanumCommand.moveToGlobalPosition(-10, 100, 0); //going forward to white pixels
-//
-//        timer.reset();
-//        while (timer.milliseconds() < 1000){
-//            intakeCommand.intakeIn(0.3);
-//        }
-//        intakeCommand.stopIntake();
-//        //prep for putting a pixel on to the backboard
-//        level = 1; //rise the lift to level 1
-//        outputCommand.armToBoard(); // arm towards the board
-//        outputCommand.tiltToBoard(); //tilt the output to the board
-//        timer.reset();
-//
-//        mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //going backward - coordinates not right/measured
-//        mecanumCommand.moveToGlobalPosition(46, -78.5, 0); //going leftward to the board - coordinates not right/measured
-//
-//        timer.reset();
-//        while (timer.milliseconds() < 500){
-//            outputCommand.openGate();
-//        }
-//        //sets every output related components to its idle position in preparation of the driver period
-//        outputCommand.closeGate();
-//        outputCommand.tiltToIdle();
-//        outputCommand.armToIdle();
-//        sleep(6000);
-//        level = 0;
-//
-//
-//        mecanumCommand.moveToGlobalPosition(0, -84, 1.65); //checkpoint
 
     }
 
@@ -350,6 +255,8 @@ public class AutonomousBackRed extends LinearOpMode {
             telemetry.addData("left encoder count", odometrySubsystem.leftEncoder());
             telemetry.addData("right encoder count", odometrySubsystem.rightEncoder());
             telemetry.addData("progress", progress);
+            telemetry.addData("liftState:", liftState);
+            telemetry.addData("level:", level);
             dashboard.sendTelemetryPacket(packet);
             telemetry.update();
         }
@@ -406,7 +313,7 @@ public class AutonomousBackRed extends LinearOpMode {
         intakeCommand.lowerIntake();
 
         while (timer.milliseconds() < 2000) {
-            intakeCommand.intakeOut(0.5);
+            intakeCommand.intakeOut(0.7);
 
         }
         intakeCommand.stopIntake();
@@ -414,25 +321,30 @@ public class AutonomousBackRed extends LinearOpMode {
         progress = "intake stop";
         progress = "checkpoint 1 start";
         //129, 43.5, -Math.PI/2
-        moveToPos(-129,62,-Math.PI/2,2.5,2.5,0.05);
+        //129, 60.8, -Math.PI/2
+        moveToPos(-118,43,-Math.PI/2,2.5,2.5,0.05);
         intakeCommand.autoPixel();
-        do{
-            intakeCommand.intakeIn(0.5);
-        } while (!colorSensor.findColor2().equalsIgnoreCase("white"));
         timer.reset();
-        while (timer.milliseconds() < 1000) {
-            intakeCommand.intakeOutNoRoller(0.8);
-        }
+//        do{
+//            intakeCommand.intakeIn(0.7);
+//        } while (!colorSensor.findColor2().equalsIgnoreCase("white") || timer.milliseconds() < 1000 );
+//        timer.reset();
+//        while (timer.milliseconds() < 1000) {
+//            intakeCommand.intakeOutNoRoller(0.8);
+//        }
         intakeCommand.raiseIntake();
         sleep(150);
-        moveToPos(-129,-177,Math.PI/2,2.5,2.5,0.05);
+        moveToPos(-135,-10,Math.PI/2,2.5,2.5,0.05);
+        moveToPos(-135,-177,Math.PI/2,2.5,2.5,0.05);
         progress = "checkpoint 2 end";
 //        moveToPos(-150, -177,Math.PI/2,7,5,0.05);
 //        progress = "checkpoint 3 end";
 //        sleep(1000);
-        moveToPos(-88,-198,-Math.PI/2,2.5,2.5,0.05);
+        moveToPos(-63,-224,-Math.PI/2,2.5,2.5,0.05);
         sleep(1000);
         progress = "boardLeft starting";
+        outputTimer.reset();
+        liftState.add(LIFT_STATE.LIFT_END);
 
     }
 
@@ -501,6 +413,27 @@ public class AutonomousBackRed extends LinearOpMode {
 
     private void goToBoardLeft(){
 
+    }
+
+    private void checkLiftState() {
+        if (liftState.contains(LIFT_STATE.LIFT_IDLE)) {
+            outputCommand.tiltToIdle(); //bring arm down BEFORE bringing lift down
+            outputCommand.armToIdle();
+            if (outputTimer.milliseconds() > 900) {
+                level = 0;
+                if (outputTimer.milliseconds() > 1300) liftState.clear(); //moved here
+            }
+        } else if (liftState.contains(LIFT_STATE.LIFT_END)) {
+            if (!liftState.contains(LIFT_STATE.LIFT_MIDDLE)) {
+                level = 2;
+                if (outputTimer.milliseconds() > 1000) {
+                    liftState.clear();
+                } else if (outputTimer.milliseconds() > 250) { //bring lift up BEFORE extending arm
+                    outputCommand.armToBoard();
+                    outputCommand.tiltToBoard();
+                }
+            }
+        }
     }
 
 

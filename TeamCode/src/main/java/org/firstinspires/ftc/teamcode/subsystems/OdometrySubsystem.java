@@ -88,7 +88,7 @@ public class OdometrySubsystem extends Specifications {
         dy = (dyc*(bEncoderf-bEncoderi))+(lengthFromOdometrySideToFront*dTheta);
 
         x += dx * Math.cos(theta) + dy * Math.sin(theta);
-        y += dx * Math.sin(theta) + dy * Math.cos(theta);
+        y += -dx * Math.sin(theta) + dy * Math.cos(theta);
 
         x += tempX;
         y += tempY;
