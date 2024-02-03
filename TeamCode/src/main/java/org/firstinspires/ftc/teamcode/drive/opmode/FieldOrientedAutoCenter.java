@@ -32,9 +32,10 @@ public class FieldOrientedAutoCenter extends LinearOpMode {
     private FtcDashboard dashboard;
     private TelemetryPacket packet;
 
-    static public volatile double kp = 0.6;
+    static public volatile double kp = -1.5;
     static public volatile double ki = 0;
     static public volatile double kd = 0;
+    static public volatile double ff = 0;
 
     static public volatile String startLocation = "backBlue";
 
@@ -62,35 +63,39 @@ public class FieldOrientedAutoCenter extends LinearOpMode {
         packet = new TelemetryPacket(true);
 
 
-        Executor executor = Executors.newFixedThreadPool(5);
+        Executor executor = Executors.newFixedThreadPool(3);
 
         dashboard = FtcDashboard.getInstance();
         packet = new TelemetryPacket(true);
 
         waitForStart();
 
-//        CompletableFuture.runAsync(this::processDriveMotor, executor);
+        CompletableFuture.runAsync(this::processDriveMotor, executor);
         CompletableFuture.runAsync(this::processIMU, executor);
-//        CompletableFuture.runAsync(this::processDriveController);
 
         MultipleTelemetry multiTele = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         while(opModeIsActive()) {
-            gridAutoCentering.setConstants(kp,ki,kd);
+            gridAutoCentering.setConstants(kp,ki,kd, ff);
             packet = new TelemetryPacket(true);
             packet.put("x", odometrySubsystem.x);
             packet.put("y", odometrySubsystem.y);
             packet.put("theta", odometrySubsystem.theta);
-
+            double robotWidth = 16.5/2;
+            double robotLength = 18/2;
 
             //backBlue
             double posX = odometrySubsystem.y;
             double posY = odometrySubsystem.x;
             double posTheta = odometrySubsystem.theta;
+            double offsetX = (-0.5) + (-1 * 24) - (robotLength); //1 * 24 inch tile down + (0.5) inch mat side tab distance + 9 inch robot radius
+            double offsetY = -(3*24) + (robotWidth);             //3 * 24inch tiles right - 9 inches robot radius
             switch(startLocation) {
                 case "backBlue":
                     posX = odometrySubsystem.y;
                     posY = odometrySubsystem.x;
                     posTheta = odometrySubsystem.theta;
+                    offsetX = (-0.5) + (-1 * 24) - (9);
+                    offsetY = (3*24) - (9);
                     //start position = 90, 10 or something (fix later)
                     break;
                 case "frontBlue":
@@ -103,15 +108,21 @@ public class FieldOrientedAutoCenter extends LinearOpMode {
                     posTheta = Math.PI + odometrySubsystem.theta;
                     break;
             }
-            double robotWidth = 16.5;
-            double robotLength = 18;
+
+
+            packet.put("target", autoCenterAngle);
+            packet.put("rotVel", gridAutoCentering.getGraphRotationalVel());
 
             packet.fieldOverlay() //in inches
+                    .setTranslation(offsetX, offsetY)
+                    //3 * 24inch tiles left - 9 inches robot radius
+                    //1 * 24 inch tile down + (0.5) inch mat side tab distance + 9 inch robot radius
                     .setFill("blue")
                     .setAlpha(0.4)
                     .fillCircle(posX,posY,9)
-                    .strokeLine(posX,posY, posX + (9*Math.sin(posTheta)), posY - (9 * Math.cos(posTheta)))
-                    .strokeCircle(50,10,5);
+                    .setFill("black")
+                    .setAlpha(1)
+                    .strokeLine(posX,posY, posX + (9*Math.sin(posTheta)), posY - (9 * Math.cos(posTheta)));
 
             dashboard.sendTelemetryPacket(packet);
             telemetry.update();
@@ -132,21 +143,27 @@ public class FieldOrientedAutoCenter extends LinearOpMode {
         }
         if(gamepad1.dpad_up){
             gridAutoCentering.reset(); //reset grid heading
+            imuSubsystem.resetAngle();
+        }
+        if(gamepad1.dpad_down){
+            autoCenterAngle = 0;
+            gridAutoCentering.offsetTargetAngle(autoCenterAngle);
         }
 
         if (gamepad1.dpad_right) {
-            autoCenterAngle = Math.PI/2; //set autocenter to right 90 degrees
+            autoCenterAngle = -Math.PI/2; //set autocenter to right 90 degrees
             gridAutoCentering.offsetTargetAngle(autoCenterAngle);
 
         }
 
         doCentering = gamepad1.left_trigger > 0.5;
 
-        mecanumSubsystem.partialMove(true, gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        mecanumCommand.moveGlobalPartial(true, -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
     }
 
     private void processDriveMotor(){
         while(opModeIsActive()) {
+            runMovement();
             gridAutoCentering.process(doCentering);
             mecanumSubsystem.motorProcessTeleOp();
         }
@@ -160,10 +177,6 @@ public class FieldOrientedAutoCenter extends LinearOpMode {
         }
     }
 
-    private void processDriveController(){
-        while(opModeIsActive()){
-            runMovement();
-        }
-    }
+
 
 }

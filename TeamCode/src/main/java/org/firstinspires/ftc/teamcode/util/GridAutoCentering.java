@@ -7,15 +7,17 @@ import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 public class GridAutoCentering {
     private MecanumSubsystem mecanumSubsystem;
     private GyroOdometry gyroOdometry;
-    private double Kp = 0.75;
+    private double Kp = -1.5;
     private double Kd = 0;
     private double Ki = 0;
+    private double Ff = 0;
     private double integralSum = 0;
     private ElapsedTime timer;
     private double lastError = 0;
     public double baseAngle = 0; //default (reference) angle
     public double error;
     public double derivative;
+    private double graphRotationalVel = 0;
 
     private double targetAngle = 0; //Offset angle from reference angle
 
@@ -30,10 +32,11 @@ public class GridAutoCentering {
         targetAngle = baseAngle;
     }
 
-    public void setConstants(double kp, double ki, double kd){
+    public void setConstants(double kp, double ki, double kd, double ff){
         Kp = kp;
         Ki = ki;
         Kd = kd;
+        Ff = ff;
     }
 
     public void offsetTargetAngle(double angle){
@@ -52,12 +55,16 @@ public class GridAutoCentering {
             integralSum += error * timer.time();
             derivative = (error - lastError) / timer.time();
             lastError = error;
-            if (Math.abs(error) > 0.005) {
-                mecanumSubsystem.partialMoveAdjustment1(true, 0, 0, (error * Kp) + (derivative * Kd)/* + (integralSum * Ki)*/);
+            graphRotationalVel = Ff + (error * Kp) + (derivative * Kd);
+            if (Math.abs(error) > 0.0025) {
+                mecanumSubsystem.partialMoveAdjustment1(true, 0, 0, graphRotationalVel /*+(integralSum * Ki)*/);
             }
         } else {
             mecanumSubsystem.partialMoveAdjustment1(true, 0, 0, 0);
         }
+    }
+    public double getGraphRotationalVel(){
+        return graphRotationalVel;
     }
     public void secondaryProcess(boolean run){
         timer.reset();
