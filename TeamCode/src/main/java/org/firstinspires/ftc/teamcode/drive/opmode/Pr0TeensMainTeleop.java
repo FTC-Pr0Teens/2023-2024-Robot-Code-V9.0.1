@@ -162,7 +162,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             processLift has to continuously run because PID only allows you to set the lift to
             a certain height while the lift must run forever
              */
-            //isLiftExtracted();
+//            //isLiftExtracted();
             checkLiftState();
             isPixelDropping();
 //            runMovement(); moved to own thread
@@ -240,12 +240,6 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             } else if (gamepad2.left_bumper){
                 intakeCommand.lowerIntake();
             }
-
-            if (gamepad1.a) {
-                mecanumSubsystem.forward(0.5);
-            } else {
-                mecanumSubsystem.forward(0);
-            }
 //
 //            telemetry.addData("Target Position", targetPosition);
 //            telemetry.addData("position", multiMotorSubsystem.getPosition());
@@ -318,8 +312,6 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         /**
          * These two will reset angle headings of the IMU, both field oriented and autocenter
          */
-        //dont enable resetting if in "field is fucked up" state
-        //This means that backdrop is to to the LEFT (meaning you are on BLUE side)
         if (gamepad1.dpad_left) {
             doCentering = false;
             imuSubsystem.resetAngle(); //for gyro odometry
@@ -342,15 +334,11 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         mecanumSubsystem.partialMove(true, -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
     }
 
-    private ElapsedTime timerrr = new ElapsedTime();
     private void processDriveMotor(){
-        timerrr.reset();
         while(opModeIsActive()) {
             runMovement();
             gridAutoCentering.process(doCentering);
             mecanumSubsystem.motorProcessTeleOp();
-            telemetry.addData("latency", timerrr.milliseconds());
-            timerrr.reset();
         }
     }
 

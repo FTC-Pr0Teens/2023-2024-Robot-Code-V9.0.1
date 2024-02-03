@@ -36,6 +36,8 @@ public class FieldOrientedAutoCenter extends LinearOpMode {
     static public volatile double ki = 0;
     static public volatile double kd = 0;
 
+    static public volatile String startLocation = "backBlue";
+
 
 
     private GridAutoCentering gridAutoCentering;
@@ -79,38 +81,38 @@ public class FieldOrientedAutoCenter extends LinearOpMode {
             packet.put("y", odometrySubsystem.y);
             packet.put("theta", odometrySubsystem.theta);
 
-            double posX = odometrySubsystem.x;
-            double posY = odometrySubsystem.y;
+
+            //backBlue
+            double posX = odometrySubsystem.y;
+            double posY = odometrySubsystem.x;
             double posTheta = odometrySubsystem.theta;
+            switch(startLocation) {
+                case "backBlue":
+                    posX = odometrySubsystem.y;
+                    posY = odometrySubsystem.x;
+                    posTheta = odometrySubsystem.theta;
+                    //start position = 90, 10 or something (fix later)
+                    break;
+                case "frontBlue":
+                    break;
+                case "backRed":
+                    break;
+                default:
+                    posX = -odometrySubsystem.y;
+                    posY = -odometrySubsystem.x;
+                    posTheta = Math.PI + odometrySubsystem.theta;
+                    break;
+            }
             double robotWidth = 16.5;
             double robotLength = 18;
-
-
-            //up down
-            final double v2 = -(robotWidth / 2) * Math.cos(posTheta) + posY;
-            double v3 = 0 + (robotWidth / 2) * Math.cos(posTheta) + posY;
-            double[] xcoords = {
-                    v2,
-                    v2,
-                    v3,
-                    v3,
-            };
-
-            //up down
-            final double v = 0 + (robotLength / 2) * Math.sin(posTheta) + posX;
-            final double v1 = 0 - (robotLength / 2) * Math.sin(posTheta) + posX;
-            double[] ycoords = {
-                    v1,
-                    v,
-                    v,
-                    v1,
-            };
 
             packet.fieldOverlay() //in inches
                     .setFill("blue")
                     .setAlpha(0.4)
-                    .fillCircle(posY,posX,9)
-                    .strokeLine(posY,posX, posY + 9 * Math.cos(posTheta), posX + 9 *Math.sin(posTheta));
+                    .fillCircle(posX,posY,9)
+                    .strokeLine(posX,posY, posX + (9*Math.sin(posTheta)), posY - (9 * Math.cos(posTheta)))
+                    .strokeCircle(50,10,5);
+
             dashboard.sendTelemetryPacket(packet);
             telemetry.update();
         }

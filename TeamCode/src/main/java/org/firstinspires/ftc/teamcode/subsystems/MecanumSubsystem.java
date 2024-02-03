@@ -151,7 +151,7 @@ public class MecanumSubsystem extends Specifications{
             rightBack.setVelocity(rb);
             leftForward.setVelocity(lf);
         }
-    }
+    }//0.78539816
 
     //used with motorProcess or motorProcessTeleop
     public void partialMove(boolean run, double verticalVel, double horizontalVel, double rotationalVel){
@@ -161,28 +161,28 @@ public class MecanumSubsystem extends Specifications{
             
             //1.57079633 is Pi divided by 2
             //1.41421356237 is square root of 2
-            rbvelMain = (verticalVel * Math.cos(1.57079633) + horizontalVel * Math.sin(1.57079633) + rotationalVel * Math.sin(1.57079633))*(1.41421356237);
-            rfvelMain = (-horizontalVel * Math.cos(1.57079633) + verticalVel * Math.sin(1.57079633) + rotationalVel * Math.sin(1.57079633))*(1.41421356237);
-            lfvelMain = (verticalVel * Math.cos(1.57079633) + horizontalVel * Math.sin(1.57079633) - rotationalVel * Math.sin(1.57079633))*(1.41421356237);
-            lbvelMain = (-horizontalVel * Math.cos(1.57079633) + verticalVel * Math.sin(1.57079633) - rotationalVel * Math.sin(1.57079633))*(1.41421356237);
+            rbvelMain = (verticalVel * Math.cos(0.78539816) + horizontalVel * Math.sin(0.78539816) + rotationalVel * Math.sin(0.78539816))*(1.41421356237);
+            rfvelMain = (-horizontalVel * Math.cos(0.78539816) + verticalVel * Math.sin(0.78539816) + rotationalVel * Math.sin(0.78539816))*(1.41421356237);
+            lfvelMain = (verticalVel * Math.cos(0.78539816) + horizontalVel * Math.sin(0.78539816) - rotationalVel * Math.sin(0.78539816))*(1.41421356237);
+            lbvelMain = (-horizontalVel * Math.cos(0.78539816) + verticalVel * Math.sin(0.78539816) - rotationalVel * Math.sin(0.78539816))*(1.41421356237);
         }
     }
 
     public void partialMoveAdjustment1(boolean run, double verticalVel, double horizontalVel, double rotationalVel){
         if (run){
-            rbvelAdjustment1 = (verticalVel * Math.cos(1.57079633) + horizontalVel * Math.sin(1.57079633) + rotationalVel * Math.sin(1.57079633))*(1.41421356237);
-            rfvelAdjustment1 = (-horizontalVel * Math.cos(1.57079633) + verticalVel * Math.sin(1.57079633) + rotationalVel * Math.sin(1.57079633))*(1.41421356237);
-            lfvelAdjustment1 = (verticalVel * Math.cos(1.57079633) + horizontalVel * Math.sin(1.57079633) - rotationalVel * Math.sin(1.57079633))*(1.41421356237);
-            lbvelAdjustment1 = (-horizontalVel * Math.cos(1.57079633) + verticalVel * Math.sin(1.57079633) - rotationalVel * Math.sin(1.57079633))*(1.41421356237);
+            rbvelAdjustment1 = (verticalVel * Math.cos(0.78539816) + horizontalVel * Math.sin(0.78539816) + rotationalVel * Math.sin(0.78539816))*(1.41421356237);
+            rfvelAdjustment1 = (-horizontalVel * Math.cos(0.78539816) + verticalVel * Math.sin(0.78539816) + rotationalVel * Math.sin(0.78539816))*(1.41421356237);
+            lfvelAdjustment1 = (verticalVel * Math.cos(0.78539816) + horizontalVel * Math.sin(0.78539816) - rotationalVel * Math.sin(0.78539816))*(1.41421356237);
+            lbvelAdjustment1 = (-horizontalVel * Math.cos(0.78539816) + verticalVel * Math.sin(0.78539816) - rotationalVel * Math.sin(0.78539816))*(1.41421356237);
         }
     }
 
     public void partialMoveAdjustment2(boolean run, double verticalVel, double horizontalVel, double rotationalVel){
         if (run){
-            rbvelAdjustment2 = (verticalVel * Math.cos(1.57079633) + horizontalVel * Math.sin(1.57079633) + rotationalVel * Math.sin(1.57079633))*(1.41421356237);
-            rfvelAdjustment2 = (-horizontalVel * Math.cos(1.57079633) + verticalVel * Math.sin(1.57079633) + rotationalVel * Math.sin(1.57079633))*(1.41421356237);
-            lfvelAdjustment2 = (verticalVel * Math.cos(1.57079633) + horizontalVel * Math.sin(1.57079633) - rotationalVel * Math.sin(1.57079633))*(1.41421356237);
-            lbvelAdjustment2 = (-horizontalVel * Math.cos(1.57079633) + verticalVel * Math.sin(1.57079633) - rotationalVel * Math.sin(1.57079633))*(1.41421356237);
+            rbvelAdjustment2 = (verticalVel * Math.cos(0.78539816) + horizontalVel * Math.sin(0.78539816) + rotationalVel * Math.sin(0.78539816))*(1.41421356237);
+            rfvelAdjustment2 = (-horizontalVel * Math.cos(0.78539816) + verticalVel * Math.sin(0.78539816) + rotationalVel * Math.sin(0.78539816))*(1.41421356237);
+            lfvelAdjustment2 = (verticalVel * Math.cos(0.78539816) + horizontalVel * Math.sin(0.78539816) - rotationalVel * Math.sin(0.78539816))*(1.41421356237);
+            lbvelAdjustment2 = (-horizontalVel * Math.cos(0.78539816) + verticalVel * Math.sin(0.78539816) - rotationalVel * Math.sin(0.78539816))*(1.41421356237);
         }
     }
 
