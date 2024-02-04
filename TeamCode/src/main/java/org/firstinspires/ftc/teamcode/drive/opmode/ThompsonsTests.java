@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import android.annotation.SuppressLint;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.teamcode.subsystems.IMUSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MultiMotorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.WebcamSubsystem;
 import org.firstinspires.ftc.teamcode.util.GridAutoCentering;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
 import org.firstinspires.ftc.teamcode.util.TimerList;
@@ -30,13 +32,13 @@ public class ThompsonsTests extends LinearOpMode {
     private OdometrySubsystem odometrySubsystem;
     private MecanumSubsystem mecanumSubsystem;
     private MecanumCommand mecanumCommand;
-//    private OutputCommand outputCommand;
     private IntakeCommand intakeCommand;
     private IMUSubsystem imuSubsystem;
     private GyroOdometry gyroOdometry;
     private GridAutoCentering gridAutoCentering;
     private OutputCommand outputCommand;
     private ColorSensorSubsystem colorSensorSubsystem;
+    private WebcamSubsystem webcamSubsystem;
     private ElapsedTime pixelTimer, liftTimer;
     private int level = -1;
     private int pixelCounter;
@@ -60,27 +62,13 @@ public class ThompsonsTests extends LinearOpMode {
         instantiateSubsystems();
         readyRobot();
         pixelCounter = 0;
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        dashboard.startCameraStream(webcamSubsystem.webcam, 24);
 
         waitForStart();
 
         startThreads();
 
-//        running = true;
-//        status = "level = 1";
-//        level = 1;
-//        sleep(3000);
-//
-//        status = "level = 2";
-//        level = 2;
-//        sleep(3000);
-//
-//        status = "level = 3";
-//        level = 3;
-//        sleep(3000);
-//
-//        status = "level = 4";
-//        level = 4;
-//        sleep(3000);
 
         for (int i = 30; i > 0; i--) {
             status = "Completed Op - Powering off in " + i + " seconds";
@@ -90,6 +78,15 @@ public class ThompsonsTests extends LinearOpMode {
     }
 
     // Auto Processes
+    public void updateTelemetry(){
+        while(opModeIsActive()) {
+            telemetry.addData("spike location", webcamSubsystem.findSpikePosition());
+            telemetry.addData("april tags", webcamSubsystem.getDetections());
+            telemetry.update();
+        }
+    }
+
+
     public void liftProcess() {
         while(opModeIsActive()){
             if (running) {
@@ -109,18 +106,6 @@ public class ThompsonsTests extends LinearOpMode {
         while (opModeIsActive()) {
             gyroOdometry.odometryProcess();
         }
-    }
-    public void updateTelemetry(){
-        telemetry.addData("status", status);
-        telemetry.addData("lift power",
-                multiMotorSubsystem.getPidUp().outputPositional(200,
-                        multiMotorSubsystem.getPosition()
-                )
-        );
-        telemetry.addData("lift position", multiMotorSubsystem.getPosition());
-        telemetry.addData("target position", 200);
-
-        telemetry.update();
     }
 
     // COmmand/Helper Functions
@@ -146,6 +131,7 @@ public class ThompsonsTests extends LinearOpMode {
         gridAutoCentering = new GridAutoCentering(mecanumSubsystem, gyroOdometry);
 
         colorSensorSubsystem = new ColorSensorSubsystem(hardwareMap);
+        webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
 
         pixelTimer = new ElapsedTime();
         liftTimer = new ElapsedTime();

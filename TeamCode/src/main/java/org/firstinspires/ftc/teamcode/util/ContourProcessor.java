@@ -1,9 +1,13 @@
-package org.firstinspires.ftc.teamcode.util.Pipelines;
+package org.firstinspires.ftc.teamcode.util;
+
+import android.graphics.Canvas;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
+import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.teamcode.subsystems.WebcamSubsystem;
+import org.firstinspires.ftc.vision.VisionProcessor;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -13,7 +17,6 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
-import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,7 +37,13 @@ yellow shapes.
 Once this information is found, the pipeline regularly updates which contour it thinks is the largest,
 in other words, which pole is deemed as the "closest"
  */
-public class ContourPipeline extends OpenCvPipeline {
+public class ContourProcessor implements VisionProcessor {
+
+    /*
+    detect things function
+
+
+     */
 
     // for tracking pipeline processing speed
     private final ElapsedTime timer = new ElapsedTime();
@@ -51,7 +60,7 @@ public class ContourPipeline extends OpenCvPipeline {
 
     // final output image
     Mat output = new Mat();
-    public ContourPipeline(double upperH, double upperS, double upperV, double lowerH, double lowerS, double lowerV){
+    public ContourProcessor(double upperH, double upperS, double upperV, double lowerH, double lowerS, double lowerV){
         UPPER_HSV = new Scalar(upperH, upperS, upperV);
         LOWER_HSV = new Scalar(lowerH, lowerS, lowerV);
     }
@@ -61,16 +70,31 @@ public class ContourPipeline extends OpenCvPipeline {
     private double largestContourArea = 0;
     private Point largestContourCenter = new Point(0, 0);
 
-    @Override
-    public Mat processFrame(Mat input) {
+    // Runs when the VisionProcessor makes this pipeline
 
-        if (input.empty()) {
-            return input;
+    public void init(int width, int height, CameraCalibration calibration) {}
+
+    // Runs when a frame from the camera is drawn, but we don't do anything here
+    public void onDrawFrame(Canvas canvas,
+                            int onscreenWidth, int onscreenHeight,
+                            float scaleBmpPxToCanvasPx, float scaleCanvasDensity,
+                            Object userContext) {}
+
+    /**
+     * Identifies contours and saves it in a list
+     *
+     * @param frame the Mat matrix object containing (ie. what the camera sees)
+     * @param captureTimeNanos
+     * @return
+     */
+    public Object processFrame(Mat frame, long captureTimeNanos) {
+        if (frame.empty()) {
+            return frame;
         }
 
         // blurring the input image to improve edge and contour detection
         Mat blur = new Mat();
-        Imgproc.blur(input, blur, KERNEL);
+        Imgproc.blur(frame, blur, KERNEL);
 
         // convert blurred image into HSV scale
         Mat hsv = new Mat();
@@ -131,6 +155,7 @@ public class ContourPipeline extends OpenCvPipeline {
         timer.reset();
 
         return output; // what the camera stream will display on the phone
+
     }
 
     /*
@@ -163,4 +188,5 @@ public class ContourPipeline extends OpenCvPipeline {
     public boolean objectDetected() {
         return !contourAreas.isEmpty();
     }
+
 }
