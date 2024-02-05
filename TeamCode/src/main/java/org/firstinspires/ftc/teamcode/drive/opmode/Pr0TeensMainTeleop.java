@@ -155,7 +155,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
         multiMotorSubsystem.reset();
 
-        intakeCommand.raiseIntake();
+        intakeCommand.lowerIntake();
 
         while(opModeIsActive()) {
 /*

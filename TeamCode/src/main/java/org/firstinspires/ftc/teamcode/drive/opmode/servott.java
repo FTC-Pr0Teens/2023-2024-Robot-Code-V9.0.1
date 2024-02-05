@@ -69,6 +69,7 @@ public class servott extends LinearOpMode {
 
         //INITIALIZES THE HANGING SERVO
         hangingServoL = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_L);
+        hangingServoL.setDirection(Servo.Direction.REVERSE);
         hangingServoL.setPosition(0.35);
 
         hangingServoR = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_R);
@@ -96,7 +97,7 @@ public class servott extends LinearOpMode {
         double tiltPosition = 0;
         double dronePosition = 0;
 
-        double intakePosition = 0;
+        double intakePosition = 0.5;
         //0.03 close
         //0.115 open
 
@@ -129,6 +130,14 @@ public class servott extends LinearOpMode {
             } else if(gamepad1.a){
 
                 tiltPosition -= 0.005;
+            }
+            if(gamepad1.right_trigger > 0.5){
+                intakeCommand.intakeIn(0.7);
+            }
+            else if(gamepad1.left_trigger > 0.5){
+                intakeCommand.intakeIn(1);
+            } else {
+                intakeCommand.stopIntake();
             }
 
 

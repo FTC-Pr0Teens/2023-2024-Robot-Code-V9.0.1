@@ -519,7 +519,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         intakeCommand.stopIntake();
 
         moveToPos(-129,-62,-Math.PI/2,5,5,0.05);
-        intakeCommand.autoPixel();
+        intakeCommand.autoPixel(1);
         timer.reset();
         do{
             intakeCommand.intakeIn(0.5);
