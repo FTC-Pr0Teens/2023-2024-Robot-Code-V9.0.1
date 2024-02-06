@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 import android.annotation.SuppressLint;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -17,6 +18,8 @@ import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MultiMotorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.WebcamSubsystem;
+import org.firstinspires.ftc.teamcode.util.Coordinate;
+import org.firstinspires.ftc.teamcode.util.CoordinateSet;
 import org.firstinspires.ftc.teamcode.util.GridAutoCentering;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
 import org.firstinspires.ftc.teamcode.util.TimerList;
@@ -35,15 +38,13 @@ public class ThompsonsTests extends LinearOpMode {
     private IntakeCommand intakeCommand;
     private IMUSubsystem imuSubsystem;
     private GyroOdometry gyroOdometry;
-    private GridAutoCentering gridAutoCentering;
     private OutputCommand outputCommand;
-    private ColorSensorSubsystem colorSensorSubsystem;
     private WebcamSubsystem webcamSubsystem;
-    private ElapsedTime pixelTimer, liftTimer;
+    private CoordinateSet coordinateSet;
     private int level = -1;
-    private int pixelCounter;
     private boolean running = true;
     private ElapsedTime timer;
+    private String parkPlace = "left";
 
     private String status = "Uninitialized";
     private enum RUNNING_STATE {
@@ -54,27 +55,125 @@ public class ThompsonsTests extends LinearOpMode {
     }
     private RUNNING_STATE state = RUNNING_STATE.LIFT_STOP;
 
-    private final TimerList timerList = new TimerList();
 
-    @SuppressLint("SuspiciousIndentation")
     @Override
     public void runOpMode() throws InterruptedException {
         instantiateSubsystems();
         readyRobot();
-        pixelCounter = 0;
-        FtcDashboard dashboard = FtcDashboard.getInstance();
-        dashboard.startCameraStream(webcamSubsystem.webcam, 24);
 
         waitForStart();
-
         startThreads();
 
+        String position = webcamSubsystem.findSpikePosition();
+
+        //Spike Drop-off
+        moveToCheckpoint(CoordinateSet.KeyPoints.SPIKE_CHECKPOINT);
+        switch (position) {
+            case "left":
+                moveTo(CoordinateSet.KeyPoints.SPIKE_LEFT);
+                break;
+            case "middle":
+                moveTo(CoordinateSet.KeyPoints.SPIKE_MIDDLE);
+                break;
+            case "right":
+                moveTo(CoordinateSet.KeyPoints.SPIKE_RIGHT);
+                break;
+        }
+        releaseIntakePixel();
+
+
+        // Pixel Stack
+        moveToCheckpoint(CoordinateSet.KeyPoints.PIXEL_STACK_CHECKPOINT);
+        moveTo(CoordinateSet.KeyPoints.PIXEL_STACK);
+        intakePixel();
+
+
+        //Middle Back
+        moveToCheckpoint(CoordinateSet.KeyPoints.MIDDLE_BACK);
+
+        //Middle Front
+        moveToCheckpoint(CoordinateSet.KeyPoints.MIDDLE_FRONT);
+
+
+        // Detecting April Tag Code
+        //goToAprilTag = true;
+        //sleep(1000);
+        //
+        //while(goToAprilTag && !isStopRequested()) {
+        //    if(aprilCamSubsystem.getHashmap().containsKey(aprilID)){
+        //        mecanumCommand.setFinalPosition(true, 30, getTargetX(-8.0), getTargetY(-5.0), getTargetTheta());
+        //    }
+        //    while(!mecanumCommand.isPositionReached(true, true)){}
+        //}
+
+
+        // April Tag Backups
+        switch (position) {
+            case "left":
+                moveTo(CoordinateSet.KeyPoints.APRIL_TAG_LEFT);
+                break;
+            case "middle":
+                moveTo(CoordinateSet.KeyPoints.APRIL_TAG_MIDDLE);
+                break;
+            case "right":
+                moveTo(CoordinateSet.KeyPoints.APRIL_TAG_RIGHT);
+                break;
+        }
+        dropPixel(1);
+
+
+        //Middle Back
+        moveToCheckpoint(CoordinateSet.KeyPoints.MIDDLE_BACK);
+
+        //Middle Front
+        moveToCheckpoint(CoordinateSet.KeyPoints.MIDDLE_FRONT);
+
+
+        // Pixel Stack
+        moveToCheckpoint(CoordinateSet.KeyPoints.PIXEL_STACK_CHECKPOINT);
+        moveTo(CoordinateSet.KeyPoints.PIXEL_STACK);
+        intakePixel();
+
+
+        //Middle Back
+        moveToCheckpoint(CoordinateSet.KeyPoints.MIDDLE_BACK);
+
+        //Middle Front
+        moveToCheckpoint(CoordinateSet.KeyPoints.MIDDLE_FRONT);
+
+        // April Tag Backups
+        switch (position) {
+            case "left":
+                moveTo(CoordinateSet.KeyPoints.APRIL_TAG_LEFT);
+                break;
+            case "middle":
+                moveTo(CoordinateSet.KeyPoints.APRIL_TAG_MIDDLE);
+                break;
+            case "right":
+                moveTo(CoordinateSet.KeyPoints.APRIL_TAG_RIGHT);
+                break;
+        }
+        dropPixel(1);
+
+
+//         Parking
+        if (parkPlace.equalsIgnoreCase("left")) {
+            // Checkpoint
+            moveToCheckpoint(CoordinateSet.KeyPoints.PARKING_LEFT_CHECKPOINT);
+            // Park
+            moveTo(CoordinateSet.KeyPoints.PARKING_LEFT);
+        } else {
+            // Checkpoint
+            moveToCheckpoint(CoordinateSet.KeyPoints.PARKING_RIGHT_CHECKPOINT);
+            // Park
+            moveTo(CoordinateSet.KeyPoints.PARKING_RIGHT);
+        }
 
         for (int i = 30; i > 0; i--) {
             status = "Completed Op - Powering off in " + i + " seconds";
             sleep(1000);
         }
-
+        stop();
     }
 
     // Auto Processes
@@ -107,52 +206,58 @@ public class ThompsonsTests extends LinearOpMode {
             gyroOdometry.odometryProcess();
         }
     }
-
-    // COmmand/Helper Functions
+    /**
+     * Create the required subsystems.
+     */
     private void instantiateSubsystems() {
-        multiMotorSubsystem = new MultiMotorSubsystem(hardwareMap, true, MultiMotorSubsystem.MultiMotorType.dualMotor);
-        multiMotorCommand = new MultiMotorCommand(multiMotorSubsystem);
-
+        coordinateSet = new CoordinateSet(CoordinateSet.StartingPoint.BACK_RED);
         imuSubsystem = new IMUSubsystem(hardwareMap);
-
-        //MAKE SURE THIS IS INSTANTIATED BEFORE ODOMETRY SUBSYSTEM
         mecanumSubsystem = new MecanumSubsystem(hardwareMap);
-
         odometrySubsystem = new OdometrySubsystem(hardwareMap);
-
-        gyroOdometry = new GyroOdometry(odometrySubsystem,imuSubsystem);
-
-        mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem,
-                gyroOdometry, this);
-
+        gyroOdometry = new GyroOdometry(odometrySubsystem, imuSubsystem);
+        mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem, gyroOdometry, this);
         intakeCommand = new IntakeCommand(hardwareMap);
         outputCommand = new OutputCommand(hardwareMap);
-
-        gridAutoCentering = new GridAutoCentering(mecanumSubsystem, gyroOdometry);
-
-        colorSensorSubsystem = new ColorSensorSubsystem(hardwareMap);
-        webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
-
-        pixelTimer = new ElapsedTime();
-        liftTimer = new ElapsedTime();
+        multiMotorSubsystem = new MultiMotorSubsystem(hardwareMap, true, MultiMotorSubsystem.MultiMotorType.dualMotor);
+        multiMotorCommand = new MultiMotorCommand(multiMotorSubsystem);
+        webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_BLUE);
         timer = new ElapsedTime();
     }
 
+    /**
+     * Put robot in a ready position.
+     */
     private void readyRobot() {
-        odometrySubsystem.reset();
         imuSubsystem.resetAngle();
-
+        odometrySubsystem.reset();
+        intakeCommand.raiseIntake();
         outputCommand.closeGate();
-
         outputCommand.armToIdle();
         outputCommand.tiltToIdle();
+        multiMotorSubsystem.reset();
     }
 
     private void startThreads() {
-        Executor executor = Executors.newFixedThreadPool(4);
+        Executor executor = Executors.newFixedThreadPool(6);
         CompletableFuture.runAsync(this::updateOdometry, executor);
         CompletableFuture.runAsync(this::updateTelemetry, executor);
         CompletableFuture.runAsync(this::liftProcess, executor);
+        //CompletableFuture.runAsync(this::tagDetectionProcess);
+    }
+    private void moveTo(CoordinateSet.KeyPoints keyPoint) {
+        Coordinate co = coordinateSet.getCoordinate(keyPoint);
+        mecanumCommand.setFinalPosition(true, 30, co.getX(), co.getY(), co.getTheta());
+        while (!mecanumCommand.isPositionReached(true, true) && !isStopRequested()) ;
+    }
+    private void moveTo(double x, double y, double theta) {
+        mecanumCommand.setFinalPosition(true, 30, x, y, theta);
+        while (!mecanumCommand.isPositionReached(true, true) && !isStopRequested()) ;
+    }
+
+    private void moveToCheckpoint(CoordinateSet.KeyPoints keyPoint) {
+        Coordinate co = coordinateSet.getCoordinate(keyPoint);
+        mecanumCommand.setFinalPosition(true, 30, co.getX(), co.getY(), co.getTheta());
+        while (!mecanumCommand.isPositionPassed() && !isStopRequested()) ;
     }
 
     private void dropPixel(int level) {
@@ -184,36 +289,13 @@ public class ThompsonsTests extends LinearOpMode {
         this.level = 0;
 
     }
-
-    private void moveTo(double x, double y, double theta) {
-        mecanumCommand.moveIntegralReset();
-        // stop moving if within 5 ticks or 0.2 radians from the position
-        while ((Math.abs(x - gyroOdometry.x) > .1  //if within 2.5 ticks of target X position
-                || Math.abs(y - gyroOdometry.y) > .1 //if within 2.5 ticks of target y position
-                || Math.abs(theta - gyroOdometry.theta) > .05)
-                && this.opModeIsActive() && !this.isStopRequested()) {
-            mecanumCommand.moveToGlobalPos(x, y, theta);
-        }
-        mecanumSubsystem.stop(true);
-    }
-    private void moveToCheckpoint(double x, double y, double theta) {
-        mecanumCommand.moveIntegralReset();
-        // stop moving if within 5 ticks or 0.2 radians from the position
-        while ((Math.abs(x - gyroOdometry.x) > 5  //if within 2.5 ticks of target X position
-                || Math.abs(y - gyroOdometry.y) > 5 //if within 2.5 ticks of target y position
-                || Math.abs(theta - gyroOdometry.theta) > .5)
-                && this.opModeIsActive() && !this.isStopRequested()) {
-            mecanumCommand.moveToGlobalPos(x, y, theta);
-        }
-        mecanumSubsystem.stop(true);
-
-    }
-
     private void releaseIntakePixel() {
-        timer.reset();
-        intakeCommand.raiseIntake();
+        //release pixel
+        intakeCommand.lowerIntake();
         intakeCommand.intakeOut(0.5);
-        sleep(500);
+        timer.reset();
+        while(timer.milliseconds() < 1000);
+        intakeCommand.raiseIntake();
         intakeCommand.stopIntake();
     }
 
