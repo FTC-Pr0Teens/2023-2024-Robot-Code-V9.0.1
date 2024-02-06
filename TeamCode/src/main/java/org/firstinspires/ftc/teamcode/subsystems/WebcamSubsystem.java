@@ -1,13 +1,19 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import android.util.Size;
+
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.util.ContourProcessor;
 import org.firstinspires.ftc.teamcode.util.Pipelines.AprilTagPipeline;
 import org.firstinspires.ftc.teamcode.util.Pipelines.ContourPipeline;
 import org.firstinspires.ftc.teamcode.util.Pipelines.ElementPipeline2;
 import org.firstinspires.ftc.teamcode.util.Pipelines.RedIntakePipeline;
 import org.firstinspires.ftc.teamcode.util.Specifications;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.opencv.core.Scalar;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -41,8 +47,18 @@ public class WebcamSubsystem extends Specifications {
     double fy = 578.272;
     double cx = 402.145;
     double cy = 221.506;
+
+    //private final VisionPortal VISION_PORTAL;
+    //private final ContourProcessor CONTOUR_PROCESSOR;
+    private final AprilTagProcessor APRIL_TAG_PROCESSOR;
     public WebcamSubsystem(HardwareMap hardwareMap, PipelineName pipelineName){
-        contourPipeline = new ContourPipeline(30, 255, 255, 10, 130, 130);
+        //contourPipeline = new ContourPipeline(30, 255, 255, 10, 130, 130);
+        APRIL_TAG_PROCESSOR = new AprilTagProcessor.Builder()
+                .setDrawAxes(true)
+                .setDrawCubeProjection(true)
+                .setDrawTagID(true)
+                .setDrawTagOutline(true)
+                .build();
 //        if(pipelineName == PipelineName.APRIL_TAG){
 //            aprilTagPipeline = new AprilTagPipeline(0.166, fy, fx, cy, cx);
 //            webcam.setPipeline(aprilTagPipeline);
@@ -55,12 +71,19 @@ public class WebcamSubsystem extends Specifications {
 //            redIntakePipeline = new RedIntakePipeline();
 //            webcam.setPipeline(redIntakePipeline);
 //        }
-        if(pipelineName == PipelineName.CONTOUR_BLUE){
-            contourPipeline = new ContourPipeline(115, 234, 255, 104, 130, 41);
-        }
-        else if(pipelineName == PipelineName.CONTOUR_RED){
-            contourPipeline = new ContourPipeline(10, 255, 255, 0, 119, 0);
-        }
+//        if(pipelineName == PipelineName.CONTOUR_BLUE){
+//            CONTOUR_PROCESSOR = new ContourProcessor(115, 234, 255, 104, 130, 41);
+//        }
+//        else if(pipelineName == PipelineName.CONTOUR_RED){
+//            CONTOUR_PROCESSOR = new ContourProcessor(10, 255, 255, 0, 119, 0);
+//        }
+//        VISION_PORTAL = new VisionPortal.Builder()
+//                .addProcessor(APRIL_TAG_PROCESSOR)
+//                .addProcessor(CONTOUR_PROCESSOR)
+//                .setCamera(hardwareMap.get(CameraName.class, "Webcam 1"))
+//                .setCameraResolution(new Size(864, 480))
+//                .build();
+
         // initiate the needed parameters
         cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId","id",hardwareMap.appContext.getPackageName());
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
@@ -84,6 +107,18 @@ public class WebcamSubsystem extends Specifications {
             }
         });
     }
+
+//    public ContourProcessor getContourProcessor() {
+//        return CONTOUR_PROCESSOR;
+//    }
+
+//    public String findSpikePosition() {
+//        // For reference, camera is 864 pixels wide
+//        double center = CONTOUR_PROCESSOR.largestContourCenter().x;
+//        return center < 288 ? "left"
+//                : center < 576 ? "middle"
+//                : "right";
+//    }
 
     public void switchPipeline(){
         redIntakePipeline = new RedIntakePipeline();

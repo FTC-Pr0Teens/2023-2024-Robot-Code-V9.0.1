@@ -342,7 +342,11 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             }
         } else if (liftState.contains(LIFT_STATE.LIFT_MIDDLE)) {
             if (!liftState.contains(LIFT_STATE.LIFT_END)) {
+<<<<<<< Updated upstream
 //                targetPosition = -1100;
+=======
+                targetPosition = -900;
+>>>>>>> Stashed changes
                 if (outputTimer.milliseconds() > 1000) {
                     liftState.clear();
                 } else if (outputTimer.milliseconds() > 250) { //bring lift up BEFORE extending arm
