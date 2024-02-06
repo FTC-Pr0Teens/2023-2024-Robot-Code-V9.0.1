@@ -147,9 +147,6 @@ public class AutonomousBackRed extends LinearOpMode {
         while (opModeInInit());
         String propPosition = webcamSubsystem.findSpikePosition();
 
-//        outputTimer.reset();
-//        liftState.add(LIFT_STATE.LIFT_END);
-
         if (propPosition.equals("right")) {
             goToRightSpike();
         } else if (propPosition.equals("left")) {
@@ -157,29 +154,6 @@ public class AutonomousBackRed extends LinearOpMode {
         } else {
             goToMiddleSpike();
         }
-        //goToBoardLeft();
-
-
-        //go to correct spike
-//        if (position.equals("left")){
-//            goToLeftSpike();
-//        }
-//        else if (position.equals("middle")){
-//            goToMiddleSpike();
-//        }
-//        else if (position.equals("right")){
-//            goToRightSpike();
-//        }
-
-//        if (position.equals("left")){
-//            goToBoardLeft();
-//        }
-//        else if (position.equals("middle")){
-//            goToBoardMiddle();
-//        }
-//        else if (position.equals("right")){
-//            goToBoardRight();
-//        }
 
         sleep(1000);
         stop();
@@ -193,44 +167,6 @@ public class AutonomousBackRed extends LinearOpMode {
         while (opModeIsActive()) {
             gyroOdometry.odometryProcess();
         }
-    }
-
-
-
-    private void propRight(){
-        //pos is good
-        moveToPos(-98,-37,0,2.5,7,1.5);
-        sleep(1000);
-    }
-
-    private void propMiddle(){
-        //pos is good
-        moveToPos(-124,0,0,2.5,2.5,1.5);
-    }
-
-    private void propLeft(){
-
-//        moveToPos(0,0,-  1.6,2.5,2.5,0.5);
-//        sleep(3000);
-//        moveToPos(-10,0,-1.6,2.5,7,0.5);
-//        sleep(1000);
-//        moveToPos(-10,-20,0,2.5,2.5,0.5);
-
-        //TODO: after turning 90 degrees counterclockwise, positive y goes towards to the board, decreasing x goes towards left side wall
-
-
-
-
-
-
-
-//        moveToPos(-20,0,0,2.5,2.5,0.05);
-//        sleep(1000);
-//        moveToPos(-20,0,1.6,2.5,2.5,0.05);
-//        sleep(1000);
-//        moveToPos(-75,0,-1.6,2.5,2.5,0.05);
-
-
     }
 
     public void updateTelemetry() {

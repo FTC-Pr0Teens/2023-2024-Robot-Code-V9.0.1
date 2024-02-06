@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.command.MecanumCommand;
 import org.firstinspires.ftc.teamcode.command.MultiMotorCommand;
 import org.firstinspires.ftc.teamcode.command.OutputCommand;
 import org.firstinspires.ftc.teamcode.subsystems.AprilCamSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.ColorSensorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IMUSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 
@@ -43,6 +44,8 @@ public class AutonomousBackBlueRough extends LinearOpMode {
     private OutputCommand outputCommand;
     private MultiMotorSubsystem multiMotorSubsystem;
     private MultiMotorCommand multiMotorCommand;
+
+    private ColorSensorSubsystem colorSensor;
 
     private AprilCamSubsystem aprilCamSubsystem;
     private Servo hangingServoL;
@@ -114,6 +117,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_BLUE);
         timer = new ElapsedTime();
         aprilCamSubsystem = new AprilCamSubsystem(hardwareMap);
+        colorSensor = new ColorSensorSubsystem(hardwareMap);
 
 
         //initializing some variables
@@ -170,198 +174,12 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         } else {
             goToMiddleSpike();
         }
-
-
-        //goToLeftSpike();
-//        //goToBoardLeft();
-//
-//
-//
-//        //go to correct spike
-////        if (position.equals("left")){
-////            goToLeftSpike();
-////        }
-////        else if (position.equals("middle")){
-////            goToMiddleSpike();
-////        }
-////        else if (position.equals("right")){
-////            goToRightSpike();
-////        }
-//
-////        if (position.equals("left")){
-////            goToBoardLeft();
-////        }
-////        else if (position.equals("middle")){
-////            goToBoardMiddle();
-////        }
-////        else if (position.equals("right")){
-////            goToBoardRight();
-////        }
-//
-//        sleep(1000);
-//        stop();
-
-
-
-
-/*
-        //prep for putting a pixel on to the backboard
-        level = 5; //rise the lift to level 1
-        outputCommand.armToBoard(); // arm towards the board
-        outputCommand.tiltToBoard(); //tilt the output to the board
-        level = 1;
-
-
-        timer.reset();
-
-            //            //TODO: tune
-//            if (propPosition > 100) {
-//                //pos right
-//                mecanumCommand.moveToGlobalPosition(46, -78.5, 1.65); //1.65 radians = 94.53804 degrees
-//                right = true;
-//            } else if (propPosition <= 100 && propPosition > 0) {
-//                //pos middle
-//                mecanumCommand.moveToGlobalPosition(61, -80, 1.65);
-//                middle = true;
-//            } else {
-//                //pos left
-//                mecanumCommand.moveToGlobalPosition(68, -81.5, 1.65);
-//                left = true;
-//            }
-//        }
-
-*/
-
-//        while (timer.milliseconds() < 500){
-//            outputCommand.openGate();
-//        }
-//        //sets every output related components to its idle position in preparation of the driver period
-//        outputCommand.closeGate();
-//        outputCommand.tiltToIdle();
-//        outputCommand.armToIdle();
-//        sleep(6000);
-//        level = 0;
-//
-//
-//        //attempt on getting more pixels(rough values)
-//        if(right == true) {
-//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //strafe leftward to the middle: 180 degrees? - coordinates not right/measured
-//        }else if(middle = true) {
-//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //coordinates not right/measured
-//        }else if(left = true) {
-//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //coordinates not right/measured
-//        }
-//
-//        mecanumCommand.moveToGlobalPosition(-10, 100, 0); //going forward to white pixels
-//
-//        timer.reset();
-//        while (timer.milliseconds() < 1000){
-//            intakeCommand.intakeIn(0.3);
-//        }
-//        intakeCommand.stopIntake();
-
-//        timer.reset();
-//
-//        mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //going backward - coordinates not right/measured
-//        mecanumCommand.moveToGlobalPosition(46, -78.5, 0); //going leftward to the board - coordinates not right/measured
-//
-//        timer.reset();
-//        while (timer.milliseconds() < 500){
-//            outputCommand.openGate();
-//        }
-//        //sets every output related components to its idle position in preparation of the driver period
-//        outputCommand.closeGate();
-//        outputCommand.tiltToIdle();
-//        outputCommand.armToIdle();
-//        sleep(6000);
-//        level = 0;
-//
-//
-//        mecanumCommand.moveToGlobalPosition(0, -84, 1.65); //checkpoint
-
-//        //attempt on getting more pixels(rough values)
-//        if(right == true) {
-//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //strafe leftward to the middle: 180 degrees? - coordinates not right/measured
-//        }else if(middle = true) {
-//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //coordinates not right/measured
-//        }else if(left = true) {
-//            mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //coordinates not right/measured
-//        }
-//
-//        mecanumCommand.moveToGlobalPosition(-10, 100, 0); //going forward to white pixels
-//
-//        timer.reset();
-//        while (timer.milliseconds() < 1000){
-//            intakeCommand.intakeIn(0.3);
-//        }
-//        intakeCommand.stopIntake();
-//        //prep for putting a pixel on to the backboard
-//        level = 1; //rise the lift to level 1
-//        outputCommand.armToBoard(); // arm towards the board
-//        outputCommand.tiltToBoard(); //tilt the output to the board
-//        timer.reset();
-//
-//        mecanumCommand.moveToGlobalPosition(-10, -78.5, 0); //going backward - coordinates not right/measured
-//        mecanumCommand.moveToGlobalPosition(46, -78.5, 0); //going leftward to the board - coordinates not right/measured
-//
-//        timer.reset();
-//        while (timer.milliseconds() < 500){
-//            outputCommand.openGate();
-//        }
-//        //sets every output related components to its idle position in preparation of the driver period
-//        outputCommand.closeGate();
-//        outputCommand.tiltToIdle();
-//        outputCommand.armToIdle();
-//        sleep(6000);
-//        level = 0;
-//
-//
-//        mecanumCommand.moveToGlobalPosition(0, -84, 1.65); //checkpoint
-
     }
 
     public void updateOdometry() {
         while (opModeIsActive()) {
             gyroOdometry.odometryProcess();
         }
-    }
-
-
-
-    private void propRight(){
-        //pos is good
-        moveToPos(-98,-37,0,2.5,7,1.5);
-        sleep(1000);
-    }
-
-    private void propMiddle(){
-        //pos is good
-        moveToPos(-124,0,0,2.5,2.5,1.5);
-    }
-
-    private void propLeft(){
-
-//        moveToPos(0,0,-  1.6,2.5,2.5,0.5);
-//        sleep(3000);
-//        moveToPos(-10,0,-1.6,2.5,7,0.5);
-//        sleep(1000);
-//        moveToPos(-10,-20,0,2.5,2.5,0.5);
-
-        //TODO: after turning 90 degrees counterclockwise, positive y goes towards to the board, decreasing x goes towards left side wall
-
-
-
-
-
-
-
-//        moveToPos(-20,0,0,2.5,2.5,0.05);
-//        sleep(1000);
-//        moveToPos(-20,0,1.6,2.5,2.5,0.05);
-//        sleep(1000);
-//        moveToPos(-75,0,-1.6,2.5,2.5,0.05);
-
-
     }
 
     public void updateTelemetry() {
@@ -421,173 +239,246 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         mecanumSubsystem.stop(true);
     }
 
-    private void goToRightSpike(){
-        //pos is good
-        moveToPos(-102,-17,0,5,5,0.05);
-        timer.reset();
-        progress = "intake start";
-        intakeCommand.lowerIntake();
-        sleep(1500);
-        while (timer.milliseconds() < 17000) {
-            intakeCommand.intakeOut(0.7);
-        }
-        intakeCommand.stopIntake();
-        moveToPos(-150,-5,0,2.5,2.5,0.05);
-        progress = "checkpoint 1 start";
-        moveToPos(-150,-5,Math.PI/2,2.5,2.5,0.05);
-        sleep(3000);
-        progress = "checkpoint 2 start";
-        moveToPos(-150,150,Math.PI/2,2.5,2.5,0.05);
-        sleep(3000 );
-        progress = "checkpoint 3 start";
-        moveToPos(-150,150,-Math.PI/2,2.5,2.5,0.05);
-        progress = "checkpoint 3 end";
-        sleep(3000);
-        moveToPos(-80,150,-Math.PI/2,2.5,2.5,0.05);
-        sleep(3000);
-        moveToPos(-80,165,-Math.PI/2,2.5,2.5,0.05);
-        progress = "boardLeft starting";
-
-        goToAprilTag = true;
-        sleep(1000);
-
-        progress = "april tag start";
-
-        while(!isStopRequested()) {
-            if(aprilCamSubsystem.getHashmap().containsKey(aprilID)){
-                moveToPos(getTargetX(10.0), getTargetY(-20.0), getTargetTheta(),2.5,2.5,0.05);
-            }
-
+    public void maintainPos(double x, double y, double theta, double toleranceX, double toleranceY, double toleranceTheta){
+        mecanumCommand.moveIntegralReset();
+        // stop moving if within 5 ticks or 0.2 radians from the position
+        if ((Math.abs(x - gyroOdometry.x) > toleranceX  //if within 2.5 ticks of target X position
+                || Math.abs(y - gyroOdometry.y) > toleranceY //if within 2.5 ticks of target y position
+                || Math.abs(theta - gyroOdometry.theta) > toleranceTheta)
+                && this.opModeIsActive() && !this.isStopRequested()) {
+            mecanumCommand.moveToGlobalPos(x, y, theta);
+        } else {
+            mecanumSubsystem.stop(true);
         }
     }
+
+    private void goToRightSpike(){
+        //pos is good
+        moveToPos(-69.48,16,-2.11,2,2,0.025);
+//        sleep(1000);
+//        moveToPos(-80,-24,-Math.PI/2,5,5,0.05);
+        timer.reset();
+        progress = "intake start";
+        intakeCommand.autoPixel(1);
+
+        while (timer.milliseconds() < 400) {
+            intakeCommand.intakeOutNoRoller(0.3);
+        }
+        intakeCommand.stopIntake();
+        intakeCommand.raiseIntake();
+        progress = "intake stop";
+        progress = "checkpoint 1 start";
+        //129, 43.5, -Math.PI/2
+        //129, 60.8, -Math.PI/2
+        moveToPos(-120,-39,Math.PI/2,3,3,0.015);
+        timer.reset();
+
+        while(opModeIsActive() && timer.milliseconds() < 3000) {
+            intakeCommand.autoPixel(1);
+
+            intakeCommand.intakeIn(0.7);
+            maintainPos(-116,-37, Math.PI/2,2.5,2.5,0.015);
+            intakeCommand.autoPixel(5);
+            if (colorSensor.findColor2().equalsIgnoreCase("white")) break;
+        }
+
+        timer.reset();
+//        ejectPixelLoop
+
+        while(opModeIsActive() && timer.milliseconds() < 1500){
+            intakeCommand.autoPixel(1); //above max stack
+            intakeCommand.intakeOutNoRoller(1);
+            intakeCommand.intakeRollerIn();
+            maintainPos(-116,-30, Math.PI/2,2.5,2.5,0.015);
+        }
+
+        intakeCommand.stopIntake();
+
+        progress = "checkpoint 2 end";
+//        moveToPos(-150, -177,Math.PI/2,7,5,0.05);
+//        progress = "checkpoint 3 end";
+//        sleep(1000);
+        moveToPos(-120,64,Math.PI/2,7,7,0.25);
+        moveToPos(-115,190,Math.PI/2,5,5,0.05);
+        timer.reset();
+        moveToPos(-30,210,Math.PI/2,2.5,2.5,0.05);
+        while (opModeIsActive() ) {
+            if (timer.milliseconds() > 3100){
+                moveToPos(-30,200,Math.PI/2,2.5,2.5,0.015);
+                outputCommand.armToIdle();
+                outputCommand.tiltToIdle();
+                break;
+            } else if (timer.milliseconds() > 2400) {
+                outputCommand.openGate();
+                outputCommand.outputWheelIn();
+            } else if (timer.milliseconds() > 500) {
+                outputCommand.armToBoard();
+                outputCommand.tiltToBoard();
+            } else {
+                level = 1;
+            }
+            if(timer.milliseconds() <= 3100) maintainPos(-30,235,Math.PI/2,2.5,2.5,0.05);
+        }
+        timer.reset();
+        while (opModeIsActive()) {
+            maintainPos(-30,220,Math.PI/2,6,3,0.25);
+            if(timer.milliseconds() > 700) break;
+        }        level = 0;
+        outputCommand.closeGate();
+    }
+
 
     private void goToMiddleSpike(){
         //pos is good
-        moveToPos(-126,0,0,2.5,6,1.5);
+        moveToPos(-113,-5,-0.7854,2.5,2.5,0.025);
         timer.reset();
         progress = "intake start";
-        intakeCommand.lowerIntake();
-        while (timer.milliseconds() < 2000) {
-            intakeCommand.intakeOut(0.7);
+        intakeCommand.autoPixel(1);
+
+        while (timer.milliseconds() < 300) {
+            intakeCommand.intakeOutNoRoller(0.3);
         }
         intakeCommand.stopIntake();
-        moveToPos(-150,-5,0,2.5,6,0.05);
-        progress = "checkpoint 1 start";
-        moveToPos(-150,-5,Math.PI/2,5,6,0.05);
-        progress = "checkpoint 2 start";
-        moveToPos(-150,150,Math.PI/2,5,6,0.05);
-        progress = "checkpoint 3 start";
-        moveToPos(-150,150,-Math.PI/2,5,6,0.05);
-        progress = "checkpoint 3 end";
-        moveToPos(-72.5,150,-Math.PI/2,7,7,0.05);
-        moveToPos(-72.5,165,-Math.PI/2,7,7,0.05);
-        progress = "boardLeft starting";
+        intakeCommand.raiseIntake();
+        moveToPos(-116,-11,-0.7854,3,3,0.5);
+//        sleep(1000);
+//        moveToPos(-80,-24,-Math.PI/2,5,5,0.05);
 
-        goToAprilTag = true;
-        sleep(1000);
+        //129, 43.5, -Math.PI/2
+        //129, 60.8, -Math.PI/2
 
+        moveToPos(-120,-39,Math.PI/2,1.5,1.5,0.015);
+        timer.reset();
 
-
-        progress = "april tag start";
-
-        while(!isStopRequested()) {
-            if(aprilCamSubsystem.getHashmap().containsKey(aprilID)){
-                moveToPos(getTargetX(10.0), getTargetY(-20.0), getTargetTheta(),2.5,2.5,0.05);
-            }
+        while(opModeIsActive() && timer.milliseconds() < 1800) {
+            intakeCommand.autoPixel(2);
+            intakeCommand.intakeIn(0.7);
+            maintainPos(-116,-37, -Math.PI/2,1.5,1.5,0.015);
+            if (colorSensor.findColor2().equalsIgnoreCase("white")) break;
         }
+
+        timer.reset();
+//        ejectPixelLoop
+
+        while(opModeIsActive() && timer.milliseconds() < 1500){
+            intakeCommand.autoPixel(1); //above max stack
+            intakeCommand.intakeOutNoRoller(1);
+            intakeCommand.intakeRollerIn();
+            maintainPos(-116,-30,Math.PI/2,1.5,1.5,0.015);
+        }
+
+        intakeCommand.stopIntake();
+
+        progress = "checkpoint 2 end";
+//        moveToPos(-150, -177,Math.PI/2,7,5,0.05);
+//        progress = "checkpoint 3 end";
+//        sleep(1000);
+        moveToPos(-126, 0, Math.PI/2, 5, 6, 0.25);
+        moveToPos(-119,160,Math.PI/2,5,6,0.25);
+
+        //middle: -82,-235
+
+        timer.reset();
+        maintainPos(-55,200,Math.PI/2,2.5,2.5,0.05);
+        while (opModeIsActive() ) {
+            double milliseconds = timer.milliseconds();
+            //go to board
+            if (milliseconds > 3100){
+                maintainPos(-55,200,Math.PI/2,2.5,2.5,0.015); //moves back from board
+                outputCommand.armToIdle();
+                outputCommand.tiltToIdle();
+                break;
+            } else if (milliseconds > 2400) {
+                outputCommand.openGate();
+                outputCommand.outputWheelIn();
+            } else if (milliseconds > 500) {
+                outputCommand.armToBoard();
+                outputCommand.tiltToBoard();
+            } else {
+                level = 1;
+            }
+            if(milliseconds <= 3100) maintainPos(-55,235,Math.PI/2,2.5,2.5,0.05); //go to board
+        }
+        timer.reset();
+        while (opModeIsActive()) {
+            maintainPos(-55,220,Math.PI/2,6,3,0.25);
+            if(timer.milliseconds() > 700) break;
+        }
+        level = 0;
+        outputCommand.closeGate();
     }
 
     private void goToLeftSpike(){
-
-        moveToPos(69.48,19,2.11,5,5,0.05);
-        progress = "2";
+        moveToPos(-90,-2,0.468,2.5,2.5,0.1);
         timer.reset();
         progress = "intake start";
-        intakeCommand.lowerIntake();
-        sleep(1500);
-        while (timer.milliseconds() < 1500) {
-            intakeCommand.intakeOut(0.7);
+        intakeCommand.autoPixel(1);
+
+        while (timer.milliseconds() < 300) {
+            intakeCommand.intakeOutNoRoller(0.3);
         }
         intakeCommand.stopIntake();
-
-        moveToPos(-129,-62,-Math.PI/2,5,5,0.05);
-        intakeCommand.autoPixel(1);
-        timer.reset();
-        do{
-            intakeCommand.intakeIn(0.5);
-        } while (timer.milliseconds() < 3000);
-        sleep(500);
-        timer.reset();
-        while (timer.milliseconds() < 2000) {
-            intakeCommand.intakeOutNoRoller(0.8);
-        }
         intakeCommand.raiseIntake();
-        sleep(150);
-        progress = "intake stop";
-        sleep (100);
+        moveToPos(-118.79,19.353,Math.PI/2,2.5,2.5,0.05);
+        moveToPos(-118,-30,Math.PI/2,1.5,1.5,0.05);
+        timer.reset();
 
-        progress = "checkpoint 1 start";
-        moveToPos(-150,-3,Math.PI/2,5,5,0.05);
-        progress = "checkpoint1 end";
+        while(opModeIsActive() && timer.milliseconds() < 1900) {
+            intakeCommand.autoPixel(2);
+            intakeCommand.intakeIn(0.7);
+            maintainPos(-116,-36, Math.PI/2,1.5,1.5,0.05);
+            if (colorSensor.findColor2().equalsIgnoreCase("white")) break;
+        }
 
-        sleep(100);
-        progress = "checkpoint 2 start";
-        moveToPos(-150,150,Math.PI/2,2.5,2.5,0.05);
+        timer.reset();
+//        ejectPixelLoop
+
+        while(opModeIsActive() && timer.milliseconds() < 1500){
+            intakeCommand.autoPixel(1); //above max stack
+            intakeCommand.intakeOutNoRoller(1);
+            intakeCommand.intakeRollerIn();
+            maintainPos(-116,-30, Math.PI/2,1.5,1.5,0.05);
+        }
+
+        intakeCommand.stopIntake();
+
         progress = "checkpoint 2 end";
-        sleep(100);
-        moveToPos(-150,150,Math.PI/2,5,5,0.05);
-        sleep(3000);
-        progress = "checkpoint 3 start";
-        moveToPos(-150,150,-Math.PI/2,2.5,2.5,0.05);
-        progress = "checkpoint 3 end";
-        sleep(1000);
-        moveToPos(-90,150,-Math.PI/2,2.5,2.5,0.05);
-        sleep(1000);
-        moveToPos(-90,170,-Math.PI/2,2.5,2.5,0.05);
-        sleep(3000);
-        moveToPos(-60,170,-Math.PI/2,6.5,6.5,0.05);
-        sleep(3000);
-        moveToPos(-60,190,-Math.PI/2,6.5,6.5,0.05);
-        progress = "boardLeft starting";
-
-        sleep(150);
-        progress = "checkpoint 2 start";
-        moveToPos(-150,150,-Math.PI/2,6.5,6.5,0.05);
-        progress = "checkpoint 3 end";
-        sleep(150);
-        moveToPos(-60,150,-Math.PI/2,6.5,6.5,0.05);
-        sleep(150);
-        moveToPos(-60,190,-Math.PI/2,6.5,6.5,0.05);
-        progress = "boardLeft starting";
-
-        liftState.add(LIFT_STATE.LIFT_END);
-
-//        goToAprilTag = true;
+//        moveToPos(-150, -177,Math.PI/2,7,5,0.05);
+//        progress = "checkpoint 3 end";
 //        sleep(1000);
-//
-//        progress = "april tag start";
-//
-//        while(goToAprilTag && !isStopRequested()) {
-//            if(aprilCamSubsystem.getHashmap().containsKey(aprilID)){
-//                moveToPos(getTargetX(10.0), getTargetY(-20.0), getTargetTheta(),2.5,2.5,0.05);
-//            }
-//        }
+        moveToPos(-120, 0, Math.PI/2, 7, 10, 0.05);
+        moveToPos(-110,160,Math.PI/2,5,10,0.05);
 
+        //middle: -82,-235
 
-
-
-//        while(!isStopRequested()) {
-//            if(aprilCamSubsystem.getHashmap().containsKey(aprilID)){
-//                moveToPos(getTargetX(-15.0), getTargetY(-10.0), getTargetTheta(), 2.5, 2.5, 0.05);
-//                progress = "april tag end";
-//                break;
-//            }
-//        }
-
-
-
-
-
+        timer.reset();
+        maintainPos(-36,200,Math.PI/2,2.5,2.5,0.05);
+        while (opModeIsActive() ) {
+            double milliseconds = timer.milliseconds();
+            //go to board
+            if (milliseconds > 3100){
+                maintainPos(-55,200,Math.PI/2,2.5,2.5,0.05); //moves back from board
+                outputCommand.armToIdle();
+                outputCommand.tiltToIdle();
+                break;
+            } else if (milliseconds > 2400) {
+                outputCommand.openGate();
+                outputCommand.outputWheelIn();
+            } else if (milliseconds > 500) {
+                outputCommand.armToBoard();
+                outputCommand.tiltToBoard();
+            } else {
+                level = 1;
+            }
+            if(milliseconds < 3100) maintainPos(-56,-237,-Math.PI/2,2.5,2.5,0.05); //go to board
+        }
+        timer.reset();
+        while (opModeIsActive()) {
+            maintainPos(-56,237,Math.PI/2,7,7,0.05);
+            if(timer.milliseconds() > 1500) break;
+        }
+        level = 0;
+        outputCommand.closeGate();
     }
 
     /*

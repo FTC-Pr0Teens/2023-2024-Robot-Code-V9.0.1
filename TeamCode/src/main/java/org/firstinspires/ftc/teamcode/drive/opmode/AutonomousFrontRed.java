@@ -116,19 +116,6 @@ public class AutonomousFrontRed extends LinearOpMode {
         }
         intakeCommand.stopIntake();
 
-        /*
-
-        if (position.equals("left")){
-            goToBoardLeft();
-        }
-        else if (position.equals("middle")){
-            goToBoardMiddle();
-        }
-        else if (position.equals("right")){
-            goToBoardRight();
-        }
-        */
-
         sleep(1000);
         stop();
 

@@ -143,6 +143,19 @@ public class AutonomousFrontBlue extends LinearOpMode {
         mecanumSubsystem.stop(true);
     }
 
+    public void maintainPos(double x, double y, double theta, double toleranceX, double toleranceY, double toleranceTheta){
+        mecanumCommand.moveIntegralReset();
+        // stop moving if within 5 ticks or 0.2 radians from the position
+        if ((Math.abs(x - gyroOdometry.x) > toleranceX  //if within 2.5 ticks of target X position
+                || Math.abs(y - gyroOdometry.y) > toleranceY //if within 2.5 ticks of target y position
+                || Math.abs(theta - gyroOdometry.theta) > toleranceTheta)
+                && this.opModeIsActive() && !this.isStopRequested()) {
+            mecanumCommand.moveToGlobalPos(x, y, theta);
+        } else {
+            mecanumSubsystem.stop(true);
+        }
+    }
+
     private void goToRightSpike(){
         moveToPos(57, 0, 0, 5, 5, 0.2);
         sleep(1500);
@@ -156,17 +169,3 @@ public class AutonomousFrontBlue extends LinearOpMode {
     private void goToLeftSpike(){
         moveToPos(67,-3,0, 5,5, 0.2);
     }
-
-    private void goToBoardRight(){
-        moveToPos(46, -78.5, 1.65, 5, 5, 0.2); //1.65 radians = 94.53804 degrees
-    }
-
-    private void goToBoardMiddle(){
-        moveToPos(61, -80,1.65, 5,5,0.2);
-    }
-
-    private void goToBoardLeft(){
-        moveToPos(68, -81.5,1.65, 5,5,0.2);
-    }
-
-}
