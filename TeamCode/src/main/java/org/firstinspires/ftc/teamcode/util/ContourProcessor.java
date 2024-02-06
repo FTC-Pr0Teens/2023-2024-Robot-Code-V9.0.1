@@ -39,12 +39,6 @@ in other words, which pole is deemed as the "closest"
  */
 public class ContourProcessor implements VisionProcessor {
 
-    /*
-    detect things function
-
-
-     */
-
     // for tracking pipeline processing speed
     private final ElapsedTime timer = new ElapsedTime();
     private double processTime = 0;
