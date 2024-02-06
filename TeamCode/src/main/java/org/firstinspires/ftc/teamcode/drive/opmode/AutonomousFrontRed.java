@@ -212,6 +212,4 @@ public class AutonomousFrontRed extends LinearOpMode {
     private void goToBoardLeft(){
         moveToPos(68, -81.5,1.65, 5,5,0.2);
     }
-
-
 }

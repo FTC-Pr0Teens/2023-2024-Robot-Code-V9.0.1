@@ -81,7 +81,7 @@ public class AutonomousFrontBlue extends LinearOpMode {
         CompletableFuture.runAsync(this::liftProcess, executor);
 
         timer.reset();
-        while (opModeInInit());
+        while (opModeInInit()) ;
         String propPosition = webcamSubsystem.findSpikePosition();
 
         if (propPosition.equals("right")) {
@@ -113,25 +113,25 @@ public class AutonomousFrontBlue extends LinearOpMode {
             telemetry.update();
         }
 
-        while (opModeInInit()){
+        while (opModeInInit()) {
             telemetry.addData("prop", webcamSubsystem.getXProp());
             telemetry.addData("position", position);
         }
     }
 
     public void liftProcess() {
-        while(opModeIsActive()) {
+        while (opModeIsActive()) {
             multiMotorCommand.LiftUp(true, level);
         }
     }
 
-    public void ThreadStop(){
-        while (opModeIsActive()){
+    public void ThreadStop() {
+        while (opModeIsActive()) {
             isStopRequested();
         }
     }
 
-    public void moveToPos(double x, double y, double theta, double toleranceX, double toleranceY, double toleranceTheta){
+    public void moveToPos(double x, double y, double theta, double toleranceX, double toleranceY, double toleranceTheta) {
         mecanumCommand.moveIntegralReset();
         // stop moving if within 5 ticks or 0.2 radians from the position
         while ((Math.abs(x - gyroOdometry.x) > toleranceX  //if within 2.5 ticks of target X position
@@ -143,7 +143,7 @@ public class AutonomousFrontBlue extends LinearOpMode {
         mecanumSubsystem.stop(true);
     }
 
-    public void maintainPos(double x, double y, double theta, double toleranceX, double toleranceY, double toleranceTheta){
+    public void maintainPos(double x, double y, double theta, double toleranceX, double toleranceY, double toleranceTheta) {
         mecanumCommand.moveIntegralReset();
         // stop moving if within 5 ticks or 0.2 radians from the position
         if ((Math.abs(x - gyroOdometry.x) > toleranceX  //if within 2.5 ticks of target X position
@@ -156,16 +156,17 @@ public class AutonomousFrontBlue extends LinearOpMode {
         }
     }
 
-    private void goToRightSpike(){
+    private void goToRightSpike() {
         moveToPos(57, 0, 0, 5, 5, 0.2);
         sleep(1500);
         moveToPos(55, -17, -0.832, 5, 5, 0.2);
     }
 
-    private void goToMiddleSpike(){
-        moveToPos(54, 24, 0, 5,5, 0.2);
+    private void goToMiddleSpike() {
+        moveToPos(54, 24, 0, 5, 5, 0.2);
     }
 
-    private void goToLeftSpike(){
-        moveToPos(67,-3,0, 5,5, 0.2);
+    private void goToLeftSpike() {
+        moveToPos(67, -3, 0, 5, 5, 0.2);
     }
+}
