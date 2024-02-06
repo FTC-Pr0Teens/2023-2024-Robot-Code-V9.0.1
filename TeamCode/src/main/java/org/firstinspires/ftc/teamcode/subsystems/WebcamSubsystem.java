@@ -44,9 +44,6 @@ public class WebcamSubsystem extends Specifications {
     double fy = 578.272;
     double cx = 402.145;
     double cy = 221.506;
-    private VisionPortal visionPortal;
-    private ContourProcessor contourProcessor;
-    private AprilTagProcessor aprilTagProcessor;
 
     private final VisionPortal VISION_PORTAL;
     private final ContourProcessor CONTOUR_PROCESSOR;
@@ -59,7 +56,7 @@ public class WebcamSubsystem extends Specifications {
     public WebcamSubsystem(HardwareMap hardwareMap, PipelineName pipelineName){
 
         //The aprilTagProcessor is used to find april tags
-        aprilTagProcessor = new AprilTagProcessor.Builder()
+        APRIL_TAG_PROCESSOR = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
                 .setDrawCubeProjection(true)
                 .setDrawTagID(true)
@@ -77,18 +74,6 @@ public class WebcamSubsystem extends Specifications {
 //            redIntakePipeline = new RedIntakePipeline();
 //            webcam.setPipeline(redIntakePipeline);
 //        }
-        if(pipelineName == PipelineName.CONTOUR_BLUE){
-            CONTOUR_PROCESSOR = new ContourProcessor(115, 234, 255, 104, 130, 41);
-        }
-        else {
-            CONTOUR_PROCESSOR = new ContourProcessor(10, 255, 255, 0, 119, 0);
-        }
-        VISION_PORTAL = new VisionPortal.Builder()
-                .addProcessor(APRIL_TAG_PROCESSOR)
-                .addProcessor(CONTOUR_PROCESSOR)
-                .setCamera(hardwareMap.get(CameraName.class, "Webcam 1"))
-                .setCameraResolution(new Size(864, 480))
-                .build();
 
         /*
         The contourProcessor is used to find the outines/contours of the spike game pieces
@@ -98,12 +83,12 @@ public class WebcamSubsystem extends Specifications {
         10, 130, 130
          */
         if(pipelineName == PipelineName.CONTOUR_BLUE){
-            contourProcessor = new ContourProcessor(
+            CONTOUR_PROCESSOR = new ContourProcessor(
                     115, 234, 255,
                     104, 130, 41
             );
-        } else if(pipelineName == PipelineName.CONTOUR_RED){
-            contourProcessor = new ContourProcessor(
+        } else {
+            CONTOUR_PROCESSOR = new ContourProcessor(
                     10, 255, 255,
                     0, 119, 0
             );
@@ -116,9 +101,9 @@ public class WebcamSubsystem extends Specifications {
          The processors then take these frame,
          and do whatever it is they do.
          */
-        visionPortal = new VisionPortal.Builder()
-                .addProcessor(aprilTagProcessor)
-                .addProcessor(contourProcessor)
+        VISION_PORTAL = new VisionPortal.Builder()
+                .addProcessor(APRIL_TAG_PROCESSOR)
+                .addProcessor(CONTOUR_PROCESSOR)
                 .setCamera(hardwareMap.get(CameraName.class, "Webcam 1"))
                 .setCameraResolution(new Size(864, 480))
                 .build();
@@ -156,18 +141,6 @@ public class WebcamSubsystem extends Specifications {
         });
     }
 
-    public ContourProcessor getContourProcessor() {
-        return CONTOUR_PROCESSOR;
-    }
-
-    public String findSpikePosition() {
-        // For reference, camera is 864 pixels wide
-        double center = CONTOUR_PROCESSOR.largestContourCenter().x;
-        return center < 288 ? "left"
-                : center < 576 ? "middle"
-                : "right";
-    }
-
     public void switchPipeline(){
         redIntakePipeline = new RedIntakePipeline();
         webcam.setPipeline(redIntakePipeline);
@@ -201,11 +174,11 @@ public class WebcamSubsystem extends Specifications {
     }
 
     public double getXProp(){
-        return contourProcessor.largestContourCenter().x;
+        return CONTOUR_PROCESSOR.largestContourCenter().x;
     }
 
     public ContourProcessor getContourProcessor() {
-        return contourProcessor;
+        return CONTOUR_PROCESSOR;
     }
 
     /**
@@ -215,7 +188,7 @@ public class WebcamSubsystem extends Specifications {
      */
     public String findSpikePosition() {
         // For reference, camera is 864 pixels wide
-        double center = contourProcessor.largestContourCenter().x;
+        double center = CONTOUR_PROCESSOR.largestContourCenter().x;
         return center < 288 ? "left"
                 : center < 576 ? "middle"
                 : "right";
@@ -232,12 +205,12 @@ public class WebcamSubsystem extends Specifications {
         ArrayList<Integer> aprilTagIDs = new ArrayList<>();
 
         // This loop formats the detections into data we can actually read
-        for (AprilTagDetection det : aprilTagProcessor.getDetections())
+        for (AprilTagDetection det : APRIL_TAG_PROCESSOR.getDetections())
             aprilTagIDs.add(det.id);
 
         return aprilTagIDs;
     }
     public VisionPortal.CameraState getCameraState() {
-        return visionPortal.getCameraState();
+        return VISION_PORTAL.getCameraState();
     }
 }
