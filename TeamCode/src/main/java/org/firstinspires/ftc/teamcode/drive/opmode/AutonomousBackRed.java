@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 
 import org.firstinspires.ftc.teamcode.subsystems.MultiMotorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
-//import org.firstinspires.ftc.teamcode.subsystems.WebcamSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.WebcamSubsystem;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
 import org.firstinspires.ftc.teamcode.util.Specifications;
 
@@ -41,7 +41,7 @@ public class AutonomousBackRed extends LinearOpMode {
     private OdometrySubsystem odometrySubsystem;
     private GyroOdometry gyroOdometry;
     private IntakeCommand intakeCommand;
-    //private WebcamSubsystem webcamSubsystem;
+    private WebcamSubsystem webcamSubsystem;
     private OutputCommand outputCommand;
     private MultiMotorSubsystem multiMotorSubsystem;
     private MultiMotorCommand multiMotorCommand;
@@ -110,7 +110,7 @@ public class AutonomousBackRed extends LinearOpMode {
         multiMotorCommand = new MultiMotorCommand(multiMotorSubsystem);
         dashboard = FtcDashboard.getInstance();
         packet = new TelemetryPacket();
-        //webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
+        webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
         timer = new ElapsedTime();
         outputTimer = new ElapsedTime();
 
@@ -143,14 +143,20 @@ public class AutonomousBackRed extends LinearOpMode {
         //TODO: when turning clockwise it is the opposite of the text above me
         //TODO: below is left
         telemetry.addData("test", gyroOdometry.x);
+        timer.reset();
+        while (opModeInInit());
+        String propPosition = webcamSubsystem.findSpikePosition();
 
 //        outputTimer.reset();
 //        liftState.add(LIFT_STATE.LIFT_END);
 
-
-
-
-        goToRightSpike();
+        if (propPosition.equals("right")) {
+            goToRightSpike();
+        } else if (propPosition.equals("left")) {
+            goToLeftSpike();
+        } else {
+            goToMiddleSpike();
+        }
         //goToBoardLeft();
 
 
@@ -315,24 +321,6 @@ public class AutonomousBackRed extends LinearOpMode {
             mecanumCommand.moveToGlobalPos(x, y, theta);
         } else {
             mecanumSubsystem.stop(true);
-        }
-    }
-
-    private void setPropPosition(){
-        double propPosition = 0;
-        timer.reset();
-        while(opModeInInit()) {
-                //propPosition = webcamSubsystem.findSpikePosition();
-        }
-        timer.reset();
-
-        if (propPosition < 100 && propPosition > 0) {
-            position = "left";
-        } else if (propPosition > 100) {
-            position = "middle";
-            sleep(1000);
-        } else {
-            position = "right";
         }
     }
 
@@ -621,18 +609,6 @@ public class AutonomousBackRed extends LinearOpMode {
         outputCommand.closeGate();
 //        moveToPos(-90,-200,-Math.PI/2,6,3,0.05);
 //        moveToPos(-90,-235,-Math.PI/2,6,3,0.05);
-    }
-
-    private void goToBoardRight(){
-        moveToPos(46, -78.5, 1.65, 5, 5, 0.2); //1.65 radians = 94.53804 degrees
-    }
-
-    private void goToBoardMiddle(){
-        moveToPos(61, -80,1.65, 5,5,0.2);
-    }
-
-    private void goToBoardLeft(){
-
     }
 
 //    private void checkLiftState() {

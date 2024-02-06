@@ -48,8 +48,8 @@ public class WebcamSubsystem extends Specifications {
     double cx = 402.145;
     double cy = 221.506;
 
-    //private final VisionPortal VISION_PORTAL;
-    //private final ContourProcessor CONTOUR_PROCESSOR;
+    private final VisionPortal VISION_PORTAL;
+    private final ContourProcessor CONTOUR_PROCESSOR;
     private final AprilTagProcessor APRIL_TAG_PROCESSOR;
     public WebcamSubsystem(HardwareMap hardwareMap, PipelineName pipelineName){
         //contourPipeline = new ContourPipeline(30, 255, 255, 10, 130, 130);
@@ -71,18 +71,18 @@ public class WebcamSubsystem extends Specifications {
 //            redIntakePipeline = new RedIntakePipeline();
 //            webcam.setPipeline(redIntakePipeline);
 //        }
-//        if(pipelineName == PipelineName.CONTOUR_BLUE){
-//            CONTOUR_PROCESSOR = new ContourProcessor(115, 234, 255, 104, 130, 41);
-//        }
-//        else if(pipelineName == PipelineName.CONTOUR_RED){
-//            CONTOUR_PROCESSOR = new ContourProcessor(10, 255, 255, 0, 119, 0);
-//        }
-//        VISION_PORTAL = new VisionPortal.Builder()
-//                .addProcessor(APRIL_TAG_PROCESSOR)
-//                .addProcessor(CONTOUR_PROCESSOR)
-//                .setCamera(hardwareMap.get(CameraName.class, "Webcam 1"))
-//                .setCameraResolution(new Size(864, 480))
-//                .build();
+        if(pipelineName == PipelineName.CONTOUR_BLUE){
+            CONTOUR_PROCESSOR = new ContourProcessor(115, 234, 255, 104, 130, 41);
+        }
+        else {
+            CONTOUR_PROCESSOR = new ContourProcessor(10, 255, 255, 0, 119, 0);
+        }
+        VISION_PORTAL = new VisionPortal.Builder()
+                .addProcessor(APRIL_TAG_PROCESSOR)
+                .addProcessor(CONTOUR_PROCESSOR)
+                .setCamera(hardwareMap.get(CameraName.class, "Webcam 1"))
+                .setCameraResolution(new Size(864, 480))
+                .build();
 
         // initiate the needed parameters
         cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId","id",hardwareMap.appContext.getPackageName());
@@ -108,17 +108,17 @@ public class WebcamSubsystem extends Specifications {
         });
     }
 
-//    public ContourProcessor getContourProcessor() {
-//        return CONTOUR_PROCESSOR;
-//    }
+    public ContourProcessor getContourProcessor() {
+        return CONTOUR_PROCESSOR;
+    }
 
-//    public String findSpikePosition() {
-//        // For reference, camera is 864 pixels wide
-//        double center = CONTOUR_PROCESSOR.largestContourCenter().x;
-//        return center < 288 ? "left"
-//                : center < 576 ? "middle"
-//                : "right";
-//    }
+    public String findSpikePosition() {
+        // For reference, camera is 864 pixels wide
+        double center = CONTOUR_PROCESSOR.largestContourCenter().x;
+        return center < 288 ? "left"
+                : center < 576 ? "middle"
+                : "right";
+    }
 
     public void switchPipeline(){
         redIntakePipeline = new RedIntakePipeline();

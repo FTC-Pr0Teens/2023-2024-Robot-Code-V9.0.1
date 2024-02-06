@@ -80,61 +80,17 @@ public class AutonomousFrontBlue extends LinearOpMode {
         CompletableFuture.runAsync(this::updateTelemetry, executor);
         CompletableFuture.runAsync(this::liftProcess, executor);
 
-        //find the prop position
-        //setPropPosition();
+        timer.reset();
+        while (opModeInInit());
+        String propPosition = webcamSubsystem.findSpikePosition();
 
-        position = "left";
-
-        //go to correct spike
-        if (position.equals("left")){
+        if (propPosition.equals("right")) {
+            goToRightSpike();
+        } else if (propPosition.equals("left")) {
             goToLeftSpike();
-        }
-        else if (position.equals("middle")){
+        } else {
             goToMiddleSpike();
         }
-        else if (position.equals("right")){
-            goToRightSpike();
-        }
-
-        //output prop
-        timer.reset();
-        intakeCommand.raiseIntake();
-        while(timer.milliseconds() < 1000) {
-            intakeCommand.intakeOut(0.5);
-        }
-        intakeCommand.stopIntake();
-
-        if (position.equals("left")){
-            goToBoardLeft();
-        }
-        else if (position.equals("middle")){
-            goToBoardMiddle();
-        }
-        else if (position.equals("right")){
-            goToBoardRight();
-        }
-
-        sleep(1000);
-        stop();
-
-        /*
-        level = 1;
-        outputCommand.armToBoard();
-        outputCommand.tiltToBoard();
-
-
-        timer.reset();
-        while (timer.milliseconds() < 500){
-            outputCommand.openGate();
-        }
-        outputCommand.closeGate();
-        outputCommand.tiltToIdle();
-        outputCommand.armToIdle();
-        sleep(6000);
-        level = 0;
-        mecanumCommand.moveToGlobalPosition(0, 84, -1.58);
-
-         */
 
     }
 
@@ -185,24 +141,6 @@ public class AutonomousFrontBlue extends LinearOpMode {
             mecanumCommand.moveToGlobalPos(x, y, theta);
         }
         mecanumSubsystem.stop(true);
-    }
-
-    private void setPropPosition(){
-        double propPosition = 0;
-        timer.reset();
-        while(opModeInInit()) {
-            propPosition = webcamSubsystem.getXProp();
-        }
-        timer.reset();
-
-        if (propPosition < 100 && propPosition > 0) {
-            position = "left";
-        } else if (propPosition > 100) {
-            position = "right";
-            sleep(1000);
-        } else {
-            position = "middle";
-        }
     }
 
     private void goToRightSpike(){

@@ -111,7 +111,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         multiMotorCommand = new MultiMotorCommand(multiMotorSubsystem);
         dashboard = FtcDashboard.getInstance();
         packet = new TelemetryPacket();
-        //webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_BLUE);
+        webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_BLUE);
         timer = new ElapsedTime();
         aprilCamSubsystem = new AprilCamSubsystem(hardwareMap);
 
@@ -159,10 +159,20 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         //TODO: below is left
         telemetry.addData("test", gyroOdometry.x);
 
-        moveToPos(50,0,0,5,5,0.05);
+        timer.reset();
+        while (opModeInInit());
+        String propPosition = webcamSubsystem.findSpikePosition();
+
+        if (propPosition.equals("right")) {
+            goToRightSpike();
+        } else if (propPosition.equals("left")) {
+            goToLeftSpike();
+        } else {
+            goToMiddleSpike();
+        }
 
 
-        goToLeftSpike();
+        //goToLeftSpike();
 //        //goToBoardLeft();
 //
 //
@@ -411,24 +421,6 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         mecanumSubsystem.stop(true);
     }
 
-    private void setPropPosition(){
-        double propPosition = 0;
-        timer.reset();
-        while(opModeInInit()) {
-            //propPosition = webcamSubsystem.getXProp();
-        }
-        timer.reset();
-
-        if (propPosition < 100 && propPosition > 0) {
-            position = "left";
-        } else if (propPosition > 100) {
-            position = "middle";
-            sleep(1000);
-        } else {
-            position = "right";
-        }
-    }
-
     private void goToRightSpike(){
         //pos is good
         moveToPos(-102,-17,0,5,5,0.05);
@@ -597,19 +589,6 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
 
     }
-
-    private void goToBoardRight(){
-        moveToPos(46, -78.5, 1.65, 5, 5, 0.2); //1.65 radians = 94.53804 degrees
-    }
-
-    private void goToBoardMiddle(){
-        moveToPos(61, -80,1.65, 5,5,0.2);
-    }
-
-    private void goToBoardLeft(){
-
-    }
-
 
     /*
     public void stopIfPosReached(double targetX, double targetY, double targetTheta){
