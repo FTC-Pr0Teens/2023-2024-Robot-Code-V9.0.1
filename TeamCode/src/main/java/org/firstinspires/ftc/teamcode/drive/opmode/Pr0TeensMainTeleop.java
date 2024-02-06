@@ -21,7 +21,6 @@ import org.firstinspires.ftc.teamcode.util.GyroOdometry;
 import org.firstinspires.ftc.teamcode.util.Specifications;
 import org.firstinspires.ftc.teamcode.util.TimerList;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -78,13 +77,15 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
     // TODO: leos stuff
     private enum LIFT{
-        REST,
+        IDLE,
         RAISE,
         SET,
-        LOWER,
+        LOWER, DROP, RETRACT,
     }
 
-    private LIFT lift = LIFT.REST;
+    private LIFT lift = LIFT.IDLE;
+    private int setLevel; //what we want
+    private volatile int targetLevel; //controls lift, added volatile so that unlike last time it actually changes
 
 
 
@@ -94,7 +95,6 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
     private boolean doCentering = false;
     private double autoCenterAngle = 0;
 
-    private int targetPosition = 0;
 
 
 
@@ -186,6 +186,9 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             }
 
 
+            //have 3 buttons to change setLevel
+
+
             //intake
 
             if (gamepad1.left_bumper) {
@@ -236,7 +239,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             }
 
             if (gamepad2.right_bumper) {
-                intakeCommand.raiseIntake();
+                intakeCommand.autoPixel(5);
             } else if (gamepad2.left_bumper){
                 intakeCommand.lowerIntake();
             }
@@ -259,6 +262,77 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
 
     private void checkLiftState() {
+        switch(lift){
+            case IDLE:
+                outputCommand.tiltToIdle();
+                outputCommand.armToIdle();
+                level = 0;
+
+                if(gamepad1.left_trigger > 0.5){
+                    timers.resetTimer("lift");
+                    lift = LIFT.RAISE;
+                    targetLevel = setLevel; //set targetpos to current controller pos
+                }
+                break;
+            case RAISE:
+                if(timers.checkTimePassed("lift", 250)) {
+                    outputCommand.armToBoard();
+                    outputCommand.tiltToBoard();
+                }
+
+                //controller inputs to change setLevel
+                targetLevel = setLevel;
+
+                if(timers.checkTimePassed("lift", 1000)){
+                    timers.resetTimer("lift");
+                    lift = LIFT.SET;
+                }
+                break;
+            case SET:
+                targetLevel = setLevel;
+                if(gamepad1.right_trigger > 0.5){
+                    timers.resetTimer("gate");
+                    lift = LIFT.DROP;
+                }
+                //condition to go back to bottom
+                if(gamepad1.right_bumper){
+                    lift = LIFT.RETRACT;
+                    timers.resetTimer("lift");
+                }
+                break;
+            case DROP:
+                targetLevel = setLevel; //maintain height
+
+                if(timers.checkTimePassed("gate", 500) && gamepad1.right_trigger < 0.5){
+                    intakeCommand.intakeRollerStop();
+                    outputCommand.closeGate();
+                    lift = LIFT.DROP;
+                } else if (timers.checkTimePassed("gate", 200) && gamepad1.right_trigger < 0.5) {
+                    if(gamepad1.right_trigger < 0.5) outputCommand.closeGate();
+                    intakeCommand.intakeRollerIn();
+                } else {
+                    outputCommand.openGate(); //if time < 200ms
+                }
+                break;
+            case RETRACT:
+                outputCommand.tiltToIdle();
+                outputCommand.armToIdle();
+                targetLevel = 1;
+                if(timers.checkTimePassed("lift", 900)){
+                    timers.resetTimer("lift");
+                    lift = LIFT.LOWER;
+                }
+                break;
+            case LOWER:
+                level = 0;
+                if(outputTimer.milliseconds() > 400){
+                    lift = LIFT.IDLE;
+                }
+                break;
+        }
+
+
+
         if (liftState.contains(LIFT_STATE.LIFT_IDLE)) {
             outputCommand.tiltToIdle(); //bring arm down BEFORE bringing lift down
             outputCommand.armToIdle();
@@ -268,7 +342,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             }
         } else if (liftState.contains(LIFT_STATE.LIFT_MIDDLE)) {
             if (!liftState.contains(LIFT_STATE.LIFT_END)) {
-                targetPosition = -1100;
+//                targetPosition = -1100;
                 if (outputTimer.milliseconds() > 1000) {
                     liftState.clear();
                 } else if (outputTimer.milliseconds() > 250) { //bring lift up BEFORE extending arm
@@ -280,7 +354,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             }
         } else if (liftState.contains(LIFT_STATE.LIFT_END)) {
             if (!liftState.contains(LIFT_STATE.LIFT_MIDDLE)) {
-                targetPosition = -2020;
+//                targetPosition = -2020;
                 if (outputTimer.milliseconds() > 1000) {
                     liftState.clear();
                 } else if (outputTimer.milliseconds() > 250) { //bring lift up BEFORE extending arm
@@ -327,11 +401,11 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             gridAutoCentering.offsetTargetAngle(autoCenterAngle);
         }
 
-        if(gamepad1.left_trigger > 0.5) {
+        if(gamepad1.left_trigger > 0.5 || lift == LIFT.SET) {
             doCentering = true;
         } else doCentering = false;
         
-        mecanumSubsystem.partialMove(true, -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        mecanumCommand.moveGlobalPartial(true, -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
     }
 
     private void processDriveMotor(){
@@ -352,6 +426,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
     private void processLift(){
         while(opModeIsActive()) multiMotorCommand.LiftUp(true, level);
+        //would be multiMotorCommand.LiftUp(true, targetLevel);
     }
 
 
