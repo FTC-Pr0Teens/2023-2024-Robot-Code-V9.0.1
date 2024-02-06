@@ -84,27 +84,45 @@ public class FieldOrientedAutoCenter extends LinearOpMode {
             double robotLength = 18/2;
 
             //backBlue
-            double posX = odometrySubsystem.y;
-            double posY = odometrySubsystem.x;
-            double posTheta = odometrySubsystem.theta;
-            double offsetX = (-0.5) + (-1 * 24) - (robotLength); //1 * 24 inch tile down + (0.5) inch mat side tab distance + 9 inch robot radius
-            double offsetY = -(3*24) + (robotWidth);             //3 * 24inch tiles right - 9 inches robot radius
+            double cmToInch = 0.3937;
+            double posX = odometrySubsystem.y * cmToInch;
+            double posY = odometrySubsystem.x* cmToInch;
+            double posTheta = Math.PI + odometrySubsystem.theta;
+            double offsetX = (-0.5) + (-1 * 24) - (robotWidth); //1 * 24 inch tile down + (0.5) inch mat side tab distance + 9 inch robot radius
+            double offsetY = -(4*24) + (robotLength);             //3 * 24inch tiles right - 9 inches robot radius
             switch(startLocation) {
                 case "backBlue":
-                    posX = odometrySubsystem.y;
-                    posY = odometrySubsystem.x;
+                    posX = odometrySubsystem.y* cmToInch;
+                    posY = odometrySubsystem.x* cmToInch;
                     posTheta = odometrySubsystem.theta;
-                    offsetX = (-0.5) + (-1 * 24) - (9);
-                    offsetY = (3*24) - (9);
+                    offsetX = (-0.5) + (-2 * 24) + (robotWidth);
+                    offsetY = (3*24) - (robotLength);
                     //start position = 90, 10 or something (fix later)
                     break;
                 case "frontBlue":
+                    posX = odometrySubsystem.y* cmToInch;
+                    posY = odometrySubsystem.x* cmToInch;
+                    posTheta = odometrySubsystem.theta;
+                    offsetX = (-0.5) + (1 * 24) - (robotWidth*2);
+                    offsetY = (3*24) - (robotLength);
+                    break;
+                case "frontRed":
+                    posX = -odometrySubsystem.y* cmToInch;
+                    posY = -odometrySubsystem.x* cmToInch;
+                    posTheta = Math.PI + odometrySubsystem.theta;
+                    offsetX = (-0.5) + (1 * 24) - (robotWidth*2); //1 * 24 inch tile down + (0.5) inch mat side tab distance + 9 inch robot radius
+                    offsetY = -(3*24) - (robotLength);
                     break;
                 case "backRed":
+                    posX = -odometrySubsystem.y* cmToInch;
+                    posY = -odometrySubsystem.x* cmToInch;
+                    posTheta = Math.PI + odometrySubsystem.theta;
+                    offsetX = (-0.5) + (-2 * 24) + (robotWidth); //1 * 24 inch tile down + (0.5) inch mat side tab distance + 9 inch robot radius
+                    offsetY = -(3*24) + (robotLength);
                     break;
                 default:
-                    posX = -odometrySubsystem.y;
-                    posY = -odometrySubsystem.x;
+                    posX = -odometrySubsystem.y* cmToInch;
+                    posY = -odometrySubsystem.x* cmToInch;
                     posTheta = Math.PI + odometrySubsystem.theta;
                     break;
             }
@@ -112,6 +130,9 @@ public class FieldOrientedAutoCenter extends LinearOpMode {
 
             packet.put("target", autoCenterAngle);
             packet.put("rotVel", gridAutoCentering.getGraphRotationalVel());
+            packet.put("right encoder", odometrySubsystem.rightEncoder());
+            packet.put("left encoder", odometrySubsystem.leftEncoder());
+            packet.put("back encoder", odometrySubsystem.backEncoder());
 
             packet.fieldOverlay() //in inches
                     .setTranslation(offsetX, offsetY)
