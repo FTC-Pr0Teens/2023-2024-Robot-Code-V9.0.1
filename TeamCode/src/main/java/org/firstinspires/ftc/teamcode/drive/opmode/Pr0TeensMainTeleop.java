@@ -41,7 +41,6 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
 
     ElapsedTime outputTimer = new ElapsedTime();
-    ElapsedTime gateTimer = new ElapsedTime();
 
     private IntakeCommand intakeCommand;
 
@@ -94,7 +93,13 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
     private boolean left_stick_pressed = false;
 
     private boolean doCentering = false;
-    private double autoCenterAngle = 0;
+
+    private enum alignDirection { //for autocenter
+        LEFT,
+        RIGHT,
+        NONE,
+    }
+        private alignDirection autoCenterDirection = alignDirection.NONE;
 
 
 
@@ -160,19 +165,12 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         intakeCommand.lowerIntake();
 
         while(opModeIsActive()) {
-/*
-            processLift has to continuously run because PID only allows you to set the lift to
-            a certain height while the lift must run forever
-             */
-//            //isLiftExtracted();
+
             checkLiftState();
 //            isPixelDropping();
-//            runMovement(); moved to own thread
 
             if(gamepad2.a) setLevel = 1;
             if(gamepad2.y) setLevel = 2;
-
-
 
             //TODO: lift_middle and lift_end is the exact same
 //
@@ -197,6 +195,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             //intake
 
             if (gamepad1.left_bumper) {
+                intakeCommand.lowerIntake();
                 intakeCommand.intakeIn(0.6);
                 intakeCommand.intakeRollerIn();
             } else if (gamepad1.right_bumper) {
@@ -206,19 +205,22 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
                 intakeCommand.stopIntake();
             }
 
+            if(gamepad1.left_trigger > 0.5){ //if autocentering, raise intake (so we dont crash into poles)
+                intakeCommand.linkageIdle();
+            }
+
 
             //output gate
-            if (gamepad1.right_trigger > 0.5){
-                timers.resetTimer("gate");
-                liftState.add(LIFT_STATE.DROP_PIXEL);
-            }
+//            if (gamepad1.right_trigger > 0.5){
+//                timers.resetTimer("gate");
+//                liftState.add(LIFT_STATE.DROP_PIXEL);
+//            }
 
             //TODO: Set positions for hangingServo
             if (gamepad2.dpad_right) {
                 //idle
                 hangingServoL.setPosition(0.6);
                 hangingServoR.setPosition(0.6); //NOT PREPARED TO HANG
-
             } else if (gamepad2.dpad_left){
                 //hang
                 hangingServoL.setPosition(0.525);
@@ -233,7 +235,6 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
                 hangingMotor.setPower(0);
             }
 
-
             //drone Launcher
             if (gamepad2.right_trigger > 0.5) {
                 droneShooter.launch();
@@ -244,14 +245,11 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             }
 
             if (gamepad2.right_bumper) {
-                intakeCommand.autoPixel(5);; //
+                intakeCommand.autoPixel(1); //
             } else if (gamepad2.left_bumper){
                 intakeCommand.lowerIntake();
             }
 
-
-
-//
             telemetry.addData("Target level (where the lift is going to)", targetLevel);
             telemetry.addData("Set level (Backdrop level that we want)", setLevel);
 //            telemetry.addData("position", multiMotorSubsystem.getPosition());
@@ -277,6 +275,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
                 outputCommand.armToIdle();
                 level = 0;
 
+                //INPUT COMMAND
                 if(gamepad2.x) {
                     timers.resetTimer("lift");
                     lift = LIFT.RAISE;
@@ -285,16 +284,21 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
                 break;
             case RAISE:
+                targetLevel = setLevel;
+                outputCommand.closeGate();
+                intakeCommand.intakeRollerIn(); //keep pixel inside thing
+
                 if(timers.checkTimePassed("lift", 250)) {
                     outputCommand.armToBoard();
                     outputCommand.tiltToBoard();
+                    intakeCommand.intakeOut(0.7);
                 }
                 //controller inputs to change setLevel
-                targetLevel = setLevel;
 
                 if(timers.checkTimePassed("lift", 1000)){
-                    timers.resetTimer("lift");
                     lift = LIFT.SET;
+                    intakeCommand.stopIntake();
+                    timers.resetTimer("lift");
                 }
                 break;
             case SET:
@@ -312,11 +316,11 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             case DROP:
                 targetLevel = setLevel; //maintain height
 
-                if(timers.checkTimePassed("gate", 500) && gamepad1.right_trigger < 0.5){
+                if(timers.checkTimePassed("gate", 500) && gamepad1.right_trigger < 0.5){ //when 500ms passed and trigger is let go
                     intakeCommand.intakeRollerStop();
                     outputCommand.closeGate();
-                    lift = LIFT.RETRACT;
-                } else if (timers.checkTimePassed("gate", 200) && gamepad1.right_trigger < 0.5) {
+                    lift = LIFT.SET;
+                } else if (timers.checkTimePassed("gate", 200)) {
                     if(gamepad1.right_trigger < 0.5) outputCommand.closeGate();
                     intakeCommand.intakeRollerIn();
                 } else {
@@ -336,7 +340,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             case LOWER:
                 telemetry.addLine("hi");
                 level = 0;
-                if(outputTimer.milliseconds() > 400){
+                if(timers.checkTimePassed("lift", 400)){
                     lift = LIFT.IDLE;
                 }
                 break;
@@ -387,25 +391,36 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
          * These two will reset angle headings of the IMU, both field oriented and autocenter
          */
         if (gamepad1.dpad_left) {
-            doCentering = false;
-            imuSubsystem.resetAngle(); //for gyro odometry
-            gridAutoCentering.reset(); //reset grid heading
-            autoCenterAngle = Math.PI/2; //set autocenter to left 90 degrees
-            gridAutoCentering.offsetTargetAngle(autoCenterAngle);
-
+            autoCenterDirection = alignDirection.LEFT;
+            gridAutoCentering.offsetTargetAngle(-Math.PI/2);
         } else if (gamepad1.dpad_right) {
-            doCentering = false;
-            imuSubsystem.resetAngle(); //for gyro odometry
-            gridAutoCentering.reset(); //reset grid heading
-            autoCenterAngle = Math.PI/2; //set autocenter to right 90 degrees
-            gridAutoCentering.offsetTargetAngle(autoCenterAngle);
+            autoCenterDirection = alignDirection.RIGHT;
+            gridAutoCentering.offsetTargetAngle(Math.PI/2);
+        } else if(gamepad1.dpad_up){
+            autoCenterDirection = alignDirection.NONE;
+            gridAutoCentering.offsetTargetAngle(0);
+        } else if(gamepad1.dpad_down){
+            if(gamepad1.right_trigger > 0.5){
+                switch (autoCenterDirection) { //resets heading if aligned to board, otherwise align to current robot position
+                    case LEFT:
+                        imuSubsystem.resetAngle(-Math.PI/2);
+                        break;
+                    case RIGHT:
+                        imuSubsystem.resetAngle(Math.PI/2);
+                        break;
+                    default:
+                        imuSubsystem.resetAngle();
+                }
+            } else imuSubsystem.resetAngle();
+            gridAutoCentering.reset();
         }
 
-        if(gamepad1.left_trigger > 0.5 || lift == LIFT.SET) {
-            doCentering = true;
-        } else doCentering = false;
+        doCentering = gamepad1.left_trigger > 0.5 && !gamepad1.dpad_down; //if not resetting angle
         
-        mecanumCommand.moveGlobalPartial(true, -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        if(lift == LIFT.SET || gamepad1.left_trigger > 0.5) mecanumCommand.moveGlobalPartial(true, -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        else mecanumCommand.moveGlobalPartial(true, -gamepad1.left_stick_y * 0.6, gamepad1.left_stick_x * 0.6, gamepad1.right_stick_x);
+        //slowmode if dropping pixel and autocentering
+
     }
 
     private void processDriveMotor(){
