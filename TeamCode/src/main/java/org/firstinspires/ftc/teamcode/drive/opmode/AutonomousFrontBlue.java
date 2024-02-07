@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.subsystems.MultiMotorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.WebcamSubsystem;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
+import org.firstinspires.ftc.teamcode.util.TimerList;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -34,10 +35,13 @@ public class AutonomousFrontBlue extends LinearOpMode {
     private OdometrySubsystem odometrySubsystem;
     private GyroOdometry gyroOdometry;
     private IntakeCommand intakeCommand;
-    private WebcamSubsystem webcamSubsystem;
     private OutputCommand outputCommand;
     private MultiMotorSubsystem multiMotorSubsystem;
     private MultiMotorCommand multiMotorCommand;
+//    private WebcamSubsystem webcamSubsystem;
+
+    private TimerList timers = new TimerList();
+
     FtcDashboard dashboard;
     TelemetryPacket packet;
     private ElapsedTime timer;
@@ -46,25 +50,32 @@ public class AutonomousFrontBlue extends LinearOpMode {
     //57, -22, -0.832
     //38, 80, -1.58
     private int level = -1;
-
     private String position = "initialized";
 
 
+    // NOTE:
+    // CHANGE THIS DEPENDING ON ALLIANCE AUTO.
+    // DEFAULT IS OFF, BUT IF ALLIANCE IS AFK, THEN SET THIS TO TRUE.
+    private boolean doStacks = false;
+
     @Override
     public void runOpMode() throws InterruptedException {
-        //contour location before 60
         imu = new IMUSubsystem(hardwareMap);
         mecanumSubsystem = new MecanumSubsystem(hardwareMap);
         odometrySubsystem = new OdometrySubsystem(hardwareMap);
         gyroOdometry = new GyroOdometry(odometrySubsystem, imu);
         mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem, gyroOdometry, this);
+        //Note: different for autonomous front red --> kpy
+        mecanumCommand.setConstants(0.10, 0.03, 0.0095/2, 0.059, 0.004, 0.0095/2, 2.15, 0.0, 0.001);
         intakeCommand = new IntakeCommand(hardwareMap);
         outputCommand = new OutputCommand(hardwareMap);
         multiMotorSubsystem = new MultiMotorSubsystem(hardwareMap, true, MultiMotorSubsystem.MultiMotorType.dualMotor);
         multiMotorCommand = new MultiMotorCommand(multiMotorSubsystem);
-        webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_BLUE);
         timer = new ElapsedTime();
 
+//        webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
+
+        //Pre-start
         odometrySubsystem.reset();
         imu.resetAngle();
 
@@ -73,24 +84,39 @@ public class AutonomousFrontBlue extends LinearOpMode {
 
         outputCommand.armToIdle();
         outputCommand.tiltToIdle();
-        waitForStart();
+        waitForStart(); //WAIT FOR START
+
+        timers.resetTimer("runTime"); //this will track the current run time of the robot. limit 30 seconds
 
         Executor executor = Executors.newFixedThreadPool(4);
         CompletableFuture.runAsync(this::updateOdometry, executor);
         CompletableFuture.runAsync(this::updateTelemetry, executor);
         CompletableFuture.runAsync(this::liftProcess, executor);
 
-        timer.reset();
-        while (opModeInInit()) ;
-        String propPosition = webcamSubsystem.findSpikePosition();
+        //find the prop position
+        double propPosition = 0;
+//        goToRightSpike();
+        goToLeftSpike();
+//
+//        timer.reset();
+//        while (opModeInInit()) {
+//            propPosition = webcamSubsystem.getXProp();
+//        }
+//
+//        if (propPosition > 475) {
+//            goToMiddleSpike();
+//        } else if (propPosition > 0 && propPosition < 475) {
+//            goToLeftSpike();
+//        } else {
+//            goToRightSpike();
+//        }
 
-        if (propPosition.equals("right")) {
-            goToRightSpike();
-        } else if (propPosition.equals("left")) {
-            goToLeftSpike();
-        } else {
-            goToMiddleSpike();
-        }
+        //go to correct spike
+
+
+        sleep(1000);
+        stop();
+
 
     }
 
@@ -109,29 +135,28 @@ public class AutonomousFrontBlue extends LinearOpMode {
             telemetry.addData("global x", mecanumCommand.globalXController.getOutputPositionalValue());
             telemetry.addData("global y", mecanumCommand.globalYController.getOutputPositionalValue());
             telemetry.addData("global theta", mecanumCommand.globalThetaController.getOutputPositionalValue());
-            telemetry.addData("xprop", webcamSubsystem.getXProp());
+
             telemetry.update();
         }
 
-        while (opModeInInit()) {
-            telemetry.addData("prop", webcamSubsystem.getXProp());
+        while (opModeInInit()){
             telemetry.addData("position", position);
         }
     }
 
     public void liftProcess() {
-        while (opModeIsActive()) {
+        while(opModeIsActive()) {
             multiMotorCommand.LiftUp(true, level);
         }
     }
 
-    public void ThreadStop() {
-        while (opModeIsActive()) {
+    public void ThreadStop(){
+        while (opModeIsActive()){
             isStopRequested();
         }
     }
 
-    public void moveToPos(double x, double y, double theta, double toleranceX, double toleranceY, double toleranceTheta) {
+    public void moveToPos(double x, double y, double theta, double toleranceX, double toleranceY, double toleranceTheta){
         mecanumCommand.moveIntegralReset();
         // stop moving if within 5 ticks or 0.2 radians from the position
         while ((Math.abs(x - gyroOdometry.x) > toleranceX  //if within 2.5 ticks of target X position
@@ -143,7 +168,44 @@ public class AutonomousFrontBlue extends LinearOpMode {
         mecanumSubsystem.stop(true);
     }
 
-    public void maintainPos(double x, double y, double theta, double toleranceX, double toleranceY, double toleranceTheta) {
+    //TODO: tune these values. This part gets the current position of the prop.
+
+
+    private void goToRightSpike(){
+        moveToPos(-69.48,-14,2.11,2,2,0.025);
+        timer.reset();
+        intakeCommand.autoPixel(1);
+
+        while (timer.milliseconds() < 700) {
+            intakeCommand.intakeOutNoRoller(0.4);
+        }
+        intakeCommand.stopIntake();
+        intakeCommand.raiseIntake();
+
+
+        timer.reset();
+        while (opModeIsActive() ) {
+            if (timer.milliseconds() > 3100){
+                outputCommand.armToIdle();
+                outputCommand.tiltToIdle();
+                break;
+            } else if (timer.milliseconds() > 2400) {
+                outputCommand.openGate();
+                outputCommand.outputWheelIn();
+            } else if (timer.milliseconds() > 500) {
+                outputCommand.armToBoard();
+                outputCommand.tiltToBoard();
+            } else {
+                level = 1;
+            }
+            if(timer.milliseconds() <= 3100) maintainPos(-39,92,Math.PI/2,2.5,2.5,0.05);
+        }
+
+        moveToPos(-1,65,Math.PI/2,2.5,2.5,0.05);
+        moveToPos(-1,113,Math.PI/2,2.5,2.5,0.05);
+    }
+
+    public void maintainPos(double x, double y, double theta, double toleranceX, double toleranceY, double toleranceTheta){
         mecanumCommand.moveIntegralReset();
         // stop moving if within 5 ticks or 0.2 radians from the position
         if ((Math.abs(x - gyroOdometry.x) > toleranceX  //if within 2.5 ticks of target X position
@@ -156,17 +218,90 @@ public class AutonomousFrontBlue extends LinearOpMode {
         }
     }
 
-    private void goToRightSpike() {
-        moveToPos(57, 0, 0, 5, 5, 0.2);
-        sleep(1500);
-        moveToPos(55, -17, -0.832, 5, 5, 0.2);
+
+    private void goToLeftSpike(){
+        moveToPos(-95,43,1.10252,2.5,2.5,0.05); timer.reset();
+        intakeCommand.autoPixel(1);
+
+        while (timer.milliseconds() < 700) {
+            intakeCommand.intakeOutNoRoller(0.4);
+        }
+        intakeCommand.stopIntake();
+        intakeCommand.raiseIntake();
+
+
+        timer.reset();
+        while (opModeIsActive() ) {
+            if (timer.milliseconds() > 3100){
+                outputCommand.armToIdle();
+                outputCommand.tiltToIdle();
+                break;
+            } else if (timer.milliseconds() > 2400) {
+                outputCommand.openGate();
+                outputCommand.outputWheelIn();
+            } else if (timer.milliseconds() > 500) {
+                outputCommand.armToBoard();
+                outputCommand.tiltToBoard();
+            } else {
+                level = 1;
+            }
+            if(timer.milliseconds() <= 3100) maintainPos(-84,93.5,Math.PI/2,2.5,2.5,0.05);
+        }
+
+
+
+        moveToPos(-1,65,Math.PI/2,2.5,2.5,0.05);
+        level = 0;
+        moveToPos(-1,105,Math.PI/2,2.5,2.5,0.05);
     }
 
-    private void goToMiddleSpike() {
-        moveToPos(54, 24, 0, 5, 5, 0.2);
+    private void goToMiddleSpike(){
+        moveToPos(-111,15,1.0139,2.5,2.5,0.025);
+
+        timer.reset();
+        intakeCommand.autoPixel(1);
+
+        while (timer.milliseconds() < 700) {
+            intakeCommand.intakeOutNoRoller(0.4);
+        }
+        intakeCommand.stopIntake();
+        intakeCommand.raiseIntake();
+
+
+        timer.reset();
+        while (opModeIsActive() ) {
+            if (timer.milliseconds() > 3100){
+                outputCommand.armToIdle();
+                outputCommand.tiltToIdle();
+                break;
+            } else if (timer.milliseconds() > 2400) {
+                outputCommand.openGate();
+                outputCommand.outputWheelIn();
+            } else if (timer.milliseconds() > 500) {
+                outputCommand.armToBoard();
+                outputCommand.tiltToBoard();
+            } else {
+                level = 1;
+            }
+            if(timer.milliseconds() <= 3100) maintainPos(-68,94,Math.PI/2,2.5,2.5,0.05);
+        }
+        moveToPos(-1,65,Math.PI/2,2.5,2.5,0.05);
+        level = 0;
+        moveToPos(-1,105,Math.PI/2,2.5,2.5,0.05);
     }
 
-    private void goToLeftSpike() {
-        moveToPos(67, -3, 0, 5, 5, 0.2);
+
+
+
+    private void goToBoardRight(){
+        moveToPos(46, -78.5, 1.65, 5, 5, 0.2); //1.65 radians = 94.53804 degrees
+    }
+
+    private void goToBoardMiddle(){
+        moveToPos(61, -80,1.65, 5,5,0.2);
+    }
+
+    private void goToBoardLeft(){
+        moveToPos(68, -81.5,1.65, 5,5,0.2);
     }
 }

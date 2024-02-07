@@ -358,7 +358,7 @@ public class MultiMotorSubsystem extends Specifications {
 
         //only for up
         intervalValue = velocityInterval.getOutput(getPosition());
-        cascadeOutput = -cascadePID.cascadeOutput(targetPos, getAuxPos(), intervalValue, getDerivativeValue());
+        cascadeOutput = -cascadePID.cascadeOutput(targetPos, getPosition(), intervalValue, getDerivativeValue());
         moveLift(cascadeOutput);
     }
 

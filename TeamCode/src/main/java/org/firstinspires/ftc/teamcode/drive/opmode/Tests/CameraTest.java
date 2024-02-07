@@ -32,12 +32,12 @@ public class CameraTest extends LinearOpMode {
         waitForStart();
         while(opModeIsActive()){
             dashboard.sendTelemetryPacket(packet);
-            packet.put("x", camera.getXProp());
-            packet.put("y", camera.getContourProcessor().largestContourCenter().y);
-            packet.put("area", camera.getContourProcessor().largestContourArea());
-            telemetry.addData("x", camera.getXProp());
-            telemetry.addData("y", camera.getContourProcessor().largestContourCenter().y);
-            telemetry.addData("area", camera.getContourProcessor().largestContourArea());
+            packet.put("x", camera.contourPipeline.largestContourCenter().x);
+            packet.put("y", camera.contourPipeline.largestContourCenter().y);
+            packet.put("area", camera.contourPipeline.largestContourArea());
+            telemetry.addData("x", camera.contourPipeline.largestContourCenter().x);
+            telemetry.addData("y", camera.contourPipeline.largestContourCenter().y);
+            telemetry.addData("area", camera.contourPipeline.largestContourArea());
             sleep(20);
         }
     }

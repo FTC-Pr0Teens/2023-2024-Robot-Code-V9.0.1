@@ -315,7 +315,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
                 if(timers.checkTimePassed("gate", 500) && gamepad1.right_trigger < 0.5){
                     intakeCommand.intakeRollerStop();
                     outputCommand.closeGate();
-                    lift = LIFT.DROP;
+                    lift = LIFT.RETRACT;
                 } else if (timers.checkTimePassed("gate", 200) && gamepad1.right_trigger < 0.5) {
                     if(gamepad1.right_trigger < 0.5) outputCommand.closeGate();
                     intakeCommand.intakeRollerIn();
@@ -326,13 +326,15 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             case RETRACT:
                 outputCommand.tiltToIdle();
                 outputCommand.armToIdle();
-                targetLevel = 1;
+                targetLevel = 0;
                 if(timers.checkTimePassed("lift", 900)){
                     timers.resetTimer("lift");
+                    telemetry.addLine("lowerLift");
                     lift = LIFT.LOWER;
                 }
                 break;
             case LOWER:
+                telemetry.addLine("hi");
                 level = 0;
                 if(outputTimer.milliseconds() > 400){
                     lift = LIFT.IDLE;

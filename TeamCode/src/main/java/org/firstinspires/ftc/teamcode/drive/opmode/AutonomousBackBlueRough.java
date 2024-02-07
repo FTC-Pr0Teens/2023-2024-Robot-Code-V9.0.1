@@ -119,7 +119,6 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         aprilCamSubsystem = new AprilCamSubsystem(hardwareMap);
         colorSensor = new ColorSensorSubsystem(hardwareMap);
 
-
         //initializing some variables
 
         //resets the different subsystems to for preparation
@@ -162,17 +161,19 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         //TODO: below is left
         //TODO: below is left
         telemetry.addData("test", gyroOdometry.x);
+        double propPosition = 0;
 
         timer.reset();
-        while (opModeInInit());
-        String propPosition = webcamSubsystem.findSpikePosition();
+        while (opModeInInit()) {
+            propPosition = webcamSubsystem.getXProp();
+        }
 
-        if (propPosition.equals("right")) {
-            goToRightSpike();
-        } else if (propPosition.equals("left")) {
+        if (propPosition > 475) {
+            goToMiddleSpike();
+        } else if (propPosition > 0 && propPosition < 475) {
             goToLeftSpike();
         } else {
-            goToMiddleSpike();
+            goToRightSpike();
         }
     }
 
