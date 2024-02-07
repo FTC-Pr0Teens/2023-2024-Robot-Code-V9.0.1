@@ -99,19 +99,6 @@ public class AutonomousFrontRed extends LinearOpMode {
         //go to correct spike
 
 
-        /*
-
-        if (position.equals("left")){
-            goToBoardLeft();
-        }
-        else if (position.equals("middle")){
-            goToBoardMiddle();
-        }
-        else if (position.equals("right")){
-            goToBoardRight();
-        }
-        */
-
         sleep(1000);
         stop();
 
@@ -303,6 +290,4 @@ public class AutonomousFrontRed extends LinearOpMode {
     private void goToBoardLeft(){
         moveToPos(68, -81.5,1.65, 5,5,0.2);
     }
-
-
 }
