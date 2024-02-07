@@ -75,6 +75,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
     }
 
 
+
     // TODO: leos stuff
     private enum LIFT{
         IDLE,
@@ -84,8 +85,8 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
     }
 
     private LIFT lift = LIFT.IDLE;
-    private int setLevel; //what we want
-    private volatile int targetLevel; //controls lift, added volatile so that unlike last time it actually changes
+    private int setLevel = 1; //what we want
+    private volatile int targetLevel = 0; //controls lift, added volatile so that unlike last time it actually changes
 
 
 
@@ -145,6 +146,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
         CompletableFuture.runAsync(this::processDriveMotor, executor);
         CompletableFuture.runAsync(this::processIMU, executor);
+        CompletableFuture.runAsync(this::manualLift,executor);
 
         Gamepad currentGamepad1 = new Gamepad();
         Gamepad previousGamepad1 = new Gamepad();
@@ -164,26 +166,29 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
              */
 //            //isLiftExtracted();
             checkLiftState();
-            isPixelDropping();
+//            isPixelDropping();
 //            runMovement(); moved to own thread
+
+            if(gamepad2.a) setLevel = 1;
+            if(gamepad2.y) setLevel = 2;
 
 
 
             //TODO: lift_middle and lift_end is the exact same
-
-            if (gamepad2.x && !liftState.contains(LIFT_STATE.LIFT_END)) {
-                //level = 0;
-                outputTimer.reset();
-                liftState.add(LIFT_STATE.LIFT_END); //go to level 2
-            } else if (gamepad2.y && !liftState.contains(LIFT_STATE.LIFT_MIDDLE)) {
-                //level = 1;
-                outputTimer.reset();
-                liftState.add(LIFT_STATE.LIFT_MIDDLE); //go to level 1
-            } else if (gamepad2.a){
-                //level = 2;
-                outputTimer.reset();
-                liftState.add(LIFT_STATE.LIFT_IDLE); //go to bottom, reset
-            }
+//
+//            if (gamepad2.a && !liftState.contains(LIFT_STATE.LIFT_END)) {
+//                //level = 0;
+//                outputTimer.reset();
+//                liftState.add(LIFT_STATE.LIFT_END); //go to level 2
+//            } else if (gamepad2.y && !liftState.contains(LIFT_STATE.LIFT_MIDDLE)) {
+//                //level = 1;
+//                outputTimer.reset();
+//                liftState.add(LIFT_STATE.LIFT_MIDDLE); //go to level 1
+//            } else if (gamepad2.b){
+//                //level = 2;
+//                outputTimer.reset();
+//                liftState.add(LIFT_STATE.LIFT_IDLE); //go to bottom, reset
+//            }
 
 
             //have 3 buttons to change setLevel
@@ -239,12 +244,16 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             }
 
             if (gamepad2.right_bumper) {
-                intakeCommand.autoPixel(5);
+                intakeCommand.autoPixel(5);; //
             } else if (gamepad2.left_bumper){
                 intakeCommand.lowerIntake();
             }
+
+
+
 //
-//            telemetry.addData("Target Position", targetPosition);
+            telemetry.addData("Target level (where the lift is going to)", targetLevel);
+            telemetry.addData("Set level (Backdrop level that we want)", setLevel);
 //            telemetry.addData("position", multiMotorSubsystem.getPosition());
 //            telemetry.addData("power", multiMotorSubsystem.getMainPower());
 //            telemetry.addData("auxpower", multiMotorSubsystem.getAux1Power());
@@ -268,18 +277,18 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
                 outputCommand.armToIdle();
                 level = 0;
 
-                if(gamepad1.left_trigger > 0.5){
+                if(gamepad2.x) {
                     timers.resetTimer("lift");
                     lift = LIFT.RAISE;
-                    targetLevel = setLevel; //set targetpos to current controller pos
+                    targetLevel = setLevel;
                 }
+
                 break;
             case RAISE:
                 if(timers.checkTimePassed("lift", 250)) {
                     outputCommand.armToBoard();
                     outputCommand.tiltToBoard();
                 }
-
                 //controller inputs to change setLevel
                 targetLevel = setLevel;
 
@@ -331,44 +340,29 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
                 break;
         }
 
-
-
-        if (liftState.contains(LIFT_STATE.LIFT_IDLE)) {
-            outputCommand.tiltToIdle(); //bring arm down BEFORE bringing lift down
-            outputCommand.armToIdle();
-            if (outputTimer.milliseconds() > 900) {
-                level = 0;
-                if (outputTimer.milliseconds() > 1300) liftState.clear(); //moved here
-            }
-        } else if (liftState.contains(LIFT_STATE.LIFT_MIDDLE)) {
-            if (!liftState.contains(LIFT_STATE.LIFT_END)) {
-<<<<<<< Updated upstream
-//                targetPosition = -1100;
-=======
-                targetPosition = -900;
->>>>>>> Stashed changes
-                if (outputTimer.milliseconds() > 1000) {
-                    liftState.clear();
-                } else if (outputTimer.milliseconds() > 250) { //bring lift up BEFORE extending arm
-                    outputCommand.armToBoard();
-                    outputCommand.tiltToBoard();
-                } else {
-                    level = 1;
-                }
-            }
-        } else if (liftState.contains(LIFT_STATE.LIFT_END)) {
-            if (!liftState.contains(LIFT_STATE.LIFT_MIDDLE)) {
-//                targetPosition = -2020;
-                if (outputTimer.milliseconds() > 1000) {
-                    liftState.clear();
-                } else if (outputTimer.milliseconds() > 250) { //bring lift up BEFORE extending arm
-                    outputCommand.armToBoard();
-                    outputCommand.tiltToBoard();
-                } else {
-                    level = 2;
-                }
-            }
-        }
+//
+//
+//        if (liftState.contains(LIFT_STATE.LIFT_IDLE)) {
+//            outputCommand.tiltToIdle(); //bring arm down BEFORE bringing lift down
+//            outputCommand.armToIdle();
+//            if (outputTimer.milliseconds() > 900) {
+//                if (outputTimer.milliseconds() > 1300) liftState.clear(); //moved here
+//            }
+//        } else if (liftState.contains(LIFT_STATE.LIFT_MIDDLE)) {
+//            if (!liftState.contains(LIFT_STATE.LIFT_END)) {
+//                targetLevel = -900;
+//                if (outputTimer.milliseconds() > 1000) {
+//                    liftState.clear();
+//                }
+//            }
+//        } else if (liftState.contains(LIFT_STATE.LIFT_END)) {
+//            if (!liftState.contains(LIFT_STATE.LIFT_MIDDLE)) {
+//                targetLevel = -2020;
+//                if (outputTimer.milliseconds() > 1000) {
+//                    liftState.clear();
+//                }
+//            }
+//        }
     }
 
     private void isPixelDropping(){
@@ -429,9 +423,13 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
 
     private void processLift(){
-        while(opModeIsActive()) multiMotorCommand.LiftUp(true, level);
-        //would be multiMotorCommand.LiftUp(true, targetLevel);
+//        while(opModeIsActive()) multiMotorCommand.LiftUp(true, level);
+        while(opModeIsActive()) multiMotorCommand.LiftUp(true, targetLevel);
     }
 
+
+    private void manualLift(){
+        multiMotorSubsystem.moveLift(-gamepad2.left_stick_y);
+    }
 
 }

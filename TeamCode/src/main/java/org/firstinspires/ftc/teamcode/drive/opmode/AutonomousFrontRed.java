@@ -35,7 +35,6 @@ public class AutonomousFrontRed extends LinearOpMode {
     private OdometrySubsystem odometrySubsystem;
     private GyroOdometry gyroOdometry;
     private IntakeCommand intakeCommand;
-    private WebcamSubsystem webcamSubsystem;
     private OutputCommand outputCommand;
     private MultiMotorSubsystem multiMotorSubsystem;
     private MultiMotorCommand multiMotorCommand;
@@ -66,12 +65,11 @@ public class AutonomousFrontRed extends LinearOpMode {
         gyroOdometry = new GyroOdometry(odometrySubsystem, imu);
         mecanumCommand = new MecanumCommand(mecanumSubsystem, odometrySubsystem, gyroOdometry, this);
         //Note: different for autonomous front red --> kpy
-        mecanumCommand.setConstants(0.07, 0.01, 0.0075 / 2, 0.05, 0.005, 0.0075 / 2, 2, 0.05, 0.0);
+        mecanumCommand.setConstants(0.10, 0.03, 0.0095/2, 0.059, 0.004, 0.0095/2, 2.15, 0.0, 0.001);
         intakeCommand = new IntakeCommand(hardwareMap);
         outputCommand = new OutputCommand(hardwareMap);
         multiMotorSubsystem = new MultiMotorSubsystem(hardwareMap, true, MultiMotorSubsystem.MultiMotorType.dualMotor);
         multiMotorCommand = new MultiMotorCommand(multiMotorSubsystem);
-        webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
         timer = new ElapsedTime();
 
         //Pre-start
@@ -83,7 +81,7 @@ public class AutonomousFrontRed extends LinearOpMode {
 
         outputCommand.armToIdle();
         outputCommand.tiltToIdle();
-        waitForStart(); //WAIT FOR STARTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTt
+        waitForStart(); //WAIT FOR START
 
         timers.resetTimer("runTime"); //this will track the current run time of the robot. limit 30 seconds
 
@@ -95,26 +93,11 @@ public class AutonomousFrontRed extends LinearOpMode {
         //find the prop position
         //setPropPosition();
 
-        position = "right";
+
+        goToMiddleSpike();
 
         //go to correct spike
-        if (position.equals("left")){
-            goToLeftSpike();
-        }
-        else if (position.equals("middle")){
-            goToMiddleSpike();
-        }
-        else if (position.equals("right")){
-            goToRightSpike();
-        }
 
-        //output prop
-        timer.reset();
-        intakeCommand.raiseIntake();
-        while(timer.milliseconds() < 1000) {
-            intakeCommand.intakeOut(0.5);
-        }
-        intakeCommand.stopIntake();
 
         /*
 
@@ -150,13 +133,11 @@ public class AutonomousFrontRed extends LinearOpMode {
             telemetry.addData("global x", mecanumCommand.globalXController.getOutputPositionalValue());
             telemetry.addData("global y", mecanumCommand.globalYController.getOutputPositionalValue());
             telemetry.addData("global theta", mecanumCommand.globalThetaController.getOutputPositionalValue());
-            telemetry.addData("xprop", webcamSubsystem.getXProp());
 
             telemetry.update();
         }
 
         while (opModeInInit()){
-            telemetry.addData("prop", webcamSubsystem.getXProp());
             telemetry.addData("position", position);
         }
     }
@@ -186,33 +167,130 @@ public class AutonomousFrontRed extends LinearOpMode {
     }
 
     //TODO: tune these values. This part gets the current position of the prop.
-    private void setPropPosition(){
-        double propPosition = 0;
+
+
+    private void goToLeftSpike(){
+        moveToPos(-69.48,16,-2.11,2,2,0.025);
         timer.reset();
-        while(opModeInInit()) {
-            propPosition = webcamSubsystem.getXProp();
+        intakeCommand.autoPixel(1);
+
+        while (timer.milliseconds() < 400) {
+            intakeCommand.intakeOutNoRoller(0.3);
         }
-        if (propPosition < 100 && propPosition > 0) {
-            position = "left";
-        } else if (propPosition > 100) {
-            position = "right";
-        } else {
-            position = "middle";
+        intakeCommand.stopIntake();
+        intakeCommand.raiseIntake();
+
+
+        timer.reset();
+        while (opModeIsActive() ) {
+            if (timer.milliseconds() > 3100){
+                outputCommand.armToIdle();
+                outputCommand.tiltToIdle();
+                break;
+            } else if (timer.milliseconds() > 2400) {
+                outputCommand.openGate();
+                outputCommand.outputWheelIn();
+            } else if (timer.milliseconds() > 500) {
+                outputCommand.armToBoard();
+                outputCommand.tiltToBoard();
+            } else {
+                level = 1;
+            }
+            if(timer.milliseconds() <= 3100) maintainPos(-38,-88,-Math.PI/2,2.5,2.5,0.05);
         }
-        sleep(1000);
+
+        moveToPos(-1,-65,-Math.PI/2,2.5,2.5,0.05);
+        moveToPos(-1,-113,-Math.PI/2,2.5,2.5,0.05);
     }
 
+    public void maintainPos(double x, double y, double theta, double toleranceX, double toleranceY, double toleranceTheta){
+        mecanumCommand.moveIntegralReset();
+        // stop moving if within 5 ticks or 0.2 radians from the position
+        if ((Math.abs(x - gyroOdometry.x) > toleranceX  //if within 2.5 ticks of target X position
+                || Math.abs(y - gyroOdometry.y) > toleranceY //if within 2.5 ticks of target y position
+                || Math.abs(theta - gyroOdometry.theta) > toleranceTheta)
+                && this.opModeIsActive() && !this.isStopRequested()) {
+            mecanumCommand.moveToGlobalPos(x, y, theta);
+        } else {
+            mecanumSubsystem.stop(true);
+        }
+    }
+
+
     private void goToRightSpike(){
-        moveToPos(-98, -50, 0, 3, 3, 0.1);
+        moveToPos(-80,-43,-1.0768,2.5,2.5,0.1); timer.reset();
+        intakeCommand.autoPixel(1);
+
+        while (timer.milliseconds() < 550) {
+            intakeCommand.intakeOutNoRoller(0.3);
+        }
+        intakeCommand.stopIntake();
+        intakeCommand.raiseIntake();
+
+
+        timer.reset();
+        while (opModeIsActive() ) {
+            if (timer.milliseconds() > 3100){
+                outputCommand.armToIdle();
+                outputCommand.tiltToIdle();
+                break;
+            } else if (timer.milliseconds() > 2400) {
+                outputCommand.openGate();
+                outputCommand.outputWheelIn();
+            } else if (timer.milliseconds() > 500) {
+                outputCommand.armToBoard();
+                outputCommand.tiltToBoard();
+            } else {
+                level = 1;
+            }
+            if(timer.milliseconds() <= 3100) maintainPos(-43,-92,-Math.PI/2,2.5,2.5,0.05);
+        }
+
+
+
+        moveToPos(-1,-65,-Math.PI/2,2.5,2.5,0.05);
+        level = 0;
+        moveToPos(-1,-105,-Math.PI/2,2.5,2.5,0.05);
     }
 
     private void goToMiddleSpike(){
-        moveToPos(-119, -20, 0, 3,3, 0.1);
+        moveToPos(-113,-5,-0.7854,2.5,2.5,0.025);
+
+        timer.reset();
+        intakeCommand.autoPixel(1);
+
+        while (timer.milliseconds() < 550) {
+            intakeCommand.intakeOutNoRoller(0.3);
+        }
+        intakeCommand.stopIntake();
+        intakeCommand.raiseIntake();
+
+
+        timer.reset();
+        while (opModeIsActive() ) {
+            if (timer.milliseconds() > 3100){
+                outputCommand.armToIdle();
+                outputCommand.tiltToIdle();
+                break;
+            } else if (timer.milliseconds() > 2400) {
+                outputCommand.openGate();
+                outputCommand.outputWheelIn();
+            } else if (timer.milliseconds() > 500) {
+                outputCommand.armToBoard();
+                outputCommand.tiltToBoard();
+            } else {
+
+                level = 1;
+            }
+            if(timer.milliseconds() <= 3100) maintainPos(-55,-88,-Math.PI/2,2.5,2.5,0.05);
+        }
+        moveToPos(-1,-65,-Math.PI/2,2.5,2.5,0.05);
+        level = 0;
+        moveToPos(-1,-105,-Math.PI/2,2.5,2.5,0.05);
     }
 
-    private void goToLeftSpike(){
-        moveToPos(67,-3,0, 5,5, 0.2);
-    }
+
+
 
     private void goToBoardRight(){
         moveToPos(46, -78.5, 1.65, 5, 5, 0.2); //1.65 radians = 94.53804 degrees
