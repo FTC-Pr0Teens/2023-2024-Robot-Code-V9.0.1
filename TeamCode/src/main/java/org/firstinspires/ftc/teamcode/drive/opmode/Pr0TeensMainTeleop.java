@@ -418,7 +418,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         doCentering = gamepad1.left_trigger > 0.5 && !gamepad1.dpad_down; //if not resetting angle
         
         if(lift == LIFT.SET || gamepad1.left_trigger > 0.5) mecanumCommand.moveGlobalPartial(true, -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-        else mecanumCommand.moveGlobalPartial(true, gamepad1.left_stick_y * 0.6, -gamepad1.left_stick_x * 0.6, gamepad1.right_stick_x);
+        else mecanumCommand.moveGlobalPartial(true, -gamepad1.left_stick_y * 0.6, gamepad1.left_stick_x * 0.6, gamepad1.right_stick_x);
         //slowmode if dropping pixel and autocentering
 
     }

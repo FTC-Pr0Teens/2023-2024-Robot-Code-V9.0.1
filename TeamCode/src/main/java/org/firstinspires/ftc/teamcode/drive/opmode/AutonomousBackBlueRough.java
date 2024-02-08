@@ -417,17 +417,6 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         level = 0;
         outputCommand.closeGate();
 
-
-
-
-
-
-
-
-
-
-
-
         moveToPos(-135,160,Math.PI/2,2.5,2.5,0.05);
         moveToPos(-135,-48.5, Math.PI/2,2.5,2.5,0.05);
 
