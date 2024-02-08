@@ -153,12 +153,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         CompletableFuture.runAsync(this::processIMU, executor);
         CompletableFuture.runAsync(this::manualLift,executor);
 
-        Gamepad currentGamepad1 = new Gamepad();
-        Gamepad previousGamepad1 = new Gamepad();
-
         outputTimer.reset();
-
-        timers.resetTimer("testTimer");
 
         multiMotorSubsystem.reset();
 
@@ -196,7 +191,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
             if (gamepad1.left_bumper) {
                 intakeCommand.lowerIntake();
-                intakeCommand.intakeIn(0.6);
+                intakeCommand.intakeIn(0.75);
                 intakeCommand.intakeRollerIn();
             } else if (gamepad1.right_bumper) {
                 intakeCommand.intakeOut(0.9);
@@ -411,7 +406,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
                     default:
                         imuSubsystem.resetAngle();
                 }
-            } else imuSubsystem.resetAngle();
+            }
             gridAutoCentering.reset();
         }
 
@@ -419,6 +414,8 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         
         if(lift == LIFT.SET || gamepad1.left_trigger > 0.5) mecanumCommand.moveGlobalPartial(true, -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         else mecanumCommand.moveGlobalPartial(true, -gamepad1.left_stick_y * 0.6, gamepad1.left_stick_x * 0.6, gamepad1.right_stick_x);
+        if(lift == LIFT.SET && gamepad1.left_trigger > 0.5) mecanumCommand.moveGlobalPartial(true, -gamepad1.left_stick_y * 0.8, gamepad1.left_stick_x * 0.8, gamepad1.right_stick_x);
+        else mecanumCommand.moveGlobalPartial(true, -gamepad1.left_stick_y , gamepad1.left_stick_x, gamepad1.right_stick_x);
         //slowmode if dropping pixel and autocentering
 
     }
