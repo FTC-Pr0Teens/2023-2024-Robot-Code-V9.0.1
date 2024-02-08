@@ -57,7 +57,7 @@ public class IMUSubsystem extends Specifications {
     }
 
     public void resetAngle(double angle){
-        cTheta = angle;
+        cTheta = orientation.thirdAngle - angle;
     }
 
     public double getCTheta(){

@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.util.Pipelines;
+import android.graphics.Canvas;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-
+import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.teamcode.subsystems.WebcamSubsystem;
+import org.firstinspires.ftc.vision.VisionProcessor;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -35,7 +37,6 @@ Once this information is found, the pipeline regularly updates which contour it 
 in other words, which pole is deemed as the "closest"
  */
 public class ContourPipeline extends OpenCvPipeline {
-
     // for tracking pipeline processing speed
     private final ElapsedTime timer = new ElapsedTime();
     private double processTime = 0;
@@ -45,13 +46,14 @@ public class ContourPipeline extends OpenCvPipeline {
     private final Size KERNEL = new Size(20, 20);
     private final Scalar WHITE = new Scalar(255, 255, 255);
     private final Scalar CONTOUR_COLOR = new Scalar(255, 255, 255);
-    private final Scalar CONTOUR_CENTER_COLOUR = new Scalar(255,0,255);
+    private final Scalar CONTOUR_CENTER_COLOUR = new Scalar(255, 0, 255);
     private final Scalar UPPER_HSV;
     private final Scalar LOWER_HSV;
 
     // final output image
     Mat output = new Mat();
-    public ContourPipeline(double upperH, double upperS, double upperV, double lowerH, double lowerS, double lowerV){
+
+    public ContourPipeline(double upperH, double upperS, double upperV, double lowerH, double lowerS, double lowerV) {
         UPPER_HSV = new Scalar(upperH, upperS, upperV);
         LOWER_HSV = new Scalar(lowerH, lowerS, lowerV);
     }
@@ -131,6 +133,7 @@ public class ContourPipeline extends OpenCvPipeline {
         timer.reset();
 
         return output; // what the camera stream will display on the phone
+
     }
 
     /*
@@ -163,4 +166,5 @@ public class ContourPipeline extends OpenCvPipeline {
     public boolean objectDetected() {
         return !contourAreas.isEmpty();
     }
+
 }

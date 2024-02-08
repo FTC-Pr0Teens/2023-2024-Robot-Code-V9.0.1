@@ -51,14 +51,9 @@ public class OdometrySubsystem extends Specifications {
     private double tempY;
 
     //async process for position and angle measurement
-    public void process(){  
-        time.reset();
-        lEncoderf = leftEncoder();
-        rEncoderf = rightEncoder();
-        bEncoderf = backEncoder();
-        dx = dxc*((lEncoderf-lEncoderi)+(rEncoderf-rEncoderi));
-        dTheta = -dThetac*((rEncoderf-rEncoderi)-(lEncoderf-lEncoderi)); //unit circle direction
-        dy = (dyc*(bEncoderf-bEncoderi))+(lengthFromOdometrySideToFront*dTheta);
+
+    public void process(){
+
         //ThetaTemp = 0.96388888888*Theta+(dTheta/2);
 //        x = x+(dx*Math.cos(Theta))-(dy*Math.sin(Theta));
 //        if (dTheta > 0) {
@@ -70,8 +65,6 @@ public class OdometrySubsystem extends Specifications {
 //        }
         //Drive Gears
 
-        x += dx * Math.cos(theta) - dy * Math.sin(theta);
-        y += dx * Math.sin(theta) + dy * Math.cos(theta);
 
 
 
@@ -86,9 +79,19 @@ public class OdometrySubsystem extends Specifications {
 //        x += dx * Math.cos(theta) + dy * Math.sin(theta);
 //        y += -dx * Math.sin(theta) + dy * Math.cos(theta);
 
+        time.reset();
+        lEncoderf = leftEncoder();
+        rEncoderf = rightEncoder();
+        bEncoderf = backEncoder();
+        dx = dxc*((lEncoderf-lEncoderi)+(rEncoderf-rEncoderi));
+        dTheta = -dThetac*((lEncoderf-lEncoderi)-(rEncoderf-rEncoderi)); //unit circle direction
+        dy = (dyc*(bEncoderf-bEncoderi))+(lengthFromOdometrySideToFront*dTheta);
 
-        x = x+tempX;
-        y = y+tempY;
+        x += dx * Math.cos(theta) + dy * Math.sin(theta);
+        y += -dx * Math.sin(theta) + dy * Math.cos(theta);
+
+        x += tempX;
+        y += tempY;
         theta += dTheta/*1.03746397695*/;
         if (theta > twoPi){
             theta -= twoPi; // resets, if it is 370, theta = 10
@@ -105,13 +108,10 @@ public class OdometrySubsystem extends Specifications {
         if (navSystem != NavSystem.IMU){
             if (navSystem == NavSystem.ODOMETRY){
                 leftEncoder = hardwareMap.get(DcMotor.class, LF_ENCODER);
-                leftEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
                 leftEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             }
             rightEncoder = hardwareMap.get(DcMotor.class, RT_ENCODER);
             backEncoder = hardwareMap.get(DcMotor.class, BK_ENCODER);
-            rightEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
-            backEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
             rightEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             backEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
@@ -143,7 +143,7 @@ public class OdometrySubsystem extends Specifications {
         return Math.toDegrees(theta);
     }
 
-    public int backEncoder(){ return -backEncoder.getCurrentPosition(); }
+    public int backEncoder(){ return backEncoder.getCurrentPosition(); }
 
     public int leftEncoder(){
         return -leftEncoder.getCurrentPosition();

@@ -24,11 +24,11 @@ public class MultiMotorSubsystem extends Specifications {
     private PIDCore pidUp; //the pid used for going upward
     private double kpUp = 0.005; //k: constant
     private double kiUp = 0.04;
-    private double kdUp = 0;
+    private double kdUp = 0.009;
     private PIDCore pidDown; //the pid used for going downward
     private double kpDown = 0.008;
     private double kiDown = 0.04;
-    private double kdDown = 0.0;
+    private double kdDown = 0.009;
     private PIDCore pidVP;
     private double kp = 0.011;
     private double ki = 0;
@@ -345,6 +345,12 @@ public class MultiMotorSubsystem extends Specifications {
         aux2.setPower(getMainPower());
     }
 
+    public void LiftPositionalProcess(double targetPos){
+        runToPosition = true;
+        power = pidUp.outputPositional(targetPos, getPosition());
+        moveLift(power);
+    }
+
     public void LiftCascadeProcess(double targetPos, Interval... interval){
         runToPosition = true;
         IntervalControl velocityInterval = new IntervalControl(interval);
@@ -352,7 +358,7 @@ public class MultiMotorSubsystem extends Specifications {
 
         //only for up
         intervalValue = velocityInterval.getOutput(getPosition());
-        cascadeOutput = -cascadePID.cascadeOutput(targetPos, getAuxPos(), intervalValue, getDerivativeValue());
+        cascadeOutput = -cascadePID.cascadeOutput(targetPos, getPosition(), intervalValue, getDerivativeValue());
         moveLift(cascadeOutput);
     }
 
@@ -461,5 +467,9 @@ public class MultiMotorSubsystem extends Specifications {
     }
     public double getCascadeVelocity(){
         return cascadePID.getOutputVelocityValue();
+    }
+
+    public PIDCore getPidUp() {
+        return pidUp;
     }
 }

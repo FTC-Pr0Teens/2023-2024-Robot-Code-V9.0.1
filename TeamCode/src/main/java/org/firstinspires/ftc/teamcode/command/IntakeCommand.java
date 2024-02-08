@@ -27,7 +27,7 @@ public class IntakeCommand {
     }
 
     public void lowerIntake() {
-        intakeServo.setPosition(0.5);
+        intakeServo.setPosition(0.6);
     }
     public void intakeRollerIn(){
         intakeRoller.setPower(-1);
@@ -47,6 +47,10 @@ public class IntakeCommand {
         intakeRollerIn();
     }
 
+    public void linkageIdle(){
+        intakeServo.setPosition(0.47);
+    }
+
     public void slowIntakeIn(){
         intake.motorTurnPurePower(true, -0.5);
     }
@@ -60,4 +64,37 @@ public class IntakeCommand {
         intake.motorTurnPurePower(true, 0);
         intakeRoller.setPower(0);
     }
+
+    public void  autoPixel(int howManyPixelDoYouWant){
+        switch (howManyPixelDoYouWant){
+            case 1:
+                intakeServo.setPosition(0.46);
+                break;
+            case 2:
+                intakeServo.setPosition(0.49);
+                break;
+            case 3:
+                intakeServo.setPosition(0.51);
+                break;
+            case 4:
+                intakeServo.setPosition(0.54);
+                break;
+            default:
+                intakeServo.setPosition(0.6);
+
+        }
+    }
+
+    public void teleOpStart(){
+        intakeServo.setPosition(0.8);
+    }
+
+    public void intakeOutNoRoller(double power){
+        intake.motorTurnPurePower(true, -Math.abs(power));
+    }
+
+    public void setPosition(double position){
+        intakeServo.setPosition(position);
+    }
+
 }

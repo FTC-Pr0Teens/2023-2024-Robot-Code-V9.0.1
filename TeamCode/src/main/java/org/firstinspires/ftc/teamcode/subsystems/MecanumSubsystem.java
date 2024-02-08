@@ -14,7 +14,7 @@ public class MecanumSubsystem extends Specifications{
     private DcMotorEx rightBack;
     private DcMotorEx leftForward;
     private DcMotorEx rightForward;
-    private final double SCALE = 1;
+    private final double SCALE = 1.6;
 
     //rf: right front/forward
     //rb: right back
@@ -48,21 +48,16 @@ public class MecanumSubsystem extends Specifications{
 
     //async process for motor control
     public void motorProcess(){
+        lfvel = (lfvelMain + lfvelAdjustment1 + lfvelAdjustment2);
+        lbvel = (lbvelMain + lbvelAdjustment1 + lbvelAdjustment2);
+        rfvel = (rfvelMain + rfvelAdjustment1 + rfvelAdjustment2);
+        rbvel = (rbvelMain + rbvelAdjustment1 + rbvelAdjustment2);
         if (Math.abs(lfvelMain + lfvelAdjustment1 + lfvelAdjustment2) > MAX_ANGULAR_VEL || Math.abs(lbvelMain + lbvelAdjustment1 + lbvelAdjustment2) > MAX_ANGULAR_VEL || Math.abs(rfvelMain + rfvelAdjustment1 + rfvelAdjustment2) > MAX_ANGULAR_VEL || Math.abs(rbvelMain + rbvelAdjustment1 + rbvelAdjustment2) > MAX_ANGULAR_VEL){
-            lfvel = (lfvelMain + lfvelAdjustment1 + lfvelAdjustment2);
-            lbvel = (lbvelMain + lbvelAdjustment1 + lbvelAdjustment2);
-            rfvel = (rfvelMain + rfvelAdjustment1 + rfvelAdjustment2);
-            rbvel = (rbvelMain + rbvelAdjustment1 + rbvelAdjustment2);
             double max = Math.max(Math.abs(lfvel), Math.max(Math.abs(lbvel), Math.max(Math.abs(rfvel), Math.abs(rbvel))));
             lfvel = lfvel/max*MAX_ANGULAR_VEL;
             lbvel = lbvel/max*MAX_ANGULAR_VEL;
             rfvel = rfvel/max*MAX_ANGULAR_VEL;
             rbvel = rbvel/max*MAX_ANGULAR_VEL;
-        } else {
-            lfvel = lfvelMain + lfvelAdjustment1 + lfvelAdjustment2;
-            lbvel = lbvelMain + lbvelAdjustment1 + lbvelAdjustment2;
-            rfvel = rfvelMain + rfvelAdjustment1 + rfvelAdjustment2;
-            rbvel = rbvelMain + rbvelAdjustment1 + rbvelAdjustment2;
         }
         rightForward.setVelocity(rfvel, AngleUnit.RADIANS);
         leftBack.setVelocity(lbvel, AngleUnit.RADIANS);
@@ -71,24 +66,19 @@ public class MecanumSubsystem extends Specifications{
     }
 
     public void motorProcessTeleOp(){
+        lfvel = (lfvelMain + lfvelAdjustment1 + lfvelAdjustment2);
+        lbvel = (lbvelMain + lbvelAdjustment1 + lbvelAdjustment2);
+        rfvel = (rfvelMain + rfvelAdjustment1 + rfvelAdjustment2);
+        rbvel = (rbvelMain + rbvelAdjustment1 + rbvelAdjustment2);
         if (Math.abs(lfvelMain + lfvelAdjustment1 + lfvelAdjustment2) > MAX_ANGULAR_VEL
                 || Math.abs(lbvelMain + lbvelAdjustment1 + lbvelAdjustment2) > MAX_ANGULAR_VEL
                 || Math.abs(rfvelMain + rfvelAdjustment1 + rfvelAdjustment2) > MAX_ANGULAR_VEL
                 || Math.abs(rbvelMain + rbvelAdjustment1 + rbvelAdjustment2) > MAX_ANGULAR_VEL){
-            lfvel = (lfvelMain + lfvelAdjustment1 + lfvelAdjustment2);
-            lbvel = (lbvelMain + lbvelAdjustment1 + lbvelAdjustment2);
-            rfvel = (rfvelMain + rfvelAdjustment1 + rfvelAdjustment2);
-            rbvel = (rbvelMain + rbvelAdjustment1 + rbvelAdjustment2);
             double max = Math.max(Math.abs(lfvel), Math.max(Math.abs(lbvel), Math.max(Math.abs(rfvel), Math.abs(rbvel))));
             lfvel = lfvel/max;
             lbvel = lbvel/max;
             rfvel = rfvel/max;
             rbvel = rbvel/max;
-        } else {
-            lfvel = lfvelMain + lfvelAdjustment1 + lfvelAdjustment2;
-            lbvel = lbvelMain + lbvelAdjustment1 + lbvelAdjustment2;
-            rfvel = rfvelMain + rfvelAdjustment1 + rfvelAdjustment2;
-            rbvel = rbvelMain + rbvelAdjustment1 + rbvelAdjustment2;
         }
         rightForward.setPower(rfvel);
         leftBack.setPower(lbvel);
@@ -97,7 +87,6 @@ public class MecanumSubsystem extends Specifications{
     }
 
     public MecanumSubsystem(HardwareMap hardwareMap) {
-
         leftBack = hardwareMap.get(DcMotorEx.class, BKLF_MOTOR);
         rightBack = hardwareMap.get(DcMotorEx.class, BKRT_MOTOR);
         leftForward = hardwareMap.get(DcMotorEx.class, FTLF_MOTOR);
@@ -162,35 +151,38 @@ public class MecanumSubsystem extends Specifications{
             rightBack.setVelocity(rb);
             leftForward.setVelocity(lf);
         }
-    }
+    }//0.78539816
 
     //used with motorProcess or motorProcessTeleop
     public void partialMove(boolean run, double verticalVel, double horizontalVel, double rotationalVel){
 //        verticalVel = 0;
 //        horizontalVel = 0;
         if (run){
-            rbvelMain = (verticalVel * Math.cos(Math.toRadians(45)) + horizontalVel * Math.sin(Math.toRadians(45)) + rotationalVel * Math.sin(Math.toRadians(45)))*(1.41421356237);
-            rfvelMain = (-horizontalVel * Math.cos(Math.toRadians(45)) + verticalVel * Math.sin(Math.toRadians(45)) + rotationalVel * Math.sin(Math.toRadians(45)))*(1.41421356237);
-            lfvelMain = (verticalVel * Math.cos(Math.toRadians(45)) + horizontalVel * Math.sin(Math.toRadians(45)) - rotationalVel * Math.sin(Math.toRadians(45)))*(1.41421356237);
-            lbvelMain = (-horizontalVel * Math.cos(Math.toRadians(45)) + verticalVel * Math.sin(Math.toRadians(45)) - rotationalVel * Math.sin(Math.toRadians(45)))*(1.41421356237);
+            
+            //1.57079633 is Pi divided by 2
+            //1.41421356237 is square root of 2
+            rbvelMain = (verticalVel * Math.cos(0.78539816) + horizontalVel * Math.sin(0.78539816) + rotationalVel * Math.sin(0.78539816))*(1.41421356237);
+            rfvelMain = (-horizontalVel * Math.cos(0.78539816) + verticalVel * Math.sin(0.78539816) + rotationalVel * Math.sin(0.78539816))*(1.41421356237);
+            lfvelMain = (verticalVel * Math.cos(0.78539816) + horizontalVel * Math.sin(0.78539816) - rotationalVel * Math.sin(0.78539816))*(1.41421356237);
+            lbvelMain = (-horizontalVel * Math.cos(0.78539816) + verticalVel * Math.sin(0.78539816) - rotationalVel * Math.sin(0.78539816))*(1.41421356237);
         }
     }
 
     public void partialMoveAdjustment1(boolean run, double verticalVel, double horizontalVel, double rotationalVel){
         if (run){
-            rbvelAdjustment1 = (verticalVel * Math.cos(Math.toRadians(45)) + horizontalVel * Math.sin(Math.toRadians(45)) + rotationalVel * Math.sin(Math.toRadians(45)))*(1.41421356237);
-            rfvelAdjustment1 = (-horizontalVel * Math.cos(Math.toRadians(45)) + verticalVel * Math.sin(Math.toRadians(45)) + rotationalVel * Math.sin(Math.toRadians(45)))*(1.41421356237);
-            lfvelAdjustment1 = (verticalVel * Math.cos(Math.toRadians(45)) + horizontalVel * Math.sin(Math.toRadians(45)) - rotationalVel * Math.sin(Math.toRadians(45)))*(1.41421356237);
-            lbvelAdjustment1 = (-horizontalVel * Math.cos(Math.toRadians(45)) + verticalVel * Math.sin(Math.toRadians(45)) - rotationalVel * Math.sin(Math.toRadians(45)))*(1.41421356237);
+            rbvelAdjustment1 = (verticalVel * Math.cos(0.78539816) + horizontalVel * Math.sin(0.78539816) + rotationalVel * Math.sin(0.78539816))*(1.41421356237);
+            rfvelAdjustment1 = (-horizontalVel * Math.cos(0.78539816) + verticalVel * Math.sin(0.78539816) + rotationalVel * Math.sin(0.78539816))*(1.41421356237);
+            lfvelAdjustment1 = (verticalVel * Math.cos(0.78539816) + horizontalVel * Math.sin(0.78539816) - rotationalVel * Math.sin(0.78539816))*(1.41421356237);
+            lbvelAdjustment1 = (-horizontalVel * Math.cos(0.78539816) + verticalVel * Math.sin(0.78539816) - rotationalVel * Math.sin(0.78539816))*(1.41421356237);
         }
     }
 
     public void partialMoveAdjustment2(boolean run, double verticalVel, double horizontalVel, double rotationalVel){
         if (run){
-            rbvelAdjustment2 = (verticalVel * Math.cos(Math.toRadians(45)) + horizontalVel * Math.sin(Math.toRadians(45)) + rotationalVel * Math.sin(Math.toRadians(45)))*(1.41421356237);
-            rfvelAdjustment2 = (-horizontalVel * Math.cos(Math.toRadians(45)) + verticalVel * Math.sin(Math.toRadians(45)) + rotationalVel * Math.sin(Math.toRadians(45)))*(1.41421356237);
-            lfvelAdjustment2 = (verticalVel * Math.cos(Math.toRadians(45)) + horizontalVel * Math.sin(Math.toRadians(45)) - rotationalVel * Math.sin(Math.toRadians(45)))*(1.41421356237);
-            lbvelAdjustment2 = (-horizontalVel * Math.cos(Math.toRadians(45)) + verticalVel * Math.sin(Math.toRadians(45)) - rotationalVel * Math.sin(Math.toRadians(45)))*(1.41421356237);
+            rbvelAdjustment2 = (verticalVel * Math.cos(0.78539816) + horizontalVel * Math.sin(0.78539816) + rotationalVel * Math.sin(0.78539816))*(1.41421356237);
+            rfvelAdjustment2 = (-horizontalVel * Math.cos(0.78539816) + verticalVel * Math.sin(0.78539816) + rotationalVel * Math.sin(0.78539816))*(1.41421356237);
+            lfvelAdjustment2 = (verticalVel * Math.cos(0.78539816) + horizontalVel * Math.sin(0.78539816) - rotationalVel * Math.sin(0.78539816))*(1.41421356237);
+            lbvelAdjustment2 = (-horizontalVel * Math.cos(0.78539816) + verticalVel * Math.sin(0.78539816) - rotationalVel * Math.sin(0.78539816))*(1.41421356237);
         }
     }
 
@@ -297,8 +289,10 @@ public class MecanumSubsystem extends Specifications{
 //        double newX =  y * Math.sin(theta) + x * Math.sin(angle);
 //        double newY = y * Math.cos(theta) - x * Math.cos(angle);
 
-        double newX = x * Math.cos(theta) + y * Math.sin(theta);
-        double newY = -x * Math.sin(theta) + y * Math.cos(theta);
+
+
+        double newX = x * Math.cos(theta) - y * Math.sin(theta);
+        double newY = x * Math.sin(theta) + y * Math.cos(theta);
 
 
 

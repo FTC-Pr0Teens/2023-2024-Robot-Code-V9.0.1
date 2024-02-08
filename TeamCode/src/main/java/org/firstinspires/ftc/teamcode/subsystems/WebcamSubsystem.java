@@ -21,15 +21,16 @@ public class WebcamSubsystem extends Specifications {
     int cameraMonitorViewId;
     ElementPipeline2 elementPipeline2;
     RedIntakePipeline redIntakePipeline;
-    public AprilTagPipeline aprilTagPipeline;
+    //public AprilTagPipeline aprilTagPipeline;
     public ContourPipeline contourPipeline;
     boolean initial;
-    public enum PipelineName{
+
+    public enum PipelineName {
         ELEMENT, RED_INTAKE, APRIL_TAG, CONTOUR_RED, CONTOUR_BLUE
     }
 
-    public static final int VIEW_WIDTH = 320;
-    public static final int VIEW_HEIGHT = 176;
+    public static final int VIEW_WIDTH = 864;
+    public static final int VIEW_HEIGHT = 480;
     public static final int CENTER_X = VIEW_WIDTH / 2;
     public static final int CENTER_Y = VIEW_HEIGHT / 2;
 
@@ -41,7 +42,8 @@ public class WebcamSubsystem extends Specifications {
     double fy = 578.272;
     double cx = 402.145;
     double cy = 221.506;
-    public WebcamSubsystem(HardwareMap hardwareMap, PipelineName pipelineName){
+
+    public WebcamSubsystem(HardwareMap hardwareMap, PipelineName pipelineName) {
         contourPipeline = new ContourPipeline(30, 255, 255, 10, 130, 130);
 //        if(pipelineName == PipelineName.APRIL_TAG){
 //            aprilTagPipeline = new AprilTagPipeline(0.166, fy, fx, cy, cx);
@@ -55,27 +57,32 @@ public class WebcamSubsystem extends Specifications {
 //            redIntakePipeline = new RedIntakePipeline();
 //            webcam.setPipeline(redIntakePipeline);
 //        }
-        if(pipelineName == PipelineName.CONTOUR_BLUE){
-            contourPipeline = new ContourPipeline(115, 234, 255, 104, 130, 41);
-        }
-        else if(pipelineName == PipelineName.CONTOUR_RED){
-            contourPipeline = new ContourPipeline(10, 255, 255, 0, 119, 0);
+        if (pipelineName == PipelineName.CONTOUR_BLUE) {
+            contourPipeline = new ContourPipeline(114, 255, 255, 104, 139, 79);
+        } else if (pipelineName == PipelineName.CONTOUR_RED) {
+            contourPipeline = new ContourPipeline(8, 219, 253, 0, 127, 81);
         }
         // initiate the needed parameters
-        cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId","id",hardwareMap.appContext.getPackageName());
+        cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
 
         // initiate the camera object with created parameters and pipeline
         webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
 
         webcam.setPipeline(contourPipeline);
-
         // runs camera on a separate thread so it can run simultaneously with everything else
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener(){
+
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
                 // starts the camera stream when init is pressed
-                webcam.startStreaming(VIEW_WIDTH,VIEW_HEIGHT, OpenCvCameraRotation.UPRIGHT);
+                /*
+                 When the camera turns on, we start streaming data,
+                 sending frames through the VisionPortal.
+
+                 Note, the camera stream starts when init is pressed.
+                 */
+                webcam.startStreaming(VIEW_WIDTH, VIEW_HEIGHT, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
@@ -85,13 +92,13 @@ public class WebcamSubsystem extends Specifications {
         });
     }
 
-    public void switchPipeline(){
+    public void switchPipeline() {
         redIntakePipeline = new RedIntakePipeline();
         webcam.setPipeline(redIntakePipeline);
         webcam.setPipeline(null);
     }
 
-    public ElementPipeline2.ElementPosition position2(){
+    public ElementPipeline2.ElementPosition position2() {
         return elementPipeline2.position;
     }
 
@@ -106,18 +113,20 @@ public class WebcamSubsystem extends Specifications {
     public int getAnalysisR() {
         return elementPipeline2.getAnalysisR();
     }
+
     public int getAnalysisG() {
         return elementPipeline2.getAnalysisG();
     }
+
     public int getAnalysisB() {
         return elementPipeline2.getAnalysisB();
     }
 
-    public void stopCamera(){
+    public void stopCamera() {
         webcam.stopStreaming();
     }
 
-    public double getXProp(){
+    public double getXProp() {
         return contourPipeline.largestContourCenter().x;
     }
 }
