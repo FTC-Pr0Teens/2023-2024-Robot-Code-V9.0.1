@@ -24,11 +24,11 @@ public class MultiMotorSubsystem extends Specifications {
     private PIDCore pidUp; //the pid used for going upward
     private double kpUp = 0.005; //k: constant
     private double kiUp = 0.04;
-    private double kdUp = 0;
+    private double kdUp = 0.009;
     private PIDCore pidDown; //the pid used for going downward
     private double kpDown = 0.008;
     private double kiDown = 0.04;
-    private double kdDown = 0.0;
+    private double kdDown = 0.009;
     private PIDCore pidVP;
     private double kp = 0.011;
     private double ki = 0;

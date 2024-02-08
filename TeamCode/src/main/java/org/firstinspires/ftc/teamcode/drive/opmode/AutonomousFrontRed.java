@@ -38,6 +38,7 @@ public class AutonomousFrontRed extends LinearOpMode {
     private OutputCommand outputCommand;
     private MultiMotorSubsystem multiMotorSubsystem;
     private MultiMotorCommand multiMotorCommand;
+//    private WebcamSubsystem webcamSubsystem;
 
     private TimerList timers = new TimerList();
 
@@ -72,6 +73,8 @@ public class AutonomousFrontRed extends LinearOpMode {
         multiMotorCommand = new MultiMotorCommand(multiMotorSubsystem);
         timer = new ElapsedTime();
 
+//        webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
+
         //Pre-start
         odometrySubsystem.reset();
         imu.resetAngle();
@@ -91,10 +94,21 @@ public class AutonomousFrontRed extends LinearOpMode {
         CompletableFuture.runAsync(this::liftProcess, executor);
 
         //find the prop position
-        //setPropPosition();
-
-
-        goToMiddleSpike();
+        double propPosition = 0;
+        goToRightSpike();
+//
+//        timer.reset();
+//        while (opModeInInit()) {
+//            propPosition = webcamSubsystem.getXProp();
+//        }
+//
+//        if (propPosition > 475) {
+//            goToMiddleSpike();
+//        } else if (propPosition > 0 && propPosition < 475) {
+//            goToLeftSpike();
+//        } else {
+//            goToRightSpike();
+//        }
 
         //go to correct spike
 
@@ -161,8 +175,8 @@ public class AutonomousFrontRed extends LinearOpMode {
         timer.reset();
         intakeCommand.autoPixel(1);
 
-        while (timer.milliseconds() < 400) {
-            intakeCommand.intakeOutNoRoller(0.3);
+        while (timer.milliseconds() < 700) {
+            intakeCommand.intakeOutNoRoller(0.4);
         }
         intakeCommand.stopIntake();
         intakeCommand.raiseIntake();
@@ -208,8 +222,8 @@ public class AutonomousFrontRed extends LinearOpMode {
         moveToPos(-80,-43,-1.0768,2.5,2.5,0.1); timer.reset();
         intakeCommand.autoPixel(1);
 
-        while (timer.milliseconds() < 550) {
-            intakeCommand.intakeOutNoRoller(0.3);
+        while (timer.milliseconds() < 700) {
+            intakeCommand.intakeOutNoRoller(0.4);
         }
         intakeCommand.stopIntake();
         intakeCommand.raiseIntake();
@@ -246,8 +260,8 @@ public class AutonomousFrontRed extends LinearOpMode {
         timer.reset();
         intakeCommand.autoPixel(1);
 
-        while (timer.milliseconds() < 550) {
-            intakeCommand.intakeOutNoRoller(0.3);
+        while (timer.milliseconds() < 700) {
+            intakeCommand.intakeOutNoRoller(0.4);
         }
         intakeCommand.stopIntake();
         intakeCommand.raiseIntake();
@@ -266,10 +280,9 @@ public class AutonomousFrontRed extends LinearOpMode {
                 outputCommand.armToBoard();
                 outputCommand.tiltToBoard();
             } else {
-
                 level = 1;
             }
-            if(timer.milliseconds() <= 3100) maintainPos(-55,-88,-Math.PI/2,2.5,2.5,0.05);
+            if(timer.milliseconds() <= 3100) maintainPos(-55,-94,-Math.PI/2,2.5,2.5,0.05);
         }
         moveToPos(-1,-65,-Math.PI/2,2.5,2.5,0.05);
         level = 0;

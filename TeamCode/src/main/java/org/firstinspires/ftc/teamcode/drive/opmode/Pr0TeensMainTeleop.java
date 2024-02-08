@@ -331,7 +331,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
                 outputCommand.tiltToIdle();
                 outputCommand.armToIdle();
                 targetLevel = 0;
-                if(timers.checkTimePassed("lift", 900)){
+                if(timers.checkTimePassed("lift", 1100)){
                     timers.resetTimer("lift");
                     telemetry.addLine("lowerLift");
                     lift = LIFT.LOWER;
@@ -340,7 +340,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             case LOWER:
                 telemetry.addLine("hi");
                 level = 0;
-                if(timers.checkTimePassed("lift", 400)){
+                if(timers.checkTimePassed("lift", 700)){
                     lift = LIFT.IDLE;
                 }
                 break;
