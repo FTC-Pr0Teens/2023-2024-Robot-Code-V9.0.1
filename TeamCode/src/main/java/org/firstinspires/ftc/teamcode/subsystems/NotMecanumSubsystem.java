@@ -13,9 +13,8 @@ public class NotMecanumSubsystem {
     private Servo leftClaw;
     private Servo rightClaw;
 
-    // Positions for armMotor
-    private final int armStartPos;
-    private final int armLimitPos;
+    // Speed limit variables (example, adjust based on your requirements)
+    private final double maxSpeed = 0.5; // Maximum speed (0.0 to 1.0)
 
     public NotMecanumSubsystem(HardwareMap hardwareMap) {
         // Initialize motors
@@ -27,31 +26,22 @@ public class NotMecanumSubsystem {
         leftClaw = hardwareMap.get(Servo.class, "leftClaw");
         rightClaw = hardwareMap.get(Servo.class, "rightClaw");
 
-        // Set motor directions
+        // Set motor directions and modes
         leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         rightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         armMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        // Set motor modes
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        // Set zero power behavior for motors
+        // Set zero power behavior
         leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        // Reset encoders and set initial positions for armMotor
-        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armStartPos = armMotor.getCurrentPosition();
-        armLimitPos = armStartPos + 1000; // Example limit, adjust based on your robot's design
-
-        // Set initial power for motors
-        leftMotor.setPower(0);
-        rightMotor.setPower(0);
-        armMotor.setPower(0);
+        leftClaw.setDirection(Servo.Direction.FORWARD); // Assuming default direction for leftClaw
+        rightClaw.setDirection(Servo.Direction.REVERSE); // Reverse direction for rightClaw
     }
 
     public void move(double leftPower, double rightPower) {
@@ -59,11 +49,11 @@ public class NotMecanumSubsystem {
         rightMotor.setPower(rightPower);
     }
 
-    public void moveArmToPosition(int position) {
-        if (position >= armStartPos && position <= armLimitPos) {
-            armMotor.setTargetPosition(position);
-            armMotor.setPower(0.5); // Set desired motor power
-        }
+    // Use this method to control the arm motor speed directly, without encoder-based positioning
+    public void controlArmMotor(double power) {
+        // Limit the power to maxSpeed to ensure the motor doesn't exceed this speed
+        double limitedPower = Math.signum(power) * Math.min(Math.abs(power), maxSpeed);
+        armMotor.setPower(limitedPower);
     }
 
     public void setClawPositions(double leftPosition, double rightPosition) {
