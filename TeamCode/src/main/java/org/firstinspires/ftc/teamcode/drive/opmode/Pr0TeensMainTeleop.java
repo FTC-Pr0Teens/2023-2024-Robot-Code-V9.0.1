@@ -325,7 +325,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             case RETRACT:
                 outputCommand.tiltToIdle();
                 outputCommand.armToIdle();
-                targetLevel = 0;
+                targetLevel = 1;
                 if(timers.checkTimePassed("lift", 1100)){
                     timers.resetTimer("lift");
                     telemetry.addLine("lowerLift");

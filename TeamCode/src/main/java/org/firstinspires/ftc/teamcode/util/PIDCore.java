@@ -71,6 +71,14 @@ public class PIDCore {
         Kd = kd;
         Ki = ki;
     }
+    public void setCascadeConstant(double kpp, double kpi, double kpd, double kvp, double kvi, double kvd){
+        Kp = kpp;
+        Kd = kpd;
+        Ki = kpi;
+        KpVel = kvp;
+        KdVel = kvd;
+        KiVel = kvi;
+    }
 
     public void setConstant(double kp, double kd, double ki, double kf){
         Kp = kp;
