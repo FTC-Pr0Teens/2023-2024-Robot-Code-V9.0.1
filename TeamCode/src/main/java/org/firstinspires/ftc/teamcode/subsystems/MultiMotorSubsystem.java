@@ -338,7 +338,7 @@ public class MultiMotorSubsystem extends Specifications {
                 power = Math.min(-0.4, -0.4 * getPosition() / 40);
             } else if (finalPosition < getPosition() - 100) {
                 power = 0.3*pidDown.outputPositionalIntegral(finalPosition, encoderF) - Math.max(kv * getAngularVelocity() * getPosition() / 300, downThreshold) + m/1050 * encoderF + c; //calculate power down
-            } else { //move down, if either no input / target is lower than current position
+            } else { //move dow n, if either no input / target is lower than current position
                 power = 0.3*pidDown.outputPositionalIntegral(finalPosition, encoderF) + m/1050 * encoderF + c; //calculate power down
             }
         }

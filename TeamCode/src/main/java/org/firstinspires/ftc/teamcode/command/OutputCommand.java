@@ -49,10 +49,10 @@ public class OutputCommand {
     }
 
     public void openGate(){
-        gate.setPosition(0.49);
+        gate.setPosition(0.73);
     }
     public void closeGate(){
-        gate.setPosition(0.58);
+        gate.setPosition(0.89);
     }
     public void outputWheelOut(){
         intakeCommand.intakeRollerOut();
@@ -91,6 +91,10 @@ public class OutputCommand {
     public void tiltToPos(double pos){
         leftTilt.setPosition(pos);
         rightTilt.setPosition(pos);
+    }
+
+    public void gateSetPos(double position){
+        gate.setPosition(position);
     }
 
 

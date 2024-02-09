@@ -68,12 +68,12 @@ public class servott extends LinearOpMode {
         intakeCommand = new IntakeCommand(hardwareMap);
 
         //INITIALIZES THE HANGING SERVO
-        hangingServoL = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_L);
-        hangingServoL.setDirection(Servo.Direction.REVERSE);
-        hangingServoL.setPosition(0.35);
-
-        hangingServoR = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_R);
-        hangingServoR.setPosition(0.35);
+//        hangingServoL = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_L);
+//        hangingServoL.setDirection(Servo.Direction.REVERSE);
+//        hangingServoL.setPosition(0.35);
+//
+//        hangingServoR = hardwareMap.get(Servo.class, Specifications.HANGING_SERVO_R);
+//        hangingServoR.setPosition(0.35);
 ////
 ////        //INITIALIZES THE HANGING MOTOR
         hangingMotor = hardwareMap.dcMotor.get(Specifications.HANGING_MOTOR);
@@ -98,6 +98,11 @@ public class servott extends LinearOpMode {
         double dronePosition = 0;
 
         double intakePosition = 0.5;
+
+        //0,89 close
+        //
+
+        double gatePos = 0;
         //0.03 close
         //0.115 open
 
@@ -105,20 +110,19 @@ public class servott extends LinearOpMode {
             sleep(50);
 //            hangingServoL.setPosition(hangingPositionL);
 //            hangingServoR.setPosition(hangingPositionR);
-            droneShooter.setPos(dronePosition);
-            outputCommand.tiltToPos(tiltPosition);
-            intakeCommand.setPosition(intakePosition);
+            outputCommand.gateSetPos(gatePos);
             if(gamepad1.dpad_up){
 
 //                hangingPositionL += 0.01;
 //                hangingPositionR += 0.01;
 
-                intakePosition +=0.01;
+//                intakePosition +=0.01;
+                gatePos +=0.01;
             } else if(gamepad1.dpad_down){
 //                hangingPositionL -= 0.01;
 //                hangingPositionR -= 0.01;
-                intakePosition -=0.01
-;            }
+                gatePos-=0.01;
+            }
             if(gamepad1.dpad_right){
                 dronePosition += 0.005;
             } else if(gamepad1.dpad_left){
@@ -145,12 +149,12 @@ public class servott extends LinearOpMode {
             telemetry.addData("drone", dronePosition);
             telemetry.addData("tilt", tiltPosition);
             telemetry.addData("intake", intakePosition);
+            telemetry.addData("gate",gatePos);
 
 
                     telemetry.update();
                 //}
             }
-
 
         }
     private void moveRobot(){

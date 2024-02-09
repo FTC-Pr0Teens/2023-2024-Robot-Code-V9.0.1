@@ -316,6 +316,8 @@ public class AutonomousFrontBlue extends LinearOpMode {
 
         moveToPos(3,65,Math.PI/2,2.5,2.5,0.05);
         level = 0;
+        outputCommand.armToIdle();
+        outputCommand.tiltToIdle();
         moveToPos(3,105,Math.PI/2,2.5,2.5,0.05);
 
 

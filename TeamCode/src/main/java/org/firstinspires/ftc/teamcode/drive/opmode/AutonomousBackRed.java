@@ -284,7 +284,7 @@ public class AutonomousBackRed extends LinearOpMode {
         progress = "checkpoint 1 start";
         //129, 43.5, -Math.PI/2
         //129, 60.8, -Math.PI/2
-        moveToPos(-124,39,-Math.PI/2,3,3,0.015);
+        moveToPos(-125,45,-Math.PI/2,3,3,0.015);
         timer.reset();
 
         while(opModeIsActive() && timer.milliseconds() < 3000) {
@@ -299,7 +299,7 @@ public class AutonomousBackRed extends LinearOpMode {
         timer.reset();
 //        ejectPixelLoop
 
-        while(opModeIsActive() && timer.milliseconds() < 1500){
+        while(opModeIsActive() && timer.milliseconds() < 1000){
             intakeCommand.autoPixel(1); //above max stack
             intakeCommand.intakeOutNoRoller(1);
             intakeCommand.intakeRollerIn();
@@ -312,7 +312,7 @@ public class AutonomousBackRed extends LinearOpMode {
 //        moveToPos(-150, -177,Math.PI/2,7,5,0.05);
 //        progress = "checkpoint 3 end";
 //        sleep(1000);
-        moveToPos(-120,-180,-Math.PI/2,2.5,2.5,0.05);
+        moveToPos(-125,-180,-Math.PI/2,2.5,2.5,0.05);
 
         timer.reset();
         while (opModeIsActive() && timer.milliseconds() < 4500){

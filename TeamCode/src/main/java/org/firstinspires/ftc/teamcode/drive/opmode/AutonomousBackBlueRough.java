@@ -40,7 +40,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
     private OdometrySubsystem odometrySubsystem;
     private GyroOdometry gyroOdometry;
     private IntakeCommand intakeCommand;
-//    private WebcamSubsystem webcamSubsystem;
+    //private WebcamSubsystem webcamSubsystem;
     private OutputCommand outputCommand;
     private MultiMotorSubsystem multiMotorSubsystem;
     private MultiMotorCommand multiMotorCommand;
@@ -113,7 +113,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         multiMotorCommand = new MultiMotorCommand(multiMotorSubsystem);
         dashboard = FtcDashboard.getInstance();
         packet = new TelemetryPacket();
-//        webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_BLUE);
+        //webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_BLUE);
         timer = new ElapsedTime();
         colorSensor = new ColorSensorSubsystem(hardwareMap);
 
@@ -172,7 +172,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 //        } else {
 //            goToRightSpike();
 //        }
-        goToMiddleSpike();
+        goToLeftSpike();
     }
 
     public void updateOdometry() {
@@ -380,7 +380,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         //middle: -82,-235
         timer.reset();
         while (opModeIsActive() && timer.milliseconds() < 2500) {
-            maintainPos(-90, 210, Math.PI / 2, 2.5, 2.5, 0.05);
+            maintainPos(-78, 210, Math.PI / 2, 2.5, 2.5, 0.05);
             level = 1;
             outputCommand.armToBoard();
             outputCommand.tiltToBoard();
@@ -417,8 +417,8 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         level = 0;
         outputCommand.closeGate();
 
-        moveToPos(-135,160,Math.PI/2,2.5,2.5,0.05);
-        moveToPos(-135,-48.5, Math.PI/2,2.5,2.5,0.05);
+        moveToPos(-128,160,Math.PI/2,2.5,2.5,0.05);
+        moveToPos(-128,-48.5, Math.PI/2,2.5,2.5,0.05);
 
         intakeCommand.autoPixel(5);
         timer.reset();
