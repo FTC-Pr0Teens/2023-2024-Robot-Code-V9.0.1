@@ -136,11 +136,9 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         hangingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         hangingMotor.setPower(0);
 
-        Executor executor = Executors.newFixedThreadPool(3);
 
         armBeingProcessed = false;
 
-        CompletableFuture.runAsync(this::processLift, executor);
         level = 0;
         droneShooter.lock();
         outputCommand.tiltToIdle(); //bring arm down BEFORE bringing lift down
@@ -149,6 +147,8 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
         waitForStart();
 
+        Executor executor = Executors.newFixedThreadPool(4);
+        CompletableFuture.runAsync(this::processLift, executor);
         CompletableFuture.runAsync(this::processDriveMotor, executor);
         CompletableFuture.runAsync(this::processIMU, executor);
         CompletableFuture.runAsync(this::manualLift,executor);
@@ -247,16 +247,17 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
             telemetry.addData("Target level (where the lift is going to)", targetLevel);
             telemetry.addData("Set level (Backdrop level that we want)", setLevel);
-//            telemetry.addData("position", multiMotorSubsystem.getPosition());
+            telemetry.addData("position", multiMotorSubsystem.getPosition());
+            telemetry.addData("target vel", multiMotorSubsystem.getIntervalValue());
 //            telemetry.addData("power", multiMotorSubsystem.getMainPower());
 //            telemetry.addData("auxpower", multiMotorSubsystem.getAux1Power());
 //            telemetry.addData("auxpos", multiMotorSubsystem.getAuxPos());
 //            telemetry.addData("derivativeValue", multiMotorSubsystem.getDerivativeValue());
-//            telemetry.addData("cascadeOutput", multiMotorSubsystem.getCascadeOutput());
+            telemetry.addData("cascadeOutput", multiMotorSubsystem.getCascadeOutput());
 //            telemetry.addData("outputPositional", multiMotorSubsystem.getCascadePositional());
 //            telemetry.addData("outputVelocity", multiMotorSubsystem.getCascadeVelocity());
 //            telemetry.addData("level", level);
-//            telemetry.update();
+            telemetry.update();
 
 
         }
@@ -438,7 +439,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
     private void processLift(){
 //        while(opModeIsActive()) multiMotorCommand.LiftUp(true, level);
-        while(opModeIsActive()) multiMotorCommand.LiftUp(true, targetLevel);
+        while(opModeIsActive()) {multiMotorCommand.LiftUp(true, targetLevel)};
     }
 
 

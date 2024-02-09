@@ -50,7 +50,7 @@ public class MultiMotorSubsystem extends Specifications {
     private double m = 0.3;
     private double c = 0.1;
     private double downThreshold = -0.3;
-    private double intervalValue = 0;
+    private volatile double intervalValue = 0;
     private double cascadeOutput = 0;
 
     public double vel = 0;
