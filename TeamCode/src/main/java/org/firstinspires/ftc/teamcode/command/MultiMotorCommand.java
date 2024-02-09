@@ -7,6 +7,8 @@ public class MultiMotorCommand {
     private MultiMotorSubsystem multiMotorSubsystem;
     private int level = -1;
 
+    public double intervalVal = 0;
+
     public MultiMotorCommand(MultiMotorSubsystem multiMotorSubsystem){
         this.multiMotorSubsystem = multiMotorSubsystem;
     }
@@ -17,19 +19,19 @@ public class MultiMotorCommand {
                 multiMotorSubsystem.LiftPositionalProcess(0);
                 break;
             case 1:
-                multiMotorSubsystem.LiftPositionalProcess(450);
+                multiMotorSubsystem.LiftPositionalProcess(-450);
                 break;
             case 2:
-                multiMotorSubsystem.LiftPositionalProcess(1200);
+                multiMotorSubsystem.LiftPositionalProcess(-1200);
                 break;
             case 3:
-                multiMotorSubsystem.LiftPositionalProcess(1800);
+                multiMotorSubsystem.LiftPositionalProcess(-1800);
                 break;
             case 4:
-                multiMotorSubsystem.LiftPositionalProcess(2200);
+                multiMotorSubsystem.LiftPositionalProcess(-2200);
                 break;
             case 5:
-                multiMotorSubsystem.LiftPositionalProcess(900);
+                multiMotorSubsystem.LiftPositionalProcess(-900);
                 break;
         }
     }
@@ -49,18 +51,19 @@ public class MultiMotorCommand {
                 interval1 = new Interval(-3400, -1000, 2000);
                 interval2 = new Interval(-1000, -500, 1500);
                 interval3 = new Interval(-500, -18, 500);
-                interval4 = new Interval(-18, 400, 0);
+                interval4 = new Interval(-18, 300, 0);
                 if(run) {
-                    multiMotorSubsystem.LiftCascadeProcess(0, interval1, interval2, interval3, interval4);
+                    intervalVal = multiMotorSubsystem.LiftCascadeProcess(0, interval1, interval2, interval3, interval4);
                 }
                 break;
             case 1:
                 interval1 = new Interval(-300, 400, -1000);
-                interval2 = new Interval(-400, -300, -400);
-                interval3 = new Interval(-2000, -250, 0);
+                interval2 = new Interval(-600, -300, -400);
+                interval3 = new Interval(-1050, -600, 0);
+                interval4 = new Interval(-3000, -1050, 300);
                 //TODO: deceleration intervals
                 if(run) {
-                    multiMotorSubsystem.LiftCascadeProcess(-900, interval1, interval2, interval3);
+                    intervalVal = multiMotorSubsystem.LiftCascadeProcess(-1300, interval1, interval2, interval3, interval4);
                 }
                 break;
             case 2:
@@ -69,7 +72,7 @@ public class MultiMotorCommand {
                 interval3 = new Interval(-1150, -1075, -900);
                 interval4 = new Interval(-1350-2000, -1150, 0);
                 if(run) {
-                    multiMotorSubsystem.LiftCascadeProcess(-2020, interval1, interval2, interval3, interval4);
+                    intervalVal = multiMotorSubsystem.LiftCascadeProcess(-2020, interval1, interval2, interval3, interval4);
                 }
                 break;
             case 3:
@@ -116,4 +119,5 @@ public class MultiMotorCommand {
     public int getLevel() {
         return level;
     }
+    public boolean getTestBoolean() { return multiMotorSubsystem.testBoolean;}
 }

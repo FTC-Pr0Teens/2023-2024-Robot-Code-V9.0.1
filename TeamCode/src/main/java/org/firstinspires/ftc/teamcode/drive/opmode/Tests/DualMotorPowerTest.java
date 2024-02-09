@@ -7,10 +7,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.command.MecanumCommand;
 import org.firstinspires.ftc.teamcode.command.MultiMotorCommand;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MultiMotorSubsystem;
+import org.firstinspires.ftc.teamcode.util.Interval;
+import org.firstinspires.ftc.teamcode.util.IntervalControl;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -20,7 +21,17 @@ public class DualMotorPowerTest extends LinearOpMode {
     private MultiMotorSubsystem multiMotorSubsystem;
     private MultiMotorCommand multiMotorCommand;
     private MecanumSubsystem mecanumSubsystem;
-    private int level = 0;
+    private volatile int level = 0;
+
+    public static double kpp = (double) 1/750;;
+    public static double kpi = 0;
+    public static double kpd = 0;
+    public static double kvp = (double) 1/2000;
+    public static double kvi = 0;
+    public static double kvd = 0;
+
+    FtcDashboard dash = FtcDashboard.getInstance();
+    TelemetryPacket packet = new TelemetryPacket();
     @Override
     public void runOpMode() throws InterruptedException {
         // Initialize your hardware components
@@ -38,51 +49,55 @@ public class DualMotorPowerTest extends LinearOpMode {
         waitForStart();
 
         CompletableFuture.runAsync(this::liftProcess);
-
+        testTime.reset();
         while (opModeIsActive()) {
-
+            multiMotorSubsystem.cascadeSetConstants(kpp,kpi,kpd,kvp,kvi,kvd);
             if(gamepad1.a){
                 level = 4;
-                targetPosition = 3100;
 //                multiMotorCommand.LiftUp(true, 4);
             }
             else if(gamepad1.b){
                 level = 3;
-                targetPosition = 0;
 //                multiMotorCommand.LiftUp(true, 3);
             }
             else if(gamepad1.y){
                 level = 2;
-                targetPosition = 3100;
-                multiMotorCommand.LiftUp(true, 2);
             }
             else if(gamepad1.x){
                 level = 1;
-                targetPosition = 1300;
-                multiMotorCommand.LiftUp(true, 1);
             }
             else if(gamepad1.dpad_down){
                 level = 0;
-                targetPosition = 0;
-                multiMotorCommand.LiftUp(true, 0);
             }
             else {
                 multiMotorSubsystem.moveLift(gamepad1.left_stick_y);
             }
 //            mecanumSubsystem.fieldOrientedMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, 0);
+            Interval interval1 = new Interval(-300, 400, -1000);
+            Interval interval2 = new Interval(-400, -300, -400);
+            Interval interval3 = new Interval(-2000, -250, 0);
+            Interval[] intervals = {interval1, interval2, interval3};
+            IntervalControl velocityInterval = new IntervalControl(intervals);
+            packet.put("velocity interval thingy", velocityInterval.getOutput(multiMotorSubsystem.getPosition()));
 
-            packet.put("position", multiMotorSubsystem.getPosition());
-            packet.put("power", multiMotorSubsystem.getMainPower());
-            packet.put("auxpower", multiMotorSubsystem.getAux1Power());
-            packet.put("derivativeValue", multiMotorSubsystem.getDerivativeValue());
-            packet.put("errorValue", multiMotorSubsystem.getErrorValue());
-            packet.put("intervalValue", multiMotorSubsystem.getIntervalValue());
-            packet.put("lastErrorValue", multiMotorSubsystem.getLastErrorValue());
-            packet.put("controlleroutput", multiMotorSubsystem.getCascadeOutput());
+            packet.put("target position", targetPosition);
+            packet.put("current position", multiMotorSubsystem.getPosition());
+            packet.put("cascade power output", -multiMotorSubsystem.getCascadeOutput());
+//            packet.put("power", multiMotorSubsystem.getMainPower());
+//            packet.put("auxpower", multiMotorSubsystem.getAux1Power());
+//            packet.put("derivativeValue", multiMotorSubsystem.getDerivativeValue());
+//            packet.put("errorValue", multiMotorSubsystem.getErrorValue());
+//            packet.put("intervalValue", multiMotorSubsystem.getIntervalValue());
+//            packet.put("lastErrorValue", multiMotorSubsystem.getLastErrorValue());
+//            packet.put("controlleroutput", multiMotorSubsystem.getCascadeOutput());
+            packet.put("outputPositionalValue", multiMotorSubsystem.getCascadePositional());
             packet.put("outputPositionalValue", multiMotorSubsystem.getCascadePositional());
             packet.put("outputVelocityValue", multiMotorSubsystem.getCascadeVelocity());
+            packet.put("target vel", multiMotorSubsystem.getIntervalValue());
+            packet.put("current vel", multiMotorSubsystem.getCascadeVelocity());
             packet.put("level", level);
-            packet.put("Target Position", targetPosition);
+            packet.put("test boolean", multiMotorCommand.getTestBoolean());
+
             telemetry.addData("Target Position", targetPosition);
             telemetry.addData("position", multiMotorSubsystem.getPosition());
             telemetry.addData("power", multiMotorSubsystem.getMainPower());
@@ -93,14 +108,21 @@ public class DualMotorPowerTest extends LinearOpMode {
             telemetry.addData("outputPositional", multiMotorSubsystem.getCascadePositional());
             telemetry.addData("outputVelocity", multiMotorSubsystem.getCascadeVelocity());
             telemetry.addData("level", level);
-            telemetry.update();
+//            telemetry.update();
             dash.sendTelemetryPacket(packet);
+//            TelemetryPacket packet = new TelemetryPacket();
+            packet.put("testTime", testTime.milliseconds());
+            multiMotorCommand.LiftUp(true, level);
+            dash.sendTelemetryPacket(packet);
+            testTime.reset();
         }
     }
 
+    private ElapsedTime testTime = new ElapsedTime();
     public void liftProcess(){
-        while(opModeIsActive()){
-//            multiMotorCommand.LiftUp(true, level);
-        }
+
+//        while(opModeIsActive()){
+//
+//        }
     }
 }
