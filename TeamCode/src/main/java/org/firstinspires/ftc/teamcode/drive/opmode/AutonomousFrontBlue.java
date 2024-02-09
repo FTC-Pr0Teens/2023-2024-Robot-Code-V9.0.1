@@ -104,17 +104,19 @@ public class AutonomousFrontBlue extends LinearOpMode {
        // goToMiddleSpike();
 //
         timer.reset();
-        while (opModeInInit()) {
-            propPosition = webcamSubsystem.getXProp();
-        }
 
-        if (propPosition > 475) {
-            goToMiddleSpike();
-        } else if (propPosition > 0 && propPosition < 475) {
-            goToLeftSpike();
-        } else {
-            goToRightSpike();
-        }
+        goToMiddleSpike();
+//        while (opModeInInit()) {
+//            propPosition = webcamSubsystem.getXProp();
+//        }
+//
+//        if (propPosition > 475) {
+//            goToMiddleSpike();
+//        } else if (propPosition > 0 && propPosition < 475) {
+//            goToLeftSpike();
+//        } else {
+//            goToRightSpike();
+//        }
 
         //go to correct spike
 
@@ -181,8 +183,8 @@ public class AutonomousFrontBlue extends LinearOpMode {
         timer.reset();
         intakeCommand.autoPixel(1);
 
-        while (timer.milliseconds() < 700) {
-            intakeCommand.intakeOutNoRoller(0.4);
+        while (timer.milliseconds() < 550) {
+            intakeCommand.intakeOutNoRoller(0.3);
         }
         intakeCommand.stopIntake();
         intakeCommand.raiseIntake();
@@ -203,11 +205,13 @@ public class AutonomousFrontBlue extends LinearOpMode {
             } else {
                 level = 1;
             }
-            if(timer.milliseconds() <= 3100) maintainPos(-39,92,Math.PI/2,2.5,2.5,0.05);
+            if(timer.milliseconds() <= 3100) maintainPos(-42,93,Math.PI/2,2.5,2.5,0.05);
         }
-
-        moveToPos(3,65,Math.PI/2,2.5,2.5,0.05);
-        moveToPos(3,113,Math.PI/2,2.5,2.5,0.05);
+        outputCommand.outputWheelStop();
+        level = 5;
+        moveToPos(-5,65,Math.PI/2,2.5,2.5,0.05);
+        moveToPos(-5,100,Math.PI/2,2.5,2.5,0.05);
+        level = 5;
 
 
 
@@ -287,8 +291,8 @@ public class AutonomousFrontBlue extends LinearOpMode {
         moveToPos(-95,43,1.10252,2.5,2.5,0.05); timer.reset();
         intakeCommand.autoPixel(1);
 
-        while (timer.milliseconds() < 700) {
-            intakeCommand.intakeOutNoRoller(0.4);
+        while (timer.milliseconds() < 550) {
+            intakeCommand.intakeOutNoRoller(0.3);
         }
         intakeCommand.stopIntake();
         intakeCommand.raiseIntake();
@@ -309,16 +313,17 @@ public class AutonomousFrontBlue extends LinearOpMode {
             } else {
                 level = 1;
             }
-            if(timer.milliseconds() <= 3100) maintainPos(-84,93.5,Math.PI/2,2.5,2.5,0.05);
+            if(timer.milliseconds() <= 3100) maintainPos(-80,94,Math.PI/2,2.5,2.5,0.05);
         }
 
 
 
-        moveToPos(3,65,Math.PI/2,2.5,2.5,0.05);
-        level = 0;
+        moveToPos(-5,65,Math.PI/2,2.5,2.5,0.05);
+        level = 5;
         outputCommand.armToIdle();
         outputCommand.tiltToIdle();
-        moveToPos(3,105,Math.PI/2,2.5,2.5,0.05);
+        outputCommand.outputWheelStop();
+        moveToPos(-5,100,Math.PI/2,2.5,2.5,0.05);
 
 
 //        while (opModeIsActive()){
@@ -381,13 +386,13 @@ public class AutonomousFrontBlue extends LinearOpMode {
     }
 
     private void goToMiddleSpike(){
-        moveToPos(-111,15,1.0139,2.5,2.5,0.025);
+        moveToPos(-110,18,1.0139,2.5,2.5,0.025);
 
         timer.reset();
         intakeCommand.autoPixel(1);
 
-        while (timer.milliseconds() < 700) {
-            intakeCommand.intakeOutNoRoller(0.4);
+        while (timer.milliseconds() < 550) {
+            intakeCommand.intakeOutNoRoller(0.3);
         }
         intakeCommand.stopIntake();
         intakeCommand.raiseIntake();
@@ -411,6 +416,11 @@ public class AutonomousFrontBlue extends LinearOpMode {
             }
             if(timer.milliseconds() <= 3100) maintainPos(-68,94,Math.PI/2,1.5,1.5,0.05);
         }
+
+        outputCommand.outputWheelStop();
+        level = 5;
+        moveToPos(-5,65,Math.PI/2,2.5,2.5,0.05);
+        moveToPos(-5,100,Math.PI/2,2.5,2.5,0.05);
 
 //        while (opModeIsActive()){
 //            maintainPos(-6,-6,Math.PI/2,2.5,2.5,0.05);

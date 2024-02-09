@@ -141,6 +141,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
         level = 0;
         droneShooter.lock();
+        outputCommand.closeGate();
         outputCommand.tiltToIdle(); //bring arm down BEFORE bringing lift down
         outputCommand.armToIdle();
         multiMotorSubsystem.reset();
@@ -390,10 +391,10 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
          */
         if (gamepad1.dpad_left) {
             autoCenterDirection = alignDirection.LEFT;
-            gridAutoCentering.offsetTargetAngle(-Math.PI/2);
+            gridAutoCentering.offsetTargetAngle(Math.PI/2);
         } else if (gamepad1.dpad_right) {
             autoCenterDirection = alignDirection.RIGHT;
-            gridAutoCentering.offsetTargetAngle(Math.PI/2);
+            gridAutoCentering.offsetTargetAngle(-Math.PI/2);
         } else if(gamepad1.dpad_up){
             autoCenterDirection = alignDirection.NONE;
             gridAutoCentering.offsetTargetAngle(0);
@@ -401,14 +402,15 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             if(gamepad1.right_trigger > 0.5){
                 switch (autoCenterDirection) { //resets heading if aligned to board, otherwise align to current robot position
                     case LEFT:
-                        imuSubsystem.resetAngle(-Math.PI/2);
+                        imuSubsystem.resetAngle(Math.PI/2);
                         break;
                     case RIGHT:
-                        imuSubsystem.resetAngle(Math.PI/2);
+                        imuSubsystem.resetAngle(-Math.PI/2);
                         break;
                     default:
                         imuSubsystem.resetAngle();
                 }
+                gridAutoCentering.reset();
             }
             gridAutoCentering.reset();
         }
