@@ -158,6 +158,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
         multiMotorSubsystem.reset();
 
         intakeCommand.lowerIntake();
+        timers.resetTimer("test");
 
         while(opModeIsActive()) {
 
@@ -244,20 +245,21 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             } else if (gamepad2.left_bumper){
                 intakeCommand.lowerIntake();
             }
-
+//
             telemetry.addData("Target level (where the lift is going to)", targetLevel);
             telemetry.addData("Set level (Backdrop level that we want)", setLevel);
             telemetry.addData("position", multiMotorSubsystem.getPosition());
-            telemetry.addData("target vel", multiMotorSubsystem.getIntervalValue());
-//            telemetry.addData("power", multiMotorSubsystem.getMainPower());
-//            telemetry.addData("auxpower", multiMotorSubsystem.getAux1Power());
-//            telemetry.addData("auxpos", multiMotorSubsystem.getAuxPos());
-//            telemetry.addData("derivativeValue", multiMotorSubsystem.getDerivativeValue());
-            telemetry.addData("cascadeOutput", multiMotorSubsystem.getCascadeOutput());
-//            telemetry.addData("outputPositional", multiMotorSubsystem.getCascadePositional());
-//            telemetry.addData("outputVelocity", multiMotorSubsystem.getCascadeVelocity());
-//            telemetry.addData("level", level);
-            telemetry.update();
+            telemetry.addData("target vel", multiMotorCommand.intervalVal);
+////            telemetry.addData("power", multiMotorSubsystem.getMainPower());
+////            telemetry.addData("auxpower", multiMotorSubsystem.getAux1Power());
+////            telemetry.addData("auxpos", multiMotorSubsystem.getAuxPos());
+////            telemetry.addData("derivativeValue", multiMotorSubsystem.getDerivativeValue());
+//            telemetry.addData("cascadeOutput", multiMotorSubsystem.getCascadeOutput());
+            telemetry.addData("outputPositional", multiMotorSubsystem.getCascadePositional());
+            telemetry.addData("outputVelocity", multiMotorSubsystem.getCascadeVelocity());
+////            telemetry.addData("level", level);
+//            telemetry.update();
+
 
 
         }
@@ -335,7 +337,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
                 break;
             case LOWER:
                 telemetry.addLine("hi");
-                level = 0;
+                targetLevel = 0;
                 if(timers.checkTimePassed("lift", 700)){
                     lift = LIFT.IDLE;
                 }
@@ -437,9 +439,16 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
     }
 
 
+
     private void processLift(){
-//        while(opModeIsActive()) multiMotorCommand.LiftUp(true, level);
-        while(opModeIsActive()) {multiMotorCommand.LiftUp(true, targetLevel)};
+        while(opModeIsActive()) multiMotorCommand.LiftUp(true, targetLevel);
+//        timers.resetTimer("test");
+//        while(opModeIsActive()) {
+//            telemetry.addData("test", timers.getTimerMillis("test"));
+//            multiMotorCommand.LiftUp(true, targetLevel);
+//            telemetry.update();
+//            timers.resetTimer("test");
+//        }
     }
 
 

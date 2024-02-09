@@ -362,16 +362,24 @@ public class MultiMotorSubsystem extends Specifications {
         moveLift(power);
     }
 
-    public void LiftCascadeProcess(double targetPos, Interval... interval){
+    public double LiftCascadeProcess(double targetPos, Interval... interval){
         runToPosition = true;
         IntervalControl velocityInterval = new IntervalControl(interval);
 //        angularVelocity = -main.getVelocity(AngleUnit.RADIANS);
 
         //only for up
-        intervalValue = velocityInterval.getOutput(getPosition());
+        intervalValue =
+//                -500;
+                velocityInterval.getOutput(getPosition());
         cascadeOutput = -cascadePID.cascadeOutput(targetPos, getPosition(), intervalValue, getDerivativeValue());
-        moveLift(Math.abs(getCascadeVelocity()) < 0.1 && intervalValue == 0 ? 0 : cascadeOutput); //basically if power is at idle
-        testBoolean = Math.abs(getCascadeVelocity()) < 0.1 && intervalValue == 0;
+        if(Math.abs(getCascadeVelocity()) < 0.1 && intervalValue == 0)
+            moveLift(0);
+        else
+            moveLift(cascadeOutput);
+//        moveLift(Math.abs(getCascadeVelocity()) < 0.1 && intervalValue == 1 ? 0 : cascadeOutput); //basically if power is at idle
+//        testBoolean = Math.abs(getCascadeVelocity()) < 0.1 && intervalValue == 0;
+//        moveLift(cascadeOutput);
+        return intervalValue;
     }
 
 

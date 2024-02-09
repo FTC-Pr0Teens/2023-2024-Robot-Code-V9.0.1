@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.command.MultiMotorCommand;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MultiMotorSubsystem;
+import org.firstinspires.ftc.teamcode.util.Interval;
+import org.firstinspires.ftc.teamcode.util.IntervalControl;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -28,7 +30,8 @@ public class DualMotorPowerTest extends LinearOpMode {
     public static double kvi = 0;
     public static double kvd = 0;
 
-
+    FtcDashboard dash = FtcDashboard.getInstance();
+    TelemetryPacket packet = new TelemetryPacket();
     @Override
     public void runOpMode() throws InterruptedException {
         // Initialize your hardware components
@@ -46,7 +49,7 @@ public class DualMotorPowerTest extends LinearOpMode {
         waitForStart();
 
         CompletableFuture.runAsync(this::liftProcess);
-
+        testTime.reset();
         while (opModeIsActive()) {
             multiMotorSubsystem.cascadeSetConstants(kpp,kpi,kpd,kvp,kvi,kvd);
             if(gamepad1.a){
@@ -70,6 +73,13 @@ public class DualMotorPowerTest extends LinearOpMode {
                 multiMotorSubsystem.moveLift(gamepad1.left_stick_y);
             }
 //            mecanumSubsystem.fieldOrientedMove(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, 0);
+            Interval interval1 = new Interval(-300, 400, -1000);
+            Interval interval2 = new Interval(-400, -300, -400);
+            Interval interval3 = new Interval(-2000, -250, 0);
+            Interval[] intervals = {interval1, interval2, interval3};
+            IntervalControl velocityInterval = new IntervalControl(intervals);
+            packet.put("velocity interval thingy", velocityInterval.getOutput(multiMotorSubsystem.getPosition()));
+
             packet.put("target position", targetPosition);
             packet.put("current position", multiMotorSubsystem.getPosition());
             packet.put("cascade power output", -multiMotorSubsystem.getCascadeOutput());
@@ -98,14 +108,21 @@ public class DualMotorPowerTest extends LinearOpMode {
             telemetry.addData("outputPositional", multiMotorSubsystem.getCascadePositional());
             telemetry.addData("outputVelocity", multiMotorSubsystem.getCascadeVelocity());
             telemetry.addData("level", level);
-            telemetry.update();
+//            telemetry.update();
             dash.sendTelemetryPacket(packet);
+//            TelemetryPacket packet = new TelemetryPacket();
+            packet.put("testTime", testTime.milliseconds());
+            multiMotorCommand.LiftUp(true, level);
+            dash.sendTelemetryPacket(packet);
+            testTime.reset();
         }
     }
 
+    private ElapsedTime testTime = new ElapsedTime();
     public void liftProcess(){
-        while(opModeIsActive()){
-            multiMotorCommand.LiftUp(true, level);
-        }
+
+//        while(opModeIsActive()){
+//
+//        }
     }
 }
