@@ -354,11 +354,11 @@ public class AutonomousFrontRed extends LinearOpMode {
 
         timer.reset();
         while (opModeIsActive()) {
-            if (timer.milliseconds() > 3200) {
+            if (timer.milliseconds() > 3500) {
                 outputCommand.armToIdle();
                 outputCommand.tiltToIdle();
                 break;
-            } else if (timer.milliseconds() > 2400) {
+            } else if (timer.milliseconds() > 2800) {
                 outputCommand.openGate();
                 outputCommand.outputWheelIn();
             } else if (timer.milliseconds() > 500) {
@@ -369,20 +369,20 @@ public class AutonomousFrontRed extends LinearOpMode {
             }
             if (timer.milliseconds() <= 3100) maintainPos(-65, -97, -Math.PI / 2, 2.5, 2.5, 0.05);
         }
-        moveToPos(-14, -65, -1.6, 5, 5, 0.01);
+        moveToPos(-14, -65, -1.6, 2.5, 2.5, 0.01);
         level = 5;
         outputCommand.closeGate();
-        moveToPos(-7, 20, -1.6, 1.5, 15, 0.01);
+        moveToPos(-7, 20, -1.6, 2.5, 15, 0.01);
         //moveToPos(-9, 67, -1.6, 1.5, 15, 0.01);
         moveToPos(-7, 75, -1.6, 2.5, 15, 0.01);
         moveToPos(-7, 160, -1.6, 2.5, 5, 0.05);
         moveToPos(-46, 172, -2.3, 2.5, 2.5, 0.05);
         timer.reset();
 
-        while (opModeIsActive() && timer.milliseconds() < 3000) {
+        while (opModeIsActive() && timer.milliseconds() < 3500) {
             intakeCommand.autoPixel(2);
             intakeCommand.intakeIn(0.7);
-            maintainPos(-46, 175, -2.3, 1.5, 1.5, 0.05);
+            maintainPos(-46, 175, -2.3, 2.5, 2.5, 0.05);
             if (colorSensor.findColor2().equalsIgnoreCase("white")) {
                 if (need2white == 2){
                     break;
@@ -399,14 +399,14 @@ public class AutonomousFrontRed extends LinearOpMode {
             intakeCommand.autoPixel(1); //above max stack
             intakeCommand.intakeOutNoRoller(1);
             intakeCommand.intakeRollerIn();
-            maintainPos(-7, 165, -Math.PI / 2, 1.5, 1.5, 0.05);
+            maintainPos(-7, 165, -Math.PI / 2, 2.5, 2.5, 0.05);
         }
 
         intakeCommand.stopIntake();
 
         moveToPos(3.5, 100, -1.6, 2.5, 10, 0.01);
-        moveToPos(3.5, 80, -1.6, 1.5, 10, 0.01);
-        moveToPos(3.5, 70, -1.6, 1.5, 10, 0.01);
+        moveToPos(3.5, 80, -1.6, 2.5, 10, 0.01);
+        moveToPos(3.5, 70, -1.6, 2.5, 10, 0.01);
         moveToPos(3.5, -65, -Math.PI / 2, 2.5, 5, 0.05);
 
         timer.reset();

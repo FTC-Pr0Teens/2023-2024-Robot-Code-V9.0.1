@@ -312,7 +312,7 @@ public class AutonomousBackRed extends LinearOpMode {
 //        moveToPos(-150, -177,Math.PI/2,7,5,0.05);
 //        progress = "checkpoint 3 end";
 //        sleep(1000);
-        moveToPos(-130,-180,-Math.PI/2,2.5,2.5,0.05);
+        moveToPos(-120,-180,-Math.PI/2,2.5,2.5,0.05);
 
         timer.reset();
         while (opModeIsActive() && timer.milliseconds() < 4500){
@@ -323,15 +323,15 @@ public class AutonomousBackRed extends LinearOpMode {
         }
 
         timer.reset();
-        while (timer.milliseconds() < 700) {
+        while (timer.milliseconds() < 1000) {
             outputCommand.openGate();
             outputCommand.outputWheelIn();
         }
 
+
         timer.reset();
         while (opModeIsActive() && timer.milliseconds() < 2000){
             maintainPos(-27,-220,-Math.PI/2,2.5,2.5,0.05);
-            level = 5;
             outputCommand.armToIdle();
             outputCommand.tiltToIdle();
         }
@@ -339,6 +339,7 @@ public class AutonomousBackRed extends LinearOpMode {
 
         level = 5;
         outputCommand.closeGate();
+        level = 5;
 
 
 //        moveToPos(-125,-118.898,-Math.PI/2,1.5,1.5,0.015);

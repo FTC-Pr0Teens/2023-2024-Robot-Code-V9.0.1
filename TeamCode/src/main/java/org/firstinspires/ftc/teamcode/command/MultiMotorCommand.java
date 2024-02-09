@@ -95,7 +95,7 @@ public class MultiMotorCommand {
                 interval3 = new Interval(-500, -18, 500);
                 interval4 = new Interval(-18, 400, 0);
                 if(run) {
-                    multiMotorSubsystem.LiftCascadeProcess(50, interval1, interval2, interval3, interval4);
+                    multiMotorSubsystem.LiftCascadeProcess(150, interval1, interval2, interval3, interval4);
                 }
 
 //                Intervals for Position 4100
