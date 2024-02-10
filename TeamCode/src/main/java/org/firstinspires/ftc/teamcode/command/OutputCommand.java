@@ -52,7 +52,7 @@ public class OutputCommand {
         gate.setPosition(0.71);
     }
     public void closeGate(){
-        gate.setPosition(0.83);
+        gate.setPosition(0.9);
     }
     public void outputWheelOut(){
         intakeCommand.intakeRollerOut();

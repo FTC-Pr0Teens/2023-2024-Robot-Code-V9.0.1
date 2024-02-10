@@ -220,7 +220,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
                 hangingServoR.setPosition(0.6); //NOT PREPARED TO HANG
             } else if (gamepad2.dpad_left){
                 //hang
-                hangingServoL.setPosition(0.525);
+                hangingServoL.setPosition(0.128);
                 hangingServoR.setPosition(0.525);
             } else  if(gamepad2.dpad_up) {
                 //hang
@@ -237,14 +237,14 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
                 droneShooter.launch();
                 telemetry.addLine("Paper airplane launched");
             } else if (gamepad2.left_trigger > 0.5){
-                hangingServoL.setPosition(0.5635);
+                hangingServoL.setPosition(0.37);
                 hangingServoR.setPosition(0.5635);
             }
 
             if (gamepad2.right_bumper) {
                 intakeCommand.autoPixel(1); //
             } else if (gamepad2.left_bumper){
-                intakeCommand.lowerIntake();
+                intakeCommand.raiseIntake();
             }
 //
             telemetry.addData("Target level (where the lift is going to)", targetLevel);

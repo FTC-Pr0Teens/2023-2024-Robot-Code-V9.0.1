@@ -41,7 +41,7 @@ public class AutonomousBackRed extends LinearOpMode {
     private OdometrySubsystem odometrySubsystem;
     private GyroOdometry gyroOdometry;
     private IntakeCommand intakeCommand;
-//    private WebcamSubsystem webcamSubsystem;
+    private WebcamSubsystem webcamSubsystem;
     private OutputCommand outputCommand;
     private MultiMotorSubsystem multiMotorSubsystem;
     private MultiMotorCommand multiMotorCommand;
@@ -112,7 +112,7 @@ public class AutonomousBackRed extends LinearOpMode {
         multiMotorCommand = new MultiMotorCommand(multiMotorSubsystem);
         dashboard = FtcDashboard.getInstance();
         packet = new TelemetryPacket();
-//        webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
+        webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
         timer = new ElapsedTime();
         outputTimer = new ElapsedTime();
 
@@ -128,16 +128,10 @@ public class AutonomousBackRed extends LinearOpMode {
 
         outputCommand.armToIdle();
         outputCommand.tiltToIdle();
-//
-//        timer.reset();
-//        while (opModeInInit()) {
-//            propPosition = webcamSubsystem.getXProp();
-//        }double propPosition = 0;
-////
-////        timer.reset();
-////        while (opModeInInit()) {
-////            propPosition = webcamSubsystem.getXProp();
-////        }
+
+        while (opModeInInit()) {
+            propPosition = webcamSubsystem.getXProp();
+        }
         waitForStart();
 
         Executor executor = Executors.newFixedThreadPool(5);
@@ -153,15 +147,15 @@ public class AutonomousBackRed extends LinearOpMode {
         //TODO: when turning clockwise it is the opposite of the text above me
         //TODO: below is left
 
-        goToRightSpike();
-
-//        if (propPosition > 475) {
-//            goToMiddleSpike();
-//        } else if (propPosition > 0 && propPosition < 475) {
-//            goToLeftSpike();
-//        } else {
-//            goToRightSpike();
-//        }
+        if (opModeIsActive()) {
+            if (propPosition <= 325 && propPosition > 0) {
+                goToLeftSpike();
+            } else if (propPosition > 325 && propPosition <= 700) {
+                goToMiddleSpike();
+            } else if (propPosition > 700) {
+                goToRightSpike();
+            }
+        }
 
 
 

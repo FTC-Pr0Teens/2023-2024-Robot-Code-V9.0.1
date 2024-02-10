@@ -93,6 +93,7 @@ public class AutonomousFrontRed extends LinearOpMode {
 
         outputCommand.armToIdle();
         outputCommand.tiltToIdle();
+
         while (opModeInInit()) {
             propPosition = webcamSubsystem.getXProp();
         }
@@ -106,14 +107,13 @@ public class AutonomousFrontRed extends LinearOpMode {
         CompletableFuture.runAsync(this::liftProcess, executor);
 
         if (opModeIsActive()) {
-            goToLeftSpike();
-//            if (propPosition <= 325 && propPosition > 0) {
-//                goToLeftSpike();
-//            } else if (propPosition > 325 && propPosition <= 700) {
-//                goToMiddleSpike();
-//            } else if (propPosition > 700) {
-//                goToRightSpike();
-//            }
+            if (propPosition <= 325 && propPosition > 0) {
+                goToLeftSpike();
+            } else if (propPosition > 325 && propPosition <= 700) {
+                goToMiddleSpike();
+            } else if (propPosition > 700) {
+                goToRightSpike();
+            }
         }
 
         //go to correct spike

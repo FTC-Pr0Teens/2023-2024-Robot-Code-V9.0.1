@@ -40,7 +40,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
     private OdometrySubsystem odometrySubsystem;
     private GyroOdometry gyroOdometry;
     private IntakeCommand intakeCommand;
-    //private WebcamSubsystem webcamSubsystem;
+    private WebcamSubsystem webcamSubsystem;
     private OutputCommand outputCommand;
     private MultiMotorSubsystem multiMotorSubsystem;
     private MultiMotorCommand multiMotorCommand;
@@ -72,6 +72,7 @@ public class AutonomousBackBlueRough extends LinearOpMode {
 
     private boolean goToAprilTag = false;
     private String autoColor = "blue";
+    double propPosition = 0;
 
 
     private HashSet <LIFT_STATE> liftState = new HashSet<>();
@@ -132,8 +133,9 @@ public class AutonomousBackBlueRough extends LinearOpMode {
         outputCommand.armToIdle();
         outputCommand.tiltToIdle();
 
-
-
+        while (opModeInInit()) {
+            propPosition = webcamSubsystem.getXProp();
+        }
 
         waitForStart();
 
@@ -146,33 +148,16 @@ public class AutonomousBackBlueRough extends LinearOpMode {
        // CompletableFuture.runAsync(this::ThreadStop);
         //setPropPosition();
 
+        if (opModeIsActive()) {
+            if (propPosition <= 325 && propPosition > 0) {
+                goToLeftSpike();
+            } else if (propPosition > 325 && propPosition <= 700) {
+                goToMiddleSpike();
+            } else if (propPosition > 700) {
+                goToRightSpike();
+            }
+        }
 
-
-
-
-
-        //TODO: positive x goes towards red side when turning 90 counter clockwise
-        //TODO: positive y goes away from the board
-
-        //TODO: when turning clockwise it is the opposite of the text above me
-        //TODO: below is left
-        //TODO: below is left
-//        telemetry.addData("test", gyroOdometry.x);
-//        double propPosition = 0;
-//
-//        timer.reset();
-//        while (opModeInInit()) {
-//            propPosition = webcamSubsystem.getXProp();
-//        }
-//
-//        if (propPosition > 475) {
-//            goToMiddleSpike();
-//        } else if (propPosition > 0 && propPosition < 475) {
-//            goToLeftSpike();
-//        } else {
-//            goToRightSpike();
-//        }
-        goToRightSpike();
     }
 
     public void updateOdometry() {

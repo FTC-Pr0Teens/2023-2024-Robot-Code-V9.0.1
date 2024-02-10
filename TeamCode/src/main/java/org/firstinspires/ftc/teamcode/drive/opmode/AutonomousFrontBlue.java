@@ -54,6 +54,7 @@ public class AutonomousFrontBlue extends LinearOpMode {
     //38, 80, -1.58
     private int level = -1;
     private String position = "initialized";
+    double propPosition = 0;
 
 
     // NOTE:
@@ -88,6 +89,11 @@ public class AutonomousFrontBlue extends LinearOpMode {
 
         outputCommand.armToIdle();
         outputCommand.tiltToIdle();
+
+        while (opModeInInit()) {
+            propPosition = webcamSubsystem.getXProp();
+        }
+
         waitForStart(); //WAIT FOR START
 
         timers.resetTimer("runTime"); //this will track the current run time of the robot. limit 30 seconds
@@ -97,29 +103,15 @@ public class AutonomousFrontBlue extends LinearOpMode {
         CompletableFuture.runAsync(this::updateTelemetry, executor);
         CompletableFuture.runAsync(this::liftProcess, executor);
 
-        //find the prop position
-        double propPosition = 0;
-//        goToRightSpike();
-//        goToLeftSpike();
-       // goToMiddleSpike();
-//
-        timer.reset();
-
-        goToMiddleSpike();
-//        while (opModeInInit()) {
-//            propPosition = webcamSubsystem.getXProp();
-//        }
-//
-//        if (propPosition > 475) {
-//            goToMiddleSpike();
-//        } else if (propPosition > 0 && propPosition < 475) {
-//            goToLeftSpike();
-//        } else {
-//            goToRightSpike();
-//        }
-
-        //go to correct spike
-
+        if (opModeIsActive()) {
+            if (propPosition <= 325 && propPosition > 0) {
+                goToLeftSpike();
+            } else if (propPosition > 325 && propPosition <= 700) {
+                goToMiddleSpike();
+            } else if (propPosition > 700) {
+                goToRightSpike();
+            }
+        }
 
         sleep(1000);
         stop();
