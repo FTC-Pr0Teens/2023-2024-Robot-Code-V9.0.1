@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.util.Pipelines.AprilTagPipeline;
+import org.firstinspires.ftc.teamcode.util.Pipelines.CameraPipeLine;
 import org.firstinspires.ftc.teamcode.util.Pipelines.ContourPipeline;
 import org.firstinspires.ftc.teamcode.util.Pipelines.ElementPipeline2;
 import org.firstinspires.ftc.teamcode.util.Pipelines.RedIntakePipeline;
@@ -23,6 +25,7 @@ public class WebcamSubsystem extends Specifications {
     RedIntakePipeline redIntakePipeline;
     //public AprilTagPipeline aprilTagPipeline;
     public ContourPipeline contourPipeline;
+    public CameraPipeLine cameraPipeLine;
     boolean initial;
 
     public enum PipelineName {
@@ -58,9 +61,15 @@ public class WebcamSubsystem extends Specifications {
 //            webcam.setPipeline(redIntakePipeline);
 //        }
         if (pipelineName == PipelineName.CONTOUR_BLUE) {
-            contourPipeline = new ContourPipeline(87, 218, 143, 138, 255, 255);
+            contourPipeline = new ContourPipeline(
+                    119, 255, 255,
+                    100, 140, 122
+                    );
         } else if (pipelineName == PipelineName.CONTOUR_RED) {
-            contourPipeline = new ContourPipeline(0, 202, 108, 26, 255, 255);
+            contourPipeline = new ContourPipeline(
+                    15, 252, 255,
+                    0, 167, 127
+            );
         }
         // initiate the needed parameters
         cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -92,6 +101,62 @@ public class WebcamSubsystem extends Specifications {
         });
     }
 
+    public WebcamSubsystem(HardwareMap hardwareMap, PipelineName pipelineName, FtcDashboard dashboard) {
+//        contourPipeline = new ContourPipeline(30, 255, 255, 10, 130, 130);
+//        if(pipelineName == PipelineName.APRIL_TAG){
+//            aprilTagPipeline = new AprilTagPipeline(0.166, fy, fx, cy, cx);
+//            webcam.setPipeline(aprilTagPipeline);
+//        }
+//        else if(pipelineName == PipelineName.ELEMENT){
+//            elementPipeline2 = new ElementPipeline2();
+//            webcam.setPipeline(elementPipeline2);
+//        }
+//        else if(pipelineName == PipelineName.RED_INTAKE){
+//            redIntakePipeline = new RedIntakePipeline();
+//            webcam.setPipeline(redIntakePipeline);
+//        }
+        if (pipelineName == PipelineName.CONTOUR_BLUE) {
+            cameraPipeLine = new CameraPipeLine(
+                    119, 255, 255,
+                    100, 140, 122,
+                    dashboard
+            );
+        } else {
+            cameraPipeLine = new CameraPipeLine(
+                    15, 252, 255,
+                    0, 167, 127,
+                    dashboard
+            );
+        }
+        // initiate the needed parameters
+        cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+
+        // initiate the camera object with created parameters and pipeline
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
+
+        webcam.setPipeline(cameraPipeLine);
+        // runs camera on a separate thread so it can run simultaneously with everything else
+
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                // starts the camera stream when init is pressed
+                /*
+                 When the camera turns on, we start streaming data,
+                 sending frames through the VisionPortal.
+
+                 Note, the camera stream starts when init is pressed.
+                 */
+                webcam.startStreaming(VIEW_WIDTH, VIEW_HEIGHT, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode) {
+
+            }
+        });
+    }
     public void switchPipeline() {
         redIntakePipeline = new RedIntakePipeline();
         webcam.setPipeline(redIntakePipeline);

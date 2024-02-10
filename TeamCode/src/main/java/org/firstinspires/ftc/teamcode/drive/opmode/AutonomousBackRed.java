@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 
 import org.firstinspires.ftc.teamcode.subsystems.MultiMotorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.WebcamSubsystem;
+//import org.firstinspires.ftc.teamcode.subsystems.WebcamSubsystem;
 import org.firstinspires.ftc.teamcode.util.GyroOdometry;
 import org.firstinspires.ftc.teamcode.util.Specifications;
 
@@ -41,7 +41,7 @@ public class AutonomousBackRed extends LinearOpMode {
     private OdometrySubsystem odometrySubsystem;
     private GyroOdometry gyroOdometry;
     private IntakeCommand intakeCommand;
-    private WebcamSubsystem webcamSubsystem;
+    //private WebcamSubsystem webcamSubsystem;
     private OutputCommand outputCommand;
     private MultiMotorSubsystem multiMotorSubsystem;
     private MultiMotorCommand multiMotorCommand;
@@ -112,7 +112,7 @@ public class AutonomousBackRed extends LinearOpMode {
         multiMotorCommand = new MultiMotorCommand(multiMotorSubsystem);
         dashboard = FtcDashboard.getInstance();
         packet = new TelemetryPacket();
-        webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
+        //webcamSubsystem = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
         timer = new ElapsedTime();
         outputTimer = new ElapsedTime();
 
@@ -129,9 +129,9 @@ public class AutonomousBackRed extends LinearOpMode {
         outputCommand.armToIdle();
         outputCommand.tiltToIdle();
 
-        while (opModeInInit()) {
-            propPosition = webcamSubsystem.getXProp();
-        }
+//        while (opModeInInit()) {
+//            propPosition = webcamSubsystem.getXProp();
+//        }
         waitForStart();
 
         Executor executor = Executors.newFixedThreadPool(5);
@@ -147,20 +147,22 @@ public class AutonomousBackRed extends LinearOpMode {
         //TODO: when turning clockwise it is the opposite of the text above me
         //TODO: below is left
 
-        if (opModeIsActive()) {
-            if (propPosition <= 325 && propPosition > 0) {
-                goToLeftSpike();
-            } else if (propPosition > 325 && propPosition <= 700) {
-                goToMiddleSpike();
-            } else if (propPosition > 700) {
-                goToRightSpike();
-            }
+        goToMiddleSpike();
+//        if (opModeIsActive()) {
+//            if (propPosition <= 325 && propPosition > 0) {
+//                goToLeftSpike();
+//            } else if (propPosition > 325 && propPosition <= 700) {
+//                goToMiddleSpike();
+//            } else {
+//                goToRightSpike();
+//            }
+            stop();
         }
 
 
 
 
-    }
+
 
     public void updateOdometry() {
         while (opModeIsActive()) {
@@ -325,15 +327,17 @@ public class AutonomousBackRed extends LinearOpMode {
 
         timer.reset();
         while (opModeIsActive() && timer.milliseconds() < 2000){
-            maintainPos(-27,-220,-Math.PI/2,2.5,2.5,0.05);
+            maintainPos(-22,-222,-Math.PI/2,2.5,2.5,0.05);
             outputCommand.armToIdle();
             outputCommand.tiltToIdle();
         }
 
 
-        level = 5;
+        level = 0;
         outputCommand.closeGate();
-        level = 5;
+        outputCommand.outputWheelStop();
+        moveToPos(-20,-232,-Math.PI/2,2.5,2.5,0.05);
+        //level = 5;
 
 
 //        moveToPos(-125,-118.898,-Math.PI/2,1.5,1.5,0.015);
@@ -442,7 +446,7 @@ public class AutonomousBackRed extends LinearOpMode {
             double milliseconds = timer.milliseconds();
             //go to board
             if (milliseconds > 3100){
-                maintainPos(-55,-200,-Math.PI/2,2.5,2.5,0.015); //moves back from board
+                maintainPos(-55,-225,-Math.PI/2,2.5,2.5,0.015); //moves back from board
                 outputCommand.armToIdle();
                 outputCommand.tiltToIdle();
                 break;
@@ -457,14 +461,15 @@ public class AutonomousBackRed extends LinearOpMode {
             }
             if(milliseconds <= 3100) maintainPos(-50,-235,-Math.PI/2,2.5,2.5,0.05); //go to board
         }
-        timer.reset();
-        while (opModeIsActive()) {
-            maintainPos(-55,-220,-Math.PI/2,6,3,0.25);
-            if(timer.milliseconds() > 700) break;
-        }
+//        timer.reset();
+//        while (opModeIsActive()) {
+//            maintainPos(-55,-220,-Math.PI/2,6,3,0.25);
+//            if(timer.milliseconds() > 700) break;
+//        }
         level = 0;
         outputCommand.closeGate();
-        stop();
+        outputCommand.outputWheelStop();
+        moveToPos(-50,-235,-Math.PI/2,2.5,2.5,0.05);
 //        moveToPos(-90,-200,-Math.PI/2,6,3,0.25);
 //        moveToPos(-90,-235,-Math.PI/2,6,3,0.25);//keep going to the point if not there already, otherwise this won't wor
     }
@@ -524,7 +529,7 @@ public class AutonomousBackRed extends LinearOpMode {
             double milliseconds = timer.milliseconds();
             //go to board
             if (milliseconds > 3100){
-                maintainPos(-63,-230,-Math.PI/2,7,7,0.05);
+                maintainPos(-68,-228,-Math.PI/2,7,7,0.05);
                 outputCommand.armToIdle();
                 outputCommand.tiltToIdle();
                 break;
@@ -541,6 +546,8 @@ public class AutonomousBackRed extends LinearOpMode {
         }
         level = 0;
         outputCommand.closeGate();
+        outputCommand.outputWheelStop();
+        moveToPos(-63,-238,-Math.PI/2,2.5,2.5,0.05);
 //        moveToPos(-90,-200,-Math.PI/2,6,3,0.05);
 //        moveToPos(-90,-235,-Math.PI/2,6,3,0.05);
     }

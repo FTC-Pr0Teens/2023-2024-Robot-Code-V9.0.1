@@ -64,6 +64,7 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
     private HashSet <LIFT_STATE> liftState = new HashSet<>();
 
     private GridAutoCentering gridAutoCentering;
+    private boolean isResetting = false;
 
     private enum LIFT_STATE {
         LIFT_IDLE,
@@ -148,11 +149,11 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
         waitForStart();
 
-        Executor executor = Executors.newFixedThreadPool(4);
+        Executor executor = Executors.newFixedThreadPool(3);
         CompletableFuture.runAsync(this::processLift, executor);
         CompletableFuture.runAsync(this::processDriveMotor, executor);
         CompletableFuture.runAsync(this::processIMU, executor);
-        CompletableFuture.runAsync(this::manualLift,executor);
+
 
         outputTimer.reset();
 
@@ -195,7 +196,10 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
                 intakeCommand.lowerIntake();
                 intakeCommand.intakeIn(0.75);
                 intakeCommand.intakeRollerIn();
-            } else if (gamepad1.right_bumper) {
+            } else if (gamepad1.a) {
+                intakeCommand.intakeOutNoRoller(0.9);
+                intakeCommand.intakeRollerIn();
+            } else if (gamepad1.x){
                 intakeCommand.intakeOut(0.9);
                 intakeCommand.intakeRollerOut();
             } else {
@@ -247,21 +251,29 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
                 intakeCommand.raiseIntake();
             }
 //
-            telemetry.addData("Target level (where the lift is going to)", targetLevel);
-            telemetry.addData("Set level (Backdrop level that we want)", setLevel);
-            telemetry.addData("position", multiMotorSubsystem.getPosition());
-            telemetry.addData("target vel", multiMotorCommand.intervalVal);
+
+
+            if(Math.abs(gamepad2.left_stick_y) > 0.3){
+                isResetting = true;
+            }
+            if(gamepad2.start) {
+                multiMotorSubsystem.reset();
+                isResetting = false;
+            }
+
+
+            telemetry.addData("theta", gyroOdometry.theta);
+            telemetry.addData("angleZ", imuSubsystem.angleZ());
+            telemetry.addData("cTheta", imuSubsystem.getCTheta());
 ////            telemetry.addData("power", multiMotorSubsystem.getMainPower());
 ////            telemetry.addData("auxpower", multiMotorSubsystem.getAux1Power());
 ////            telemetry.addData("auxpos", multiMotorSubsystem.getAuxPos());
 ////            telemetry.addData("derivativeValue", multiMotorSubsystem.getDerivativeValue());
 //            telemetry.addData("cascadeOutput", multiMotorSubsystem.getCascadeOutput());
-            telemetry.addData("outputPositional", multiMotorSubsystem.getCascadePositional());
-            telemetry.addData("outputVelocity", multiMotorSubsystem.getCascadeVelocity());
+//            telemetry.addData("outputPositional", multiMotorSubsystem.getCascadePositional());
+//            telemetry.addData("outputVelocity", multiMotorSubsystem.getCascadeVelocity());
 ////            telemetry.addData("level", level);
-//            telemetry.update();
-
-
+            telemetry.update();
 
         }
     }
@@ -399,28 +411,23 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
             autoCenterDirection = alignDirection.NONE;
             gridAutoCentering.offsetTargetAngle(0);
         } else if(gamepad1.dpad_down){
-            if(gamepad1.right_trigger > 0.5){
-                switch (autoCenterDirection) { //resets heading if aligned to board, otherwise align to current robot position
-                    case LEFT:
-                        imuSubsystem.resetAngle(Math.PI/2);
-                        break;
-                    case RIGHT:
-                        imuSubsystem.resetAngle(-Math.PI/2);
-                        break;
-                    default:
-                        imuSubsystem.resetAngle();
-                }
-                gridAutoCentering.reset();
+            switch (autoCenterDirection) { //resets heading if aligned to board, otherwise align to current robot position
+                case LEFT:
+                    imuSubsystem.resetAngle(Math.PI/2);
+                    break;
+                case RIGHT:
+                    imuSubsystem.resetAngle(-Math.PI/2);
+                    break;
+                default:
+                    imuSubsystem.resetAngle();
             }
-            gridAutoCentering.reset();
+            gridAutoCentering.resetZero();
         }
 
         doCentering = gamepad1.left_trigger > 0.5 && !gamepad1.dpad_down; //if not resetting angle
         
-        if(lift == LIFT.SET || gamepad1.left_trigger > 0.5) mecanumCommand.moveGlobalPartial(true, -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-        else mecanumCommand.moveGlobalPartial(true, -gamepad1.left_stick_y * 0.6, gamepad1.left_stick_x * 0.6, gamepad1.right_stick_x);
-        if(lift == LIFT.SET && gamepad1.left_trigger > 0.5) mecanumCommand.moveGlobalPartial(true, -gamepad1.left_stick_y * 0.8, gamepad1.left_stick_x * 0.8, gamepad1.right_stick_x);
-        else mecanumCommand.moveGlobalPartial(true, -gamepad1.left_stick_y , gamepad1.left_stick_x, gamepad1.right_stick_x);
+        if(lift == LIFT.SET && gamepad1.left_trigger > 0.5) mecanumCommand.moveGlobalPartial(true, -gamepad1.left_stick_y * 0.6, gamepad1.left_stick_x * 0.6, gamepad1.right_stick_x);
+        else mecanumCommand.moveGlobalPartial(true, -gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         //slowmode if dropping pixel and autocentering
 
     }
@@ -443,7 +450,10 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 
 
     private void processLift(){
-        while(opModeIsActive()) multiMotorCommand.LiftUp(true, targetLevel);
+        while(opModeIsActive()) {
+            if(isResetting) multiMotorSubsystem.moveLift(-gamepad2.left_stick_y);
+            else multiMotorCommand.LiftUp(true, targetLevel);
+        }
 //        timers.resetTimer("test");
 //        while(opModeIsActive()) {
 //            telemetry.addData("test", timers.getTimerMillis("test"));
@@ -453,9 +463,5 @@ public class Pr0TeensMainTeleop extends LinearOpMode {
 //        }
     }
 
-
-    private void manualLift(){
-        multiMotorSubsystem.moveLift(-gamepad2.left_stick_y);
-    }
 
 }

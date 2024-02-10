@@ -108,15 +108,11 @@ public class AutonomousFrontBlue extends LinearOpMode {
                 goToLeftSpike();
             } else if (propPosition > 325 && propPosition <= 700) {
                 goToMiddleSpike();
-            } else if (propPosition > 700) {
+            } else {
                 goToRightSpike();
             }
+            stop();
         }
-
-        sleep(1000);
-        stop();
-
-
     }
 
     public void updateOdometry() {
@@ -185,6 +181,7 @@ public class AutonomousFrontBlue extends LinearOpMode {
         timer.reset();
         while (opModeIsActive() ) {
             if (timer.milliseconds() > 3100){
+                maintainPos(-45,80,Math.PI/2,2.5,2.5,0.05);
                 outputCommand.armToIdle();
                 outputCommand.tiltToIdle();
                 break;
@@ -199,11 +196,15 @@ public class AutonomousFrontBlue extends LinearOpMode {
             }
             if(timer.milliseconds() <= 3100) maintainPos(-42,93,Math.PI/2,2.5,2.5,0.05);
         }
+        level = 0;
         outputCommand.outputWheelStop();
-        level = 5;
-        moveToPos(-5,65,Math.PI/2,2.5,2.5,0.05);
-        moveToPos(-5,100,Math.PI/2,2.5,2.5,0.05);
-        level = 5;
+        outputCommand.closeGate();
+        moveToPos(-42,93,Math.PI/2,2.5,2.5,0.05);
+
+//        level = 5;
+//        moveToPos(-5,65,Math.PI/2,2.5,2.5,0.05);
+//        moveToPos(-5,100,Math.PI/2,2.5,2.5,0.05);
+//        level = 5;
 
 
 
@@ -293,6 +294,7 @@ public class AutonomousFrontBlue extends LinearOpMode {
         timer.reset();
         while (opModeIsActive() ) {
             if (timer.milliseconds() > 3100){
+                maintainPos(-83,80,Math.PI/2,2.5,2.5,0.05);
                 outputCommand.armToIdle();
                 outputCommand.tiltToIdle();
                 break;
@@ -310,12 +312,15 @@ public class AutonomousFrontBlue extends LinearOpMode {
 
 
 
-        moveToPos(-5,65,Math.PI/2,2.5,2.5,0.05);
-        level = 5;
-        outputCommand.armToIdle();
-        outputCommand.tiltToIdle();
+//        moveToPos(-5,65,Math.PI/2,2.5,2.5,0.05);
+//        level = 5;
+//        outputCommand.armToIdle();
+//        outputCommand.tiltToIdle();
+        level = 0;
         outputCommand.outputWheelStop();
-        moveToPos(-5,100,Math.PI/2,2.5,2.5,0.05);
+        outputCommand.closeGate();
+        moveToPos(-80,94,Math.PI/2,2.5,2.5,0.05);
+        //moveToPos(-5,100,Math.PI/2,2.5,2.5,0.05);
 
 
 //        while (opModeIsActive()){
@@ -394,6 +399,7 @@ public class AutonomousFrontBlue extends LinearOpMode {
         timer.reset();
         while (opModeIsActive() ) {
             if (timer.milliseconds() > 3100){
+                maintainPos(-71,80,Math.PI/2,1.5,1.5,0.05);
                 outputCommand.armToIdle();
                 outputCommand.tiltToIdle();
                 break;
@@ -408,11 +414,13 @@ public class AutonomousFrontBlue extends LinearOpMode {
             }
             if(timer.milliseconds() <= 3100) maintainPos(-68,94,Math.PI/2,1.5,1.5,0.05);
         }
-
+        level = 0;
         outputCommand.outputWheelStop();
-        level = 5;
-        moveToPos(-5,65,Math.PI/2,2.5,2.5,0.05);
-        moveToPos(-5,100,Math.PI/2,2.5,2.5,0.05);
+        outputCommand.closeGate();
+        moveToPos(-68,94,Math.PI/2,1.5,1.5,0.05);
+//        level = 5;
+//        moveToPos(-5,65,Math.PI/2,2.5,2.5,0.05);
+//        moveToPos(-5,100,Math.PI/2,2.5,2.5,0.05);
 
 //        while (opModeIsActive()){
 //            maintainPos(-6,-6,Math.PI/2,2.5,2.5,0.05);

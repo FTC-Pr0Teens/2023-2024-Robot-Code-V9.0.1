@@ -57,7 +57,7 @@ public class MultiMotorSubsystem extends Specifications {
 
     private InterpLUT interpLUT = new InterpLUT();
     private LUT<Integer, Double> lut = new LUT<>();
-
+//12040
     private PIDCore cascadePID;
     private double cascadeKp = (double) 1/750;
     private double cascadeKi = 0;
@@ -216,7 +216,6 @@ public class MultiMotorSubsystem extends Specifications {
         aux1.setPower(getMainPower());
         testLiftPID.outputPositional(3900, getPosition());
     }
-
     public void externalEncoderProcessTwoMotor(){
         test = true;
         mainTimer.reset(); //reset timer

@@ -24,20 +24,17 @@ public class CameraTest extends LinearOpMode {
 
     @Override
     public void runOpMode(){
-        camera = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_RED);
         dashboard = FtcDashboard.getInstance();
+        camera = new WebcamSubsystem(hardwareMap, WebcamSubsystem.PipelineName.CONTOUR_BLUE, dashboard);
         dashboard.startCameraStream(camera.webcam, 24);
         packet = new TelemetryPacket();
 
         waitForStart();
         while(opModeIsActive()){
+//            packet.put("x", camera.contourPipeline.largestContourCenter().x);
+//            packet.put("y", camera.contourPipeline.largestContourCenter().y);
+//            packet.put("area", camera.contourPipeline.largestContourArea());
             dashboard.sendTelemetryPacket(packet);
-            packet.put("x", camera.contourPipeline.largestContourCenter().x);
-            packet.put("y", camera.contourPipeline.largestContourCenter().y);
-            packet.put("area", camera.contourPipeline.largestContourArea());
-            telemetry.addData("x", camera.contourPipeline.largestContourCenter().x);
-            telemetry.addData("y", camera.contourPipeline.largestContourCenter().y);
-            telemetry.addData("area", camera.contourPipeline.largestContourArea());
             sleep(20);
         }
     }

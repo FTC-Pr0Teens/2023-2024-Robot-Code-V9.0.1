@@ -111,18 +111,11 @@ public class AutonomousFrontRed extends LinearOpMode {
                 goToLeftSpike();
             } else if (propPosition > 325 && propPosition <= 700) {
                 goToMiddleSpike();
-            } else if (propPosition > 700) {
+            } else {
                 goToRightSpike();
             }
+            stop();
         }
-
-        //go to correct spike
-
-
-        sleep(1000);
-        stop();
-
-
     }
 
     public void updateOdometry() {
@@ -202,6 +195,7 @@ public class AutonomousFrontRed extends LinearOpMode {
         timer.reset();
         while (opModeIsActive()) {
             if (timer.milliseconds() > 3100) {
+                maintainPos(-68, -75, -Math.PI / 2, 2.5, 2.5, 0.05);
                 outputCommand.armToIdle();
                 outputCommand.tiltToIdle();
                 break;
@@ -216,6 +210,10 @@ public class AutonomousFrontRed extends LinearOpMode {
             }
             if (timer.milliseconds() < 3100) maintainPos(-63, -88, -Math.PI / 2, 2.5, 2.5, 0.05);
         }
+        level = 0;
+        outputCommand.closeGate();
+        outputCommand.outputWheelStop();
+        moveToPos(-63, -88, -Math.PI / 2, 2.5, 2.5, 0.05);
 //        moveToPos(0, -65, -Math.PI / 2, 5, 5, 0.05);
 //        level = 0;
 //        moveToPos(2, 67, -Math.PI / 2, 5, 5, 0.05);
@@ -264,7 +262,7 @@ public class AutonomousFrontRed extends LinearOpMode {
     }
 
     private void goToRightSpike() {
-        moveToPos(-80, -45, -1.0768, 2.5, 2.5, 0.1);
+        moveToPos(-80, -45, -1.0768, 2.5, 2.5, 0.1); // go mark
         timer.reset();
         intakeCommand.autoPixel(1);
 
@@ -273,11 +271,12 @@ public class AutonomousFrontRed extends LinearOpMode {
         }
         intakeCommand.stopIntake();
         intakeCommand.raiseIntake();
-
+// drop
 
         timer.reset();
         while (opModeIsActive()) {
             if (timer.milliseconds() > 3100) {
+                maintainPos(-46, 80, -Math.PI / 2, 2.5, 2.5, 0.05);
                 outputCommand.armToIdle();
                 outputCommand.tiltToIdle();
                 break;
@@ -290,8 +289,12 @@ public class AutonomousFrontRed extends LinearOpMode {
             } else {
                 level = 1;
             }
-            if (timer.milliseconds() <= 3100) maintainPos(-43, -94, -Math.PI / 2, 2.5, 2.5, 0.05);
+            if (timer.milliseconds() <= 3100) maintainPos(-43, -94, -Math.PI / 2, 2.5, 2.5, 0.05); // go to board
         }
+        level = 0;
+        outputCommand.outputWheelStop();
+        outputCommand.closeGate();
+        moveToPos(-43, -94, -Math.PI / 2, 2.5, 2.5, 0.05);
 //        moveToPos(-13, -65, -Math.PI / 2, 5, 5, 0.05);
 //        level = 0;
 //        moveToPos(-6, 67, -Math.PI / 2, 5, 5, 0.05);
@@ -355,6 +358,7 @@ public class AutonomousFrontRed extends LinearOpMode {
         timer.reset();
         while (opModeIsActive()) {
             if (timer.milliseconds() > 3500) {
+                maintainPos(-68, -80, -Math.PI/2, 2.5, 2.5, 0.01);
                 outputCommand.armToIdle();
                 outputCommand.tiltToIdle();
                 break;
@@ -369,9 +373,10 @@ public class AutonomousFrontRed extends LinearOpMode {
             }
             if (timer.milliseconds() <= 3100) maintainPos(-65, -97, -Math.PI / 2, 2.5, 2.5, 0.05);
         }
-        moveToPos(-14, -65, -Math.PI/2, 2.5, 2.5, 0.01);
-        level = 5;
+        level = 0;
         outputCommand.closeGate();
+        outputCommand.outputWheelStop();
+        moveToPos(-65, -97, -Math.PI/2, 2.5, 2.5, 0.01);
 
         //TODO: +2 starts here
 //        moveToPos(-7, 20, -Math.PI/2, 2.5, 15, 0.01);

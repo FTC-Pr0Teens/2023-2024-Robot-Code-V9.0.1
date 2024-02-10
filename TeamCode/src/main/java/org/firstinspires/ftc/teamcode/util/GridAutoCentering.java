@@ -32,6 +32,10 @@ public class GridAutoCentering {
         targetAngle = baseAngle;
     }
 
+    public void resetZero(){
+        baseAngle = 0;
+        targetAngle = baseAngle;
+    }
     public void setConstants(double kp, double ki, double kd, double ff){
         Kp = kp;
         Ki = ki;
